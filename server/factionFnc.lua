@@ -1,9 +1,3 @@
-ESX = exports['es_extended']:getSharedObject()
-mCore = exports["mCore"]:getSharedObj()
-local inv = exports["ox_inventory"]
-
-Factions = {}
-
 function LoadFactions()
     local res = MySQL.query.await("SELECT * FROM factions")
     for _, row in pairs(res) do
@@ -22,4 +16,8 @@ end
 
 function GetFactionConfig(factionName)
     return Factions[factionName] or nil
+end
+
+function GetEffectiveFaction(identifier)
+    -- Return player faction, and factionConfig
 end

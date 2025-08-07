@@ -13,7 +13,9 @@ shared_scripts {
 }
 
 server_scripts {
+    "server/log.lua",
     "server/functions.lua",
+    "server/factionFnc.lua",
     "server/main.lua",
 }
 

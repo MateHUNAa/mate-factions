@@ -20,7 +20,7 @@ lib.callback.register("mate-factions:getDutyData", (function(source)
     res = {
         factionType = factionData.type,
         factionName = factionId,
-        rankLabel = memberData.rank
+        rankLabel = Factions[factionId].ranks[tostring(memberData.rank)].name
     }
 
     return res

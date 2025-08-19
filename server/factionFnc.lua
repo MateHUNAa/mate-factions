@@ -9,7 +9,8 @@ function LoadFactions()
             permissions = json.decode(row.permissions or "{}"),
             allow_offduty = row.allow_offduty == 1,
             offduty_name = row.offduty_name,
-            members = {}
+            members = {},
+            duty_point = row.duty_point and json.decode(row.duty_point) or nil
         }
     end
 

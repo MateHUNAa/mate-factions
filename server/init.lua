@@ -8,6 +8,7 @@ function Init()
         "`allow_offduty` tinyint(1) DEFAULT 0",
         "`offduty_name` varchar(100) DEFAULT NULL",
         "`created_at` datetime DEFAULT current_timestamp()",
+        "`duty_point` JSON DEFAULT NULL",
         "CONSTRAINT `factions_offduty_fk` FOREIGN KEY(`offduty_name`) REFERENCES `factions`(`name`) ON DELETE SET NULL"
     })
 

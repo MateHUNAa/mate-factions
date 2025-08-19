@@ -78,6 +78,15 @@ end)
 
 
 RegisterCommand("setfactionleader", function(source, args, raw)
+    if not Functions.IsAdmin(source) then
+        Logger:Debug(("%s(%s) is not an admin Tried to use command: `setfaction`"):format(GetPlayerName(source),
+            source))
+        mCore.Notify(source, lang.Title, "error", lang.error["not_an_admin"], 5000)
+        return
+    end
+
+
+
     local targetId = args[1]
     local factionId = args[2]
     local isLeader = tonumber(args[3])
@@ -116,5 +125,45 @@ RegisterCommand("setfactionleader", function(source, args, raw)
             5000)
     else
         handleErr(errVal, source)
+    end
+end)
+
+
+RegisterCommand("createduty", function(source, args, raw)
+    if not Functions.IsAdmin(source) then
+        Logger:Debug(("%s(%s) is not an admin Tried to use command: `setfaction`"):format(GetPlayerName(source),
+            source))
+        mCore.Notify(source, lang.Title, "error", lang.error["not_an_admin"], 5000)
+        return
+    end
+
+    local factionId = args[1]
+
+    local adminPed = GetPlayerPed(source)
+
+    local coords = GetEntityCoords(adminPed)
+    local heading = GetEntityHeading(adminPed)
+
+    local dutyData = vec4(coords.x, coords.y, coords.z, heading)
+
+    if not Factions[factionId] then return end
+
+    local ok, err = pcall(function(...)
+        MySQL.update.await([[
+            UPDATE factions
+            SET duty_point = ?
+            WHERE name = ?
+        ]], {
+            json.encode(dutyData),
+            factionId
+        })
+    end)
+
+    if ok then
+        Factions[factionId].duty_point = dutyData
+        mCore.Notify(source, lang.Title, string.format(lang.success["duty_point_set"], factionId), "success", 5000)
+    else
+        mCore.Notify(source, lang.Title, lang.error["duty_point_set"], "error", 5000)
+        Logger:Error("[createduty]:", err)
     end
 end)

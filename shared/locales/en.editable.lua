@@ -6,12 +6,14 @@ Loc["en"] = {
           ["db_err"] = "Database error, check logs.",
           ["unknown_error"] = "Unknonw issue while createing faction.",
           ["faction_missing"] = "`%s` faction does not exists !",
-          ["player_missing"] = "Targeted player is not found !"
+          ["player_missing"] = "Targeted player is not found !",
+          ["duty_point_set"] = "Failed to place duty point !"
      },
      success = {
           ["faction_created"] = "Faction %s created !",
           ["faction_set"] = "Set %s faction to %s",
-          ["faction_leader_set"] = "%s leader status in %s set to %d"
+          ["faction_leader_set"] = "%s leader status in %s set to %d",
+          ["duty_point_set"] = "Duty point updated for faction: %s"
      },
      info    = {
           ["faction_set"] = "You were set to faction %s",

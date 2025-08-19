@@ -8,7 +8,7 @@ Loc["en"] = {
           ["faction_missing"] = "`%s` faction does not exists !",
           ["player_missing"] = "Targeted player is not found !",
           ["duty_point_set"] = "Failed to place duty point !",
-          ["wait"] = "Please wait..."
+          ["wait"] = "Please wait...",
      },
      success = {
           ["faction_created"] = "Faction %s created !",
@@ -19,7 +19,9 @@ Loc["en"] = {
      info    = {
           ["faction_set"] = "You were set to faction %s",
           ["faction_leader_set"] = "Your leader status in %s changed to %d",
-          ["duty_marker_help"] = "Manage duty"
+          ["duty_marker_help"] = "Manage duty",
+          ["off_duty"] = "You left duty.",
+          ["in_duty"] = "You clocked into an active duty."
      },
      warning = {},
 

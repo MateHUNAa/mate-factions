@@ -23,7 +23,6 @@ local panel = {
                     return Error(result.msg)
                 end
 
-                result.duty      = true
                 result.page      = "DutyPanel"
                 result.visible   = true
                 result.onDuty    = LocalPlayer.state.factionDuty?.factionId == factionId
@@ -33,11 +32,7 @@ local panel = {
                 sendNUI("DutyPage", result)
             end, factionId)
         else
-            sendNUI("DutyPage", {
-                duty = true,
-                visible = false,
-                page = "DutyPanel"
-            })
+            sendNUI("close")
         end
     end
 }
@@ -48,9 +43,34 @@ nuiCallback("exit", function(_, cb)
 end)
 
 nuiCallback("ToggleDuty", function(_, cb)
-    sendNUI("close")
+    cb("ok")
+
+    if not panel.visible then
+        return
+    end
+
+    local dutyState = LocalPlayer.state.factionDuty
+
+    if dutyState then
+        if dutyState.factionId ~= panel.visible then
+            return Error("You are already in duty somewhere else.")
+        end
+
+        LocalPlayer.state:set('factionDuty', nil, true)
+        LocalPlayer.state:set('factionBadge', nil, true)
+
+        Info(lang.info["duty_off"])
+    else
+        LocalPlayer.state:set('factionDuty', {
+            factionID = panel.visible,
+            factionType = panel.factionType,
+            start = GetCloudTimeAsInt()
+        }, true)
+
+        Info(lang.info["in_duty"])
+    end
+
     panel:setVisible(false)
-    -- TODO: ToggleDuty state
 end)
 
 local dutyMarkers = {}

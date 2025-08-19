@@ -58,6 +58,24 @@ lib.callback.register("mate-faction:GetPlayerFaction", (function(src)
             end
         end
     end
-    
+
     return nil
+end))
+
+
+AddEventHandler("playerJoining", (function(source)
+    local Player = mCore.getPlayer(source)
+    local start = GetGameTimer()
+    while not Player do
+        local now = GetGameTimer()
+        Wait(500)
+        Player = mCore.getPlayer(source)
+
+        if start - now > 5000 then
+            break
+        end
+    end
+    if not Player then return Logger:Error(("%s(%s) Not loaded properly !"):format(GetPlayerName(source), source)) end
+
+    TriggerClientEvent("mate-factions:AddAllDutyMarker", source, Factions)
 end))

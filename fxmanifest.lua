@@ -19,14 +19,15 @@ server_scripts {
     "server/init.lua",
     "server/admin.lua",
     "server/main.lua",
+    "server/duty.lua"
 }
 
 client_scripts {
     "client/functions.lua",
     "client/nui.lua",
     "client/exports.lua",
-    "client/duty.lua",
     "client/main.lua",
+    "client/duty.lua",
 }
 
 server_script "@oxmysql/lib/MySQL.lua"

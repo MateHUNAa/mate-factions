@@ -45,7 +45,7 @@ Config.DutyMarker = {
      scale          = vector3(0.7, 0.7, 0.7),
      upDown         = false,
      rotate         = false,
-     color          = { 56, 187, 147, 150 }
+     color          = { 88, 88, 88, 150 }
 }
 
 

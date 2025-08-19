@@ -23,39 +23,46 @@ local panel = {
                     return Error(result.msg)
                 end
 
-                result.duty = true
-                result.visible = true
-                result.onDuty = LocalPlayer.state.factionDuty?.factionId == factionId
-                result.cpID = cpID
+                result.duty      = true
+                result.page      = "DutyPanel"
+                result.visible   = true
+                result.onDuty    = LocalPlayer.state.factionDuty?.factionId == factionId
+                result.cpID      = cpID
                 self.factionType = result?.factionType
 
-                sendNUI("open", result)
+                sendNUI("DutyPage", result)
             end, factionId)
         else
-            sendNUI("open", {
+            sendNUI("DutyPage", {
                 duty = true,
-                visible = false
+                visible = false,
+                page = "DutyPanel"
             })
         end
     end
 }
 panel.__index = panel
 
+nuiCallback("exit", function(_, cb)
+    panel:setVisible(false)
+end)
 
+nuiCallback("ToggleDuty", function(_, cb)
+    sendNUI("close")
+    panel:setVisible(false)
+    -- TODO: ToggleDuty state
+end)
 
 local dutyMarkers = {}
 
 local function addMarker(factionId, pos)
     local template = Config.DutyMarker
     template.id = "duty-" .. factionId
-    template.pos = vec3(pos.x,pos.y,pos.z-1)
+    template.pos = vec3(pos.x, pos.y, pos.z - 1)
     template.help = lang.info["duty_marker_help"]
     template.factionID = factionId
     -- TODO: Add Image to marker
     template.onInteract = (function()
-        -- Show duty panel
-        print("factionId show panel!")
-
         panel:setVisible(not panel.visible, factionId)
     end)
 

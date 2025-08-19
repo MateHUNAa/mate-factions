@@ -3,14 +3,14 @@ function LoadFactions()
     local res = MySQL.query.await("SELECT * FROM factions")
     for _, row in pairs(res) do
         Factions[row.name] = {
-            label = row.label,
-            type = row.type,
-            ranks = json.decode(row.ranks or "{}"),
-            permissions = json.decode(row.permissions or "{}"),
+            label         = row.label,
+            type          = row.type,
+            ranks         = json.decode(row.ranks or "{}"),
+            permissions   = json.decode(row.permissions or "{}"),
             allow_offduty = row.allow_offduty == 1,
-            offduty_name = row.offduty_name,
-            members = {},
-            duty_point = row.duty_point and json.decode(row.duty_point) or nil
+            offduty_name  = row.offduty_name,
+            members       = {},
+            duty_point    = row.duty_point and json.decode(row.duty_point) or nil
         }
     end
 
@@ -40,7 +40,13 @@ function GetFactionConfig(factionName)
 end
 
 function GetEffectiveFaction(identifier)
-    -- Return player faction, and factionConfig
+    for facId, facData in pairs(Factions) do
+        for memberIdf, memberData in pairs(facData.members) do
+            if memberIdf == identifier then
+                return facId, facData, memberData
+            end
+        end
+    end
 end
 
 function InsertFaction(name, label, type)

@@ -25,9 +25,10 @@ function Init()
     })
 
 
-    Wait(1000)
+    Wait(500)
 
     LoadFactions()
+    LoadFactionMembers()
 
     isLoaded = true
 end

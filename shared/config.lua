@@ -15,6 +15,26 @@ Config.ApprovedLicenses = {
 }
 
 
+Config.DefaultRanks = {
+     ["1"] = {
+          name = "Recruit",
+          permissions = {}
+     },
+     ["2"] = {
+          name = "Member",
+          permissions = {}
+     },
+     ["99"] = {
+          name = "Sub-Leader",
+          permissions = { "manage_ranks", "invite" }
+     },
+     ["100"] = {
+          name = "Leader",
+          permissions = { "all" }
+     },
+
+}
+
 Config.Debug = true
 
 Config.BadgeItem = "badge"

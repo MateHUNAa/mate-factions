@@ -8,12 +8,30 @@ function LoadFactions()
             ranks = json.decode(row.ranks or "{}"),
             permissions = json.decode(row.permissions or "{}"),
             allow_offduty = row.allow_offduty == 1,
-            offduty_name = row.offduty_name
+            offduty_name = row.offduty_name,
+            members = {}
         }
     end
 
     Logger:Info(("Loaded %s factions"):format(#res))
     return true
+end
+
+function LoadFactionMembers()
+    local res = MySQL.query.await("SELECT * FROM faction_members")
+    for _, row in pairs(res) do
+        local faction = Factions[row.faction_name]
+        if faction then
+            faction.members[row.identifier] = {
+                rank      = row.rank,
+                title     = row.title,
+                on_duty   = 0,
+                joined_at = row.joined_at
+            }
+        end
+    end
+
+    Logger:Info("Loaded faction members")
 end
 
 function GetFactionConfig(factionName)
@@ -48,7 +66,7 @@ function InsertFaction(name, label, type)
             label,
             type,
             "{}",
-            "{}",
+            json.encode(Config.DefaultRanks),
             0
         })
     end)
@@ -57,7 +75,7 @@ function InsertFaction(name, label, type)
         Factions[name] = {
             label = label,
             type = type,
-            ranks = {},
+            ranks = Config.DefaultRanks,
             permissions = {},
             allow_offduty = false,
             offduty_name = nil
@@ -146,9 +164,55 @@ function SetFactionLeader(identifier, factionId, isLeader)
         if res == 0 then
             return false, "player_missing", handleErr
         end
-        
+
         return true, nil, handleErr
     else
         return false, "sql_error", handleErr
     end
+end
+
+--
+-- Ranking System
+--
+
+function GetFactionMemeberRank(identifier, factionId)
+    local member = Factions[factionId] and Factions[factionId].members[identifier]
+    if not member then return nil end
+    local rankId = tonumber(member.rank)
+    return Factions[factionId].ranks[rankId]
+end
+
+function IsLeader(identifier, factionId)
+    local member = Factions[factionId] and Factions[factionId].members[identifier]
+    if not member then return false, false end
+    local rankId = member.rank
+
+    return rankId == 100, rankId == 99
+end
+
+function AddRank(factionId, rankId, name, permissions)
+    local faction = Factions[factionId]
+    if not faction then return false end
+
+    faction.ranks[tostring(rankId)] = {
+        name = name,
+        permissions = permissions or {}
+    }
+
+    MySQL.update.await("UPDATE factions SET ranks = ? WHERE name = ?", {
+        json.encode(faction.ranks),
+        factionId
+    })
+end
+
+function RemoveRank(factionId, rankId)
+    local faction = Factions[factionId]
+    if not faction then return false end
+
+    faction.ranks[tostring(rankId)] = nil
+
+    MySQL.update.await("UPDATE factions SET ranks = ? WHERE name = ?", {
+        json.encode(faction.ranks),
+        factionId
+    })
 end

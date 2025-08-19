@@ -14,5 +14,10 @@ function Logger:Warning(msg, ...)
     print(("[^2Factions^0] [^4Warning^0] %s"):format(msg), ...)
 end
 
+function Logger:Debug(msg, ...)
+    if Config.Debug then
+        print(("[^2Factions^0] [^3Debug^0] %s"):format(msg), ...)
+    end
+end
 
 return Logger

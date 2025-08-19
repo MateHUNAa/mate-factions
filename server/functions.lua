@@ -70,7 +70,7 @@ Functions = {
      end),
      ---@param PlayerId number
      ---@return boolean
-     IsAdmin = (function(PlayerId)
+     IsAdmin = (function(pid)
           if Config.MHAdminSystem then
                return exports["mate-admin"]:isAdmin(pid)
           else

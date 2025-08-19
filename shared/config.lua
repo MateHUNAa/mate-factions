@@ -14,6 +14,9 @@ Config.ApprovedLicenses = {
      "xbl:123"
 }
 
+
+Config.Debug = true
+
 Config.BadgeItem = "badge"
 
 Config.DutyMarker = {

@@ -162,6 +162,7 @@ RegisterCommand("createduty", function(source, args, raw)
     if ok then
         Factions[factionId].duty_point = dutyData
         mCore.Notify(source, lang.Title, string.format(lang.success["duty_point_set"], factionId), "success", 5000)
+        TriggerClientEvent("mate-factions:DutyPointUpdated", -1, factionId, Factions[factionId])
     else
         mCore.Notify(source, lang.Title, lang.error["duty_point_set"], "error", 5000)
         Logger:Error("[createduty]:", err)

@@ -23,6 +23,9 @@ server_scripts {
 
 client_scripts {
     "client/functions.lua",
+    "client/nui.lua",
+    "client/exports.lua",
+    "client/duty.lua",
     "client/main.lua",
 }
 
@@ -44,12 +47,11 @@ escrow_ignore {
 
 
 files {
-  "html/index.html",
-  "html/assets/*.js",
-  "html/assets/*.css"
+    "html/index.html",
+    "html/assets/*.js",
+    "html/assets/*.css"
 }
 
 
 ui_page "html/index.html"
 --ui_page "http://localhost:5173"
-                  

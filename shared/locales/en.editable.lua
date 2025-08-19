@@ -7,7 +7,8 @@ Loc["en"] = {
           ["unknown_error"] = "Unknonw issue while createing faction.",
           ["faction_missing"] = "`%s` faction does not exists !",
           ["player_missing"] = "Targeted player is not found !",
-          ["duty_point_set"] = "Failed to place duty point !"
+          ["duty_point_set"] = "Failed to place duty point !",
+          ["wait"] = "Please wait..."
      },
      success = {
           ["faction_created"] = "Faction %s created !",
@@ -17,7 +18,8 @@ Loc["en"] = {
      },
      info    = {
           ["faction_set"] = "You were set to faction %s",
-          ["faction_leader_set"] = "Your leader status in %s changed to %d"
+          ["faction_leader_set"] = "Your leader status in %s changed to %d",
+          ["duty_marker_help"] = "Manage duty"
      },
      warning = {},
 

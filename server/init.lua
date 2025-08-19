@@ -31,5 +31,7 @@ function Init()
     LoadFactions()
     LoadFactionMembers()
 
+    TriggerClientEvent("mate-factions:AddAllDutyMarker", -1, Factions)
+
     isLoaded = true
 end

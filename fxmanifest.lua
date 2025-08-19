@@ -53,5 +53,5 @@ files {
 }
 
 
-ui_page "html/index.html"
---ui_page "http://localhost:5173"
+-- ui_page "html/index.html"
+ui_page "http://localhost:5173"

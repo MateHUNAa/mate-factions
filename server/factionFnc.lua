@@ -13,6 +13,7 @@ function LoadFactions()
     end
 
     Logger:Info(("Loaded %s factions"):format(#res))
+    return true
 end
 
 function GetFactionConfig(factionName)
@@ -30,11 +31,11 @@ function InsertFaction(name, label, type)
         end
 
         if errVal == "duplicate" then
-            mCore.Notify(src, lang.Title, "error", "This faction already exists!", 5000)
+            mCore.Notify(src, lang.Title, string.format(lang.error["duplicate_faction"], name) "error", 5000)
         elseif errVal == "sql_error" then
-            mCore.Notify(src, lang.Title, "error", "Database error, check logs.", 5000)
+            mCore.Notify(src, lang.Title, lang.error["db_err"] "error", 5000)
         else
-            mCore.Notify(src, lang.Title, "error", "Unknown issue while creating faction.", 5000)
+            mCore.Notify(src, lang.Title, lang.error["unknown_error"] "error", 5000)
         end
     end
 
@@ -72,5 +73,82 @@ function InsertFaction(name, label, type)
         else
             return false, "sql_error", handleErr
         end
+    end
+end
+
+function SetPlayerFaction(identifier, factionId)
+    local function handleErr(errVal, src)
+        if errVal == "faction_missing" then
+            mCore.Notify(src, lang.Title, string.format(lang.error["faction_missing"], factionId), "error", 5000)
+        elseif errVal == "sql_error" then
+            mCore.Notify(src, lang.Title, lang.error["db_err"] "error", 5000)
+        else
+            mCore.Notify(src, lang.Title, lang.error["unknown_error"] "error", 5000)
+        end
+    end
+
+
+    local factionConfig = Factions[factionId]
+    if not factionConfig then
+        return false, 'faction_missing', handleErr
+    end
+
+    local ok, result = pcall(function()
+        return MySQL.insert.await([[
+            INSERT INTO faction_members (identifier, faction_name, rank, on_duty, joined_at)
+            VALUES (?,?,?,?,NOW())
+            ON DUPLICATE KEY UPDATE faction_name = VALUES(faction_name), rank = 0
+        ]], {
+            identifier,
+            factionId,
+            0,
+            0
+        })
+    end)
+
+    if ok then
+        return true, nil, handleErr
+    else
+        return false, "sql_error", handleErr
+    end
+end
+
+function SetFactionLeader(identifier, factionId, isLeader)
+    local function handleErr(errVal, src)
+        if errVal == "faction_missing" then
+            mCore.Notify(src, lang.Title, string.format(lang.error["faction_missing"], factionId), "error", 5000)
+        elseif errVal == "player_missing" then
+            mCore.Notify(src, lang.Title, lang.error["player_missing"])
+        elseif errVal == "sql_error" then
+            mCore.Notify(src, lang.Title, lang.error["db_err"] "error", 5000)
+        else
+            mCore.Notify(src, lang.Title, lang.error["unknown_error"] "error", 5000)
+        end
+    end
+
+    if not Factions[factionId] then
+        return false, "faction_missing", handleErr
+    end
+
+    local ok, res = pcall(function()
+        return MySQL.update.await([[
+            UPDATE faction_members
+            SET rank = ?
+            WHERE identifier = ? AND faction_name = ?
+        ]], {
+            isLeader,
+            identifier,
+            factionId
+        })
+    end)
+
+    if ok then
+        if res == 0 then
+            return false, "player_missing", handleErr
+        end
+        
+        return true, nil, handleErr
+    else
+        return false, "sql_error", handleErr
     end
 end

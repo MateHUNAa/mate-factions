@@ -23,4 +23,11 @@ function Init()
         "KEY `identifier` (`identifier`)",
         "CONSTRAINT `faction_members_ibfk_1` FOREIGN KEY(`faction_name`) REFERENCES `factions` (`name`) ON DELETE CASCADE"
     })
+
+
+    Wait(1000)
+
+    LoadFactions()
+
+    isLoaded = true
 end

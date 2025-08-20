@@ -9,6 +9,8 @@ function Init()
         "`offduty_name` varchar(100) DEFAULT NULL",
         "`created_at` datetime DEFAULT current_timestamp()",
         "`duty_point` JSON DEFAULT NULL",
+        "`stash` JSON DEFAULT NULL",
+        "`settings` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`settings`))",
         "CONSTRAINT `factions_offduty_fk` FOREIGN KEY(`offduty_name`) REFERENCES `factions`(`name`) ON DELETE SET NULL"
     })
 

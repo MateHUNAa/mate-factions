@@ -15,7 +15,7 @@ function App() {
   useNuiEvent("DutyPage", (data: DutyData) => {
     setVisibility(data.visible)
     setActivePanel(data.page)
-    setDutyData(dutyData)
+    setDutyData(data)
   })
 
   useNuiEvent("open", () => setVisibility(true))
@@ -24,22 +24,25 @@ function App() {
   return (
     <div className="App">
       {visible && (
-        <div className="min-h-screen flex items-center justify-center px-4">
-          <div className="bg-zinc-900 p-6 rounded-2xl shadow-xl max-w-5xl w-full">
+        <>
+          {activePanel !== "DutyPanel" && (
+            <div className="min-h-screen flex items-center justify-center px-4">
+              <div className="bg-zinc-900 p-6 rounded-2xl shadow-xl max-w-5xl w-full">
 
-            {
-              activePanel == "DutyPanel" && (
-                <DutyPanel
-                  visible={visible}
-                  factionName={dutyData?.factionName}
-                  onDuty={dutyData?.onDuty || false}
-                  rankLabel={dutyData?.rankLabel}
-                />
-              )
-            }
-
-          </div>
-        </div>
+              </div>
+            </div>
+          )}
+          {
+            activePanel == "DutyPanel" && (
+              <DutyPanel
+                visible={visible}
+                factionName={dutyData?.factionName}
+                onDuty={dutyData?.onDuty || false}
+                rankLabel={dutyData?.rankLabel}
+              />
+            )
+          }
+        </>
       )}
     </div>
   )

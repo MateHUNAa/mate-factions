@@ -53,7 +53,7 @@ const DutyPanel: React.FC<DutyPanelProps> = ({
 
 
     return (
-        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1/5 text-white bg-slate-400 border-2 border-slate-600">
+        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1/5 text-white bg-zinc-800 border-2 border-zinc-600 rounded-md">
             <div className="header text-center font-bold py-2">
                 mate-factions
             </div>

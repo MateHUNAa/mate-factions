@@ -1,6 +1,31 @@
-local cachedFactions = nil
-local lastUpdate = 0
+local cachedFactions         = nil
+local lastUpdate             = 0
 local CACHE_INTERVAL <const> = 10000
+
+local factionTypes           = {}
+local playerFactions         = {}
+local playerFactionsKey      = {}
+
+
+RegisterNetEvent("mate-factions:updateClientFactionTypes", function(data, factions)
+    factionTypes = data
+    playerFactions = factions
+    playerFactionsKey = {}
+
+    for facId, faction in pairs(factions or {}) do
+        playerFactionsKey[facId] = faction
+    end
+
+
+    sendNUI("updateClientFactionTypes", {
+        factions = factions
+    })
+
+    if #factions <= 0 then
+        -- TODO: Hide panel cuz player is no part of any faction
+        print("(TODO)Player no part of any faction! Hiding panels ! (TODO)")
+    end
+end)
 
 local function UpdateFactionCache()
     local now = GetGameTimer()
@@ -11,8 +36,17 @@ local function UpdateFactionCache()
     return cachedFactions
 end
 
+local function UpdatePlayerFactionCache()
+    local now = GetGameTimer()
+    if not playerFactions or (now - lastUpdate) > CACHE_INTERVAL then
+        playerFactions = lib.callback.await("mate-factions:requestClientFactions", false)
+        lastUpdate = now
+    end
+    return playerFactions
+end
+
 function CanUseFactionGarage(factionId, isGarage)
-    local factions = UpdateFactionCache()
+    local factions = UpdatePlayerFactionCache()
     local currentDuty = LocalPlayer.state.factionDuty
 
     for facId, factionData in pairs(factions) do
@@ -32,7 +66,7 @@ function CanUseFactionGarage(factionId, isGarage)
             end
         end
     end
-  
+    return false
 end
 
 exports("CanUseFactionGarage", CanUseFactionGarage)

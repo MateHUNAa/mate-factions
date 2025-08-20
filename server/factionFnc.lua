@@ -41,6 +41,8 @@ function GetFactionConfig(factionName)
     return Factions[factionName] or nil
 end
 
+exports("GetFactionConfig", GetFactionConfig)
+
 function GetEffectiveFaction(identifier)
     for facId, facData in pairs(Factions) do
         for memberIdf, memberData in pairs(facData.members) do
@@ -50,6 +52,8 @@ function GetEffectiveFaction(identifier)
         end
     end
 end
+
+exports("GetEffectiveFaction", GetEffectiveFaction)
 
 function InsertFaction(name, label, type)
     local function handleErr(errVal, src)
@@ -103,12 +107,15 @@ function InsertFaction(name, label, type)
     end
 end
 
+exports('InsertFaction', InsertFaction)
 function SetPlayerFaction(identifier, factionId)
     local function handleErr(errVal, src)
         if errVal == "faction_missing" then
             mCore.Notify(src, lang.Title, string.format(lang.error["faction_missing"], factionId), "error", 5000)
         elseif errVal == "sql_error" then
             mCore.Notify(src, lang.Title, lang.error["db_err"] "error", 5000)
+        elseif errVal == "already_in_this_faction" then
+            mCore.Notify(src, lang.Title, lang.error["same_faction"] "error", 5000)
         else
             mCore.Notify(src, lang.Title, lang.error["unknown_error"] "error", 5000)
         end
@@ -120,6 +127,14 @@ function SetPlayerFaction(identifier, factionId)
         return false, 'faction_missing', handleErr
     end
 
+    local exists = MySQL.query.await("SELECT 1 FROM faction_members WHERE identifier = ? AND faction_name = ?", {
+        identifier, factionId
+    })
+
+    if #exists > 0 then
+        return true, "already_in_this_faction", handleErr
+    end
+
     local ok, result = pcall(function()
         return MySQL.insert.await([[
             INSERT INTO faction_members (identifier, faction_name, rank, on_duty, joined_at)
@@ -128,7 +143,7 @@ function SetPlayerFaction(identifier, factionId)
         ]], {
             identifier,
             factionId,
-            0,
+            1,
             0
         })
     end)
@@ -140,6 +155,7 @@ function SetPlayerFaction(identifier, factionId)
     end
 end
 
+exports("SetPlayerFaction", SetPlayerFaction)
 function SetFactionLeader(identifier, factionId, isLeader)
     local function handleErr(errVal, src)
         if errVal == "faction_missing" then
@@ -157,13 +173,17 @@ function SetFactionLeader(identifier, factionId, isLeader)
         return false, "faction_missing", handleErr
     end
 
+    local num = 1
+
+    if isLeader == 2 then num = 99 elseif isLeader == 1 then num = 100 else num = 1 end
+
     local ok, res = pcall(function()
         return MySQL.update.await([[
             UPDATE faction_members
             SET rank = ?
             WHERE identifier = ? AND faction_name = ?
         ]], {
-            isLeader,
+            num,
             identifier,
             factionId
         })
@@ -174,12 +194,15 @@ function SetFactionLeader(identifier, factionId, isLeader)
             return false, "player_missing", handleErr
         end
 
+        Factions[factionId].members[identifier].rank = num
+
         return true, nil, handleErr
     else
         return false, "sql_error", handleErr
     end
 end
 
+exports("SetFactionLeader", SetFactionLeader)
 --
 -- Ranking System
 --
@@ -191,6 +214,8 @@ function GetFactionMemeberRank(identifier, factionId)
     return Factions[factionId].ranks[rankId]
 end
 
+exports("GetFactionMemeberRank", GetFactionMemeberRank)
+
 function IsLeader(identifier, factionId)
     local member = Factions[factionId] and Factions[factionId].members[identifier]
     if not member then return false, false end
@@ -198,6 +223,8 @@ function IsLeader(identifier, factionId)
 
     return rankId == 100, rankId == 99
 end
+
+exports("IsLeader", IsLeader)
 
 function AddRank(factionId, rankId, name, permissions)
     local faction = Factions[factionId]
@@ -214,6 +241,8 @@ function AddRank(factionId, rankId, name, permissions)
     })
 end
 
+exports("AddRank", AddRank)
+
 function RemoveRank(factionId, rankId)
     local faction = Factions[factionId]
     if not faction then return false end
@@ -225,6 +254,8 @@ function RemoveRank(factionId, rankId)
         factionId
     })
 end
+
+exports("RemoveRank", RemoveRank)
 
 function MemberHasPermission(identifier, factionId, permission)
     local faction = Factions[factionId]

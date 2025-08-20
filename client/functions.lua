@@ -2,7 +2,7 @@ mCore = exports["mCore"]:getSharedObj()
 
 local Peds = {}
 
-
+local lang = Loc[Config.lan]
 local count = 0
 Editable = {}
 Functions = {

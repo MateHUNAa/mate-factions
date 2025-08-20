@@ -17,6 +17,7 @@ local panel = {
             self.loading = true
 
             lib.callback("mate-factions:getDutyData", false, function(result)
+                if not result then return Error("Failed to fetch cb*(`getDutyData`)") end
                 self.loading = false
                 if result.err then
                     self:setVisible(false)
@@ -50,7 +51,6 @@ nuiCallback("ToggleDuty", function(_, cb)
     end
 
     local dutyState = LocalPlayer.state.factionDuty
-
     if dutyState then
         if dutyState.factionId ~= panel.visible then
             return Error("You are already in duty somewhere else.")
@@ -62,12 +62,14 @@ nuiCallback("ToggleDuty", function(_, cb)
         Info(lang.info["duty_off"])
     else
         LocalPlayer.state:set('factionDuty', {
-            factionID = panel.visible,
+            factionId = panel.visible,
             factionType = panel.factionType,
             start = GetCloudTimeAsInt()
         }, true)
 
         Info(lang.info["in_duty"])
+        
+        TriggerServerEvent('mate-factions:requestClientFactions')
     end
 
     panel:setVisible(false)

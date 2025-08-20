@@ -5,75 +5,76 @@ local lang = Loc[Config.lan]
 local inv  = exports["ox_inventory"]
 
 function sendNUI(action, data)
-    if type(data) ~= "table" then
-        data = {}
-    end
+  if type(data) ~= "table" then
+    data = {}
+  end
 
-    SendNUIMessage({
-        action = action,
-        data   = data
-    })
+  SendNUIMessage({
+    action = action,
+    data   = data
+  })
 end
 
 function nuiCallback(name, callback)
-    RegisterNUICallback(name, function(data, cb)
-        print("nuiCallback:", name)
+  RegisterNUICallback(name, function(data, cb)
+    print("nuiCallback:", name)
 
-        callback(data, cb)
-    end)
+    callback(data, cb)
+  end)
 end
 
 function nuiServerCallback(name, otherParams)
-    nuiCallback(name, (function(params, cb)
-        print("serverCallback[Params]:", json.encode(params, { indent = true }))
-        lib.callback(("mate-factions:%s"):format(name), false, (function(result)
-            print("Result: ", json.encode(result, { indent = true }))
-            if result.msg and result.msgTyp ~= nil then
-                mCore.Notify(lang.Title, result.msg, result.msgTyp, 5000)
-            elseif result.msg then
-                mCore.Notify(lang.Title, result.msg, result.err and "error" or "info", 5000)
-            end
+  nuiCallback(name, (function(params, cb)
+    print("serverCallback[Params]:", json.encode(params, { indent = true }))
+    lib.callback(("mate-factions:%s"):format(name), false, (function(result)
+      print("Result: ", json.encode(result, { indent = true }))
+      if result.msg and result.msgTyp ~= nil then
+        mCore.Notify(lang.Title, result.msg, result.msgTyp, 5000)
+      elseif result.msg then
+        mCore.Notify(lang.Title, result.msg, result.err and "error" or "info", 5000)
+      end
 
-            cb(result)
-        end), params, otherParams and otherParams())
-    end))
+      cb(result)
+    end), params, otherParams and otherParams())
+  end))
 end
 
 nuiCallback("exit", (function(_, cb)
-    visible = false
-    SetNuiFocus(false, false)
-    cb("ok")
+  visible = false
+  SetNuiFocus(false, false)
+  cb("ok")
 end))
 
 exports("Close", function(...)
-    visible = false
-    SetNuiFocus(false, false)
-    sendNUI("close")
+  visible = false
+  SetNuiFocus(false, false)
+  sendNUI("close")
 end)
 
 RegisterCommand("mate-factions", (function(src, args, raw)
-    sendNUI("open")
-    visible = true
-    SetNuiFocus(true, true)
+  sendNUI("open")
+  visible = true
+  SetNuiFocus(true, true)
 end))
 
 -- RegisterKeyMapping("mate-factions", "Dashboard Open", "keyboard", "home")
 exports("Open", function(...)
-    ExecuteCommand("mate-factions")
+  ExecuteCommand("mate-factions")
 end)
 
 
 local function addSuggestions()
   TriggerEvent('chat:addSuggestion', '/showfactions', 'Frakciók listázása')
 
---   local types = ''
---   for key, typ in pairs(FTYPES) do
---     types = types .. ('%s - %s, '):format(key, typ.label)
---   end
+  --   local types = ''
+  --   for key, typ in pairs(FTYPES) do
+  --     types = types .. ('%s - %s, '):format(key, typ.label)
+  --   end
 
   TriggerEvent('chat:addSuggestion', '/makefaction', 'Frakció létrehozása', {
-    { name = "typ",  help = ("Típus (%s)"):format("maffia, gang, job") },
-    { name = "name", help = 'Név' },
+    { name = "name",  help = 'Név' },
+    { name = "label", help = 'Label' },
+    { name = "typ",   help = ("Típus (%s)"):format("maffia, gang, job") },
   })
 
   TriggerEvent('chat:addSuggestion', '/setfaction', 'Játékos frakcióba rakása', {
@@ -84,7 +85,7 @@ local function addSuggestions()
   TriggerEvent('chat:addSuggestion', '/setfactionleader', 'Játékos leader jog állítás', {
     { name = "ID",        help = 'Játékos ID' },
     { name = "factionID", help = 'Frakció ID' },
-    { name = "leader",    help = 'Leader (0 - Nem, 1 - Igen)' },
+    { name = "leader",    help = 'Leader (0 - Nem, 1 - Leader, 2 - Sub-Leader)' },
   })
 
   TriggerEvent('chat:addSuggestion', '/createduty', 'Frakció duty létrehozása', {

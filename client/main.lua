@@ -61,3 +61,50 @@ end))
 exports("Open", function(...)
     ExecuteCommand("mate-factions")
 end)
+
+
+local function addSuggestions()
+  TriggerEvent('chat:addSuggestion', '/showfactions', 'Frakciók listázása')
+
+--   local types = ''
+--   for key, typ in pairs(FTYPES) do
+--     types = types .. ('%s - %s, '):format(key, typ.label)
+--   end
+
+  TriggerEvent('chat:addSuggestion', '/makefaction', 'Frakció létrehozása', {
+    { name = "typ",  help = ("Típus (%s)"):format("maffia, gang, job") },
+    { name = "name", help = 'Név' },
+  })
+
+  TriggerEvent('chat:addSuggestion', '/setfaction', 'Játékos frakcióba rakása', {
+    { name = "ID",        help = 'Játékos ID' },
+    { name = "factionID", help = 'Frakció ID' },
+  })
+
+  TriggerEvent('chat:addSuggestion', '/setfactionleader', 'Játékos leader jog állítás', {
+    { name = "ID",        help = 'Játékos ID' },
+    { name = "factionID", help = 'Frakció ID' },
+    { name = "leader",    help = 'Leader (0 - Nem, 1 - Igen)' },
+  })
+
+  TriggerEvent('chat:addSuggestion', '/createduty', 'Frakció duty létrehozása', {
+    { name = "factionID", help = 'Frakció ID' },
+  })
+
+  TriggerEvent('chat:addSuggestion', '/createstash', 'Frakció tároló létrehozása', {
+    { name = "factionID", help = 'Frakció ID' },
+  })
+
+  TriggerEvent('chat:addSuggestion', '/showstashes', 'Tárolók megjelenítése')
+
+  TriggerEvent('chat:addSuggestion', '/deletestash', 'Frakció tároló törlése', {
+    { name = "factionID", help = 'Tároló ID' },
+  })
+end
+SetTimeout(1000, addSuggestions)
+
+AddEventHandler("onResourceStart", function(resourceName)
+  if resourceName == "chat" then
+    SetTimeout(1000, addSuggestions)
+  end
+end)

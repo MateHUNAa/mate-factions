@@ -36,6 +36,7 @@ local function UpdateFactionCache()
     return cachedFactions
 end
 
+-- FIXME: Markers does not update after a new faction is set for a player, 
 local function UpdatePlayerFactionCache()
     local now = GetGameTimer()
     if not playerFactions or (now - lastUpdate) > CACHE_INTERVAL then

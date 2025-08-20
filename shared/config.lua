@@ -35,6 +35,14 @@ Config.DefaultRanks = {
 
 }
 
+---@alias FactionType "job" | "gang" | "organization" | "maffia"
+Config.ValidFactionTypes = {
+     "gang",
+     "maffia",
+     "job", -- DEFAULT
+     "organization"
+}
+
 Config.Debug = true
 
 Config.BadgeItem = "badge"

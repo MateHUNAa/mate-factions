@@ -9,19 +9,23 @@ Loc["en"] = {
           ["player_missing"] = "Targeted player is not found !",
           ["duty_point_set"] = "Failed to place duty point !",
           ["wait"] = "Please wait...",
+          ["stash_place_failed"] = "Failed to place the stash!"
      },
      success = {
           ["faction_created"] = "Faction %s created !",
           ["faction_set"] = "Set %s faction to %s",
           ["faction_leader_set"] = "%s leader status in %s set to %d",
-          ["duty_point_set"] = "Duty point updated for faction: %s"
+          ["duty_point_set"] = "Duty point updated for faction: %s",
+          ["stash_placed"] = "You successfully placed a stash for %s"
      },
      info    = {
           ["faction_set"] = "You were set to faction %s",
           ["faction_leader_set"] = "Your leader status in %s changed to %d",
           ["duty_marker_help"] = "Manage duty",
           ["off_duty"] = "You left duty.",
-          ["in_duty"] = "You clocked into an active duty."
+          ["in_duty"] = "You clocked into an active duty.",
+          ["stash_render_off"] = "You disabled stash rendering",
+          ["stash_render_on"] = "You enabled stash rendering."
      },
      warning = {},
 

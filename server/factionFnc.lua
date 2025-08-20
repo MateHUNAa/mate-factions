@@ -10,7 +10,8 @@ function LoadFactions()
             allow_offduty = row.allow_offduty == 1,
             offduty_name  = row.offduty_name,
             members       = {},
-            duty_point    = row.duty_point and json.decode(row.duty_point) or nil
+            duty_point    = row.duty_point and json.decode(row.duty_point) or nil,
+            stash         = row.stash and json.decode(row.stash) or nil,
         }
     end
 
@@ -222,4 +223,26 @@ function RemoveRank(factionId, rankId)
         json.encode(faction.ranks),
         factionId
     })
+end
+
+function MemberHasPermission(identifier, factionId, permission)
+    local faction = Factions[factionId]
+    if not faction then return false end
+
+    local member = faction.members[identifier]
+    if not member then return false end
+
+    local rankData = faction.ranks[tostring(member.rank)]
+    if not rankData then return false end
+
+    if rankData.permissions and rankData.permissions["all"] then
+        return true
+    end
+
+
+    if rankData.permissions and rankData.permissions[permission] then
+        return true
+    end
+
+    return false
 end

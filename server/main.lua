@@ -5,7 +5,6 @@ local inv = exports["ox_inventory"]
 isLoaded = false
 
 
----@alias FactionType "job" | "gang" | "organization" | "maffia"
 
 ---@class FactionRanks
 ---@param name string
@@ -62,20 +61,6 @@ lib.callback.register("mate-faction:GetPlayerFaction", (function(src)
     return nil
 end))
 
-
-AddEventHandler("playerJoining", (function(source)
-    local Player = mCore.getPlayer(source)
-    local start = GetGameTimer()
-    while not Player do
-        local now = GetGameTimer()
-        Wait(500)
-        Player = mCore.getPlayer(source)
-
-        if start - now > 5000 then
-            break
-        end
-    end
-    if not Player then return Logger:Error(("%s(%s) Not loaded properly !"):format(GetPlayerName(source), source)) end
-
-    TriggerClientEvent("mate-factions:AddAllDutyMarker", source, Factions)
-end))
+AddEventHandler('esx:playerLoaded', function(playerId, xPlayer, isNew)
+    TriggerClientEvent("mate-factions:AddAllDutyMarker", playerId, Factions)
+end)

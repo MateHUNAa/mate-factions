@@ -168,3 +168,38 @@ RegisterCommand("createduty", function(source, args, raw)
         Logger:Error("[createduty]:", err)
     end
 end)
+
+
+RegisterCommand("createstash", function(source, args, raw)
+    if not Functions.IsAdmin(source) then
+        Logger:Debug(("%s(%s) is not an admin Tried to use command: `setfaction`"):format(GetPlayerName(source),
+            source))
+        mCore.Notify(source, lang.Title, "error", lang.error["not_an_admin"], 5000)
+        return
+    end
+
+
+    local factionId = args[1]
+
+    if not factionId then
+        Logger:Debug("[setfactionleader]: Missing arg: factionId")
+        return mCore.Notify(source, lang.Title, string.format(lang.error["missing_arg"], "factionId"), "error",
+            5000)
+    end
+
+    local adminPed = GetPlayerPed(source)
+    local adminPos = GetEntityCoords(adminPed)
+
+    local affectedRows = MySQL.update.await("UPDATE factions SET stash = ? WHERE name = ?", {
+        json.encode(adminPos),
+        factionId
+    })
+
+    if affectedRows > 0 then
+        mCore.Notify(source, lang.Title, string.format(lang.success["stash_placed"], factionId), "success", 5000)
+        Factions[factionId].stash = adminPos
+        TriggerClientEvent("mate-fations:UpdateStash", -1, factionId, adminPos)
+    else
+        mCore.Notify(source, lang.Title, lang.error["stash_place_failed"], "error", 5000)
+    end
+end)

@@ -100,10 +100,10 @@ const News: React.FC = ({ }) => {
                                     style={{ backgroundColor: item.color || "#0ea5e9" }}
                                 />
                                 <div className="flex-1 min-w-0">
-                                    <h4 className="font-medium text-white">{item.title}</h4>
-                                    <p className="text-sm text-gray-300">{item.description}</p>
+                                    <h4 className="font-medium text-white  truncate">{item.title}</h4>
+                                    <p className="text-sm text-gray-300  truncate">{item.description}</p>
                                     <div className="flex items-center gap-2 mt-2">
-                                        <Badge variant={item.badgeVariant || "default"} style={{color: item.color || "#FFFFFF"}}>{item.badgeText}</Badge>
+                                        <Badge variant={item.badgeVariant || "default"} style={{ color: item.color || "#FFFFFF" }} className="truncate">{item.badgeText}</Badge>
                                         {item.timestamp && (
                                             <span className="text-xs text-gray-300">
                                                 {formatDistanceToNow(item.timestamp, { addSuffix: true })}

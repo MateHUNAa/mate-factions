@@ -12,6 +12,7 @@ const Actions: React.FC<Props> = ({ }) => {
                 <CardTitle className="text-white font-heading">Quick Actions</CardTitle>
                 <CardDescription className="text-gray-300">Common management tasks</CardDescription>
             </CardHeader>
+            
             <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-3">
                     <Button variant="outline" className="h-20 flex-col gap-2 bg-zinc-900/80 hover:bg-zinc-900/50">

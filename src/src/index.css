@@ -8,38 +8,32 @@ body {
 
 
 
+/* Scrollbar width */
 ::-webkit-scrollbar {
   width: 5px;
 }
 
+/* Track (background of the scrollbar) */
 ::-webkit-scrollbar-track {
-  background-color: #2c3e50;
-  /* bg-slate-700 color */
+  background-color: var(--sidebar); /* #1f1f23 or oklch dark variant */
 }
 
+/* Thumb (the draggable part) */
 ::-webkit-scrollbar-thumb {
   height: 40px;
-  background-color: #a0aec0;
-  /* A slightly darker shade for the thumb */
+  background-color: var(--muted); /* #3f3f46 or oklch dark variant */
   border-radius: 5px;
-
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Add hover effect to the thumb */
+/* Thumb hover effect */
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #3d5267;
-  /* A slightly lighter shade for hover effect */
+  background-color: var(--primary); /* #6366f1 or oklch accent */
 }
 
-/* Add custom scroll indicators */
+/* Hide default scrollbar buttons */
 ::-webkit-scrollbar-button {
   display: none;
-  /* Hide the default scrollbar buttons */
-}
-
-/* Optional: Add a subtle glow or shadow to the thumb */
-::-webkit-scrollbar-thumb {
-  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
 }
 
 @custom-variant dark (&:is(.dark *));

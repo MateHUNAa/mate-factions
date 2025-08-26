@@ -58,7 +58,7 @@ const News: React.FC = ({ }) => {
                     setNews(MockNews(10))
                     return
                 }
-                const { data } = await fetchNui<{ data: NewsItem[] }>("{:uri}")
+                const { data } = await fetchNui<{ data: NewsItem[] }>("requestNews")
                 setNews(data)
             } catch (error) {
                 console.error("Error:", error);

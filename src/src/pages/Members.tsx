@@ -1,4 +1,5 @@
 import InfoCard, { InfoCardBox, InfoSubElement } from "@/components/InfoCard";
+import MemberTable from "@/components/memberTable";
 import { Button } from "@/components/ui/button";
 import { UserCheck, UserPlus, Users } from "lucide-react";
 import React from "react";
@@ -34,7 +35,11 @@ const Members: React.FC<Props> = ({ }) => {
                 </InfoCardBox>
 
                 {/* Search Bar */}
-                
+
+
+                {/* Member Tabler */}
+
+                <MemberTable />
             </div>
         </main>
     );

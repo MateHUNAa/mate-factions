@@ -75,7 +75,7 @@ const News: React.FC = ({ }) => {
     }
 
     return (
-        <Card className="bg-zinc-800/80 border-zinc-700/80 mt-2">
+        <Card className="bg-zinc-800/80 border-zinc-700/80">
             <CardHeader>
                 <CardTitle className="text-white font-heading">Latest News</CardTitle>
                 <CardDescription className="text-gray-300">Recent updates and announcements</CardDescription>

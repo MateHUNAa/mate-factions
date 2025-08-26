@@ -2,14 +2,15 @@ import { useState } from 'react'
 import { isEnvBrowser } from './utils/misc';
 import useNuiEvent from './hooks/useNuiEvent';
 import { useExitListener } from './hooks/useExitListener';
-import DutyPanel, { DutyData } from './components/DutyPanel';
+import DutyPanel, { DutyData } from './pages/DutyPanel';
+import Dashboard from './pages/Dashboard';
 
-export type PanelType = "off" | "DutyPanel"
+export type PanelType = "off" | "DutyPanel" | "Dashboard"
 
 function App() {
   const [visible, setVisibility] = useState<boolean>(isEnvBrowser() ? true : false);
   const [dutyData, setDutyData] = useState<DutyData>()
-  const [activePanel, setActivePanel] = useState<PanelType>("off")
+  const [activePanel, setActivePanel] = useState<PanelType>("Dashboard")
   useExitListener(setVisibility);
 
   useNuiEvent("DutyPage", (data: DutyData) => {
@@ -28,6 +29,10 @@ function App() {
           {activePanel !== "DutyPanel" && (
             <div className="min-h-screen flex items-center justify-center px-4">
               <div className="bg-zinc-900 p-6 rounded-2xl shadow-xl max-w-5xl w-full">
+
+                {activePanel == "Dashboard" && (
+                  <Dashboard />
+                )}
 
               </div>
             </div>

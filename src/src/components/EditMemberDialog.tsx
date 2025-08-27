@@ -25,6 +25,7 @@ export interface FactionRank {
     permissions: string[];
     id: number;
     color: string;
+    description: string;
 }
 
 export const MockFactionRanks = (count: number): FactionRank[] => {
@@ -35,10 +36,11 @@ export const MockFactionRanks = (count: number): FactionRank[] => {
 
         const color = colors[Math.floor(Math.random() * colors.length)]
         ranks.push({
-            id: i, // numeric ID matches string key
+            id: i,
             name: `Rank ${i}`,
-            permissions: [`perm_${i}_a`, `perm_${i}_b`],
-            color
+            permissions: [`perm_${i}_a`, `perm_${i}_b`, "stashAccess"],
+            color,
+            description: `description_${i}`
         });
     }
 

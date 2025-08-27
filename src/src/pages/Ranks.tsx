@@ -1,10 +1,15 @@
+import { FactionRank, MockFactionRanks } from "@/components/EditMemberDialog";
 import InfoCard, { InfoCardBox } from "@/components/InfoCard";
 import CreateRankDialog from "@/components/ranks/CreateRankDialog";
+import RankCard, { RankCardProps } from "@/components/ranks/RankCard";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Search, Settings, Shield, Users } from "lucide-react";
-import React, { useState } from "react";
+import { Separator } from "@/components/ui/separator";
+import { fetchNui } from "@/utils/fetchNui";
+import { isEnvBrowser } from "@/utils/misc";
+import { Search, Settings, Shield, SortAsc, Users } from "lucide-react";
+import React, { useEffect, useState } from "react";
 
 interface Props {
 }
@@ -13,6 +18,27 @@ interface Props {
 
 const Ranks: React.FC<Props> = ({ }) => {
     const [totalMembers, setTotalMembers] = useState()
+
+    const [ranksData, setRanks] = useState<FactionRank[]>()
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                if (isEnvBrowser()) {
+                    setRanks(MockFactionRanks(10))
+                    return
+                }
+                const { data } = await fetchNui<{ data: FactionRank[] }>("requsetFactionRanks")
+                setRanks(data)
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        };
+
+        fetchData();
+    }, [])
+
+    if (!ranksData || ranksData.at.length <= 0) return null
 
     return (
         <main className="flex-1 overflow-auto space-y-5">
@@ -58,13 +84,15 @@ const Ranks: React.FC<Props> = ({ }) => {
                 <div className="flex items-center gap-2">
                     <Shield className="size-5 text-blue-400" />
                     <h2 className="font-heading text-xl font-semibold text-white">Rank Hierarchy</h2>
-                    <Badge variant={"outline"} className="ml-auto text-white">
+                    <Badge variant={"outline"} className="ml-auto text-white rounded-sm">
                         Sorted by level
                     </Badge>
                 </div>
 
-                <div className="space-y-3">
-
+                <div className="space-y-3 overflow-y-auto max-h-[calc(5*5.9rem)] snap-y snap-mandatory scroll-smooth">
+                    {ranksData.sort((a, b) => b.id - a.id).map((rank) => (
+                        <RankCard key={rank.id} rank={rank} className="snap-start mr-2" />
+                    ))}
                 </div>
             </div>
         </main>

@@ -1,85 +1,75 @@
-import React, { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
-import { Button } from "../ui/button";
-import { Palette, Plus } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { colorPresets, permissions } from "./CreateRankDialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Slider } from "../ui/slider";
 import { Textarea } from "../ui/textarea";
+import { Palette } from "lucide-react";
 import { Checkbox } from "../ui/checkbox";
+import { Button } from "../ui/button";
 
+interface Props {
+    rank: {
+        id: number;
+        name: string;
+        color: string;
+        permissions: string[];
+        description: string;
+    },
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+}
 
-export const permissions = [
-    { id: "manageRanks", label: "Manage Ranks", description: "Create, edit, and delete ranks" },
-    { id: "manageMembers", label: "Manage Members", description: "Edit memeber profiles and ranks" },
-    { id: "manageNews", label: "Manage News", description: "Create and edit news posts" },
-    { id: "kickMembers", label: "Kick Members", description: "Remove members" },
-    { id: "stashAccess", label: "Stash Access", description: "Allow access for faction stash" },
-]
-export const colorPresets = [
-    "#ff0000",
-    "#ff6b35",
-    "#f7b731",
-    "#5f27cd",
-    "#00d2d3",
-    "#ff9ff3",
-    "#54a0ff",
-    "#5f27cd",
-    "#10ac84",
-    "#ee5a24",
-]
-
-
-const CreateRankDialog: React.FC = ({ }) => {
-    const [open, setOpen] = useState<boolean>(false)
+const EditRankDialog: React.FC<Props> = ({ rank, open, onOpenChange }) => {
     const [formData, setFormData] = useState({
         name: "",
         description: "",
         level: [5],
         color: colorPresets[0],
-        permissions: {} as Record<string, boolean>,
+        permissions: [] as string[]
     })
+
+    useEffect(() => {
+        if (rank) {
+            setFormData({
+                name: rank.name,
+                description: rank.description,
+                level: [rank.id],
+                color: rank.color,
+                permissions: rank.permissions || []
+            })
+        }
+    }, [rank])
+
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        console.log("Createing Rank: ", formData)
-        setOpen(false)
-        setFormData({
-            name: "",
-            color: colorPresets[0],
-            description: "",
-            level: [5],
-            permissions: {}
-        })
+        console.log("Updateing rank: ", formData)
+        onOpenChange(false)
     }
 
     const handlePermissionChange = (permissionId: string, checked: boolean) => {
-        setFormData({
-            ...formData,
-            permissions: {
-                ...formData.permissions,
-                [permissionId]: checked
-            }
+        setFormData((prev) => {
+            const newPerms = checked
+                ? [...prev.permissions, permissionId]
+                : prev.permissions.filter((perm) => perm !== permissionId)
+
+            return { ...prev, permissions: newPerms }
         })
     }
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-                <Button className="text-white" variant={"outline"}>
-                    <Plus className="size-4 " />
-                    Create Rank
-                </Button>
-            </DialogTrigger>
-
-            <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto bg-zinc-900 border-zinc-700/80 ">
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className='sm:max-w-[700px] max-h-[90vh] overflow-y-auto bg-zinc-900 border-zinc-700/80'>
                 <DialogHeader>
-                    <DialogTitle className="font-heading text-white">Create New Rank</DialogTitle>
-                    <DialogDescription className="text-gray-300">Set up a new rank with custom permissions and styling.</DialogDescription>
+                    <DialogTitle className="text-gray-200">Edit Rank: {rank.name}</DialogTitle>
+                    <DialogDescription className="text-gray-400">Modify rank settings, permissions, and styling</DialogDescription>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-2 gap-4">
+
                         <div className="space-y-2">
                             <Label htmlFor={"name"} className="text-white/80">Rank Name</Label>
                             <Input
@@ -91,7 +81,6 @@ const CreateRankDialog: React.FC = ({ }) => {
                                 className="text-white border-gray-500"
                             />
                         </div>
-
 
                         <div className="space-y-2">
                             <Label className="text-white/80">Rank Level</Label>
@@ -112,6 +101,8 @@ const CreateRankDialog: React.FC = ({ }) => {
                             </div>
                         </div>
                     </div>
+
+
 
                     <div className="space-y-2">
                         <Label htmlFor="description" className="text-white/80">
@@ -153,34 +144,43 @@ const CreateRankDialog: React.FC = ({ }) => {
                     <div className="space-y-4">
                         <Label className="text-white/80">Permissions</Label>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {permissions.map((perm) => (
-                                <div
-                                    key={perm.id}
-                                    className="flex items-start space-x-3 p-3 rounded-lg bg-zinc-900/50 border border-zinc-700"
-                                >
-                                    <Checkbox
-                                        id={perm.id}
-                                        checked={formData.permissions[perm.id] || false}
-                                        onCheckedChange={(checked) => handlePermissionChange(perm.id, checked as boolean)}
-                                        className="text-white data-[state=checked]:text-green-400"
-                                    />
-                                    <div className="grid gap-1.5 leading-none">
-                                        <Label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-white">
-                                            {perm.label}
-                                        </Label>
-                                        <p className="text-xs text-gray-400">{perm.description}</p>
+                            {permissions.map((perm) => {
+                                const isChecked = formData.permissions.includes(perm.id)
+                                return (
+                                    <div
+                                        key={perm.id}
+                                        className="flex items-start space-x-3 p-3 rounded-lg bg-zinc-900/50 border border-zinc-700"
+                                    >
+                                        <Checkbox
+                                            id={perm.id}
+                                            checked={isChecked}
+                                            onCheckedChange={(checked) =>
+                                                handlePermissionChange(perm.id, checked === true)
+                                            }
+                                            className="text-white data-[state=checked]:text-green-400"
+                                        />
+                                        <div className="grid gap-1.5 leading-none">
+                                            <Label
+                                                htmlFor={perm.id}
+                                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-white"
+                                            >
+                                                {perm.label}
+                                            </Label>
+                                            <p className="text-xs text-gray-400">{perm.description}</p>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                )
+                            })}
                         </div>
                     </div>
 
 
+
                     <DialogFooter className="p-2 text-white/90">
-                        <Button type="button" variant={"outline"} onClick={() => setOpen(false)}>
+                        <Button type="button" variant={"outline"} onClick={() => onOpenChange(false)}>
                             Cancel
                         </Button>
-                        <Button type="submit" variant={"outline"}>Create Rank</Button>
+                        <Button type="submit" variant={"outline"}>Save Changes</Button>
                     </DialogFooter>
                 </form>
 
@@ -189,4 +189,4 @@ const CreateRankDialog: React.FC = ({ }) => {
     );
 };
 
-export default CreateRankDialog;
+export default EditRankDialog;

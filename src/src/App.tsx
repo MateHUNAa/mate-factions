@@ -6,6 +6,7 @@ import DutyPanel, { DutyData } from './pages/DutyPanel';
 import Dashboard from './pages/Dashboard';
 import Members from './pages/Members';
 import Ranks from './pages/Ranks';
+import Navbar from './components/Navbar';
 
 export type PanelType = "off" | "DutyPanel" | "Dashboard" | "Members" | "Ranks"
 
@@ -30,23 +31,29 @@ function App() {
         <>
           {activePanel !== "DutyPanel" && (
             <div className="min-h-screen flex items-center justify-center px-4">
-              <div className="bg-zinc-900 p-6 rounded-2xl shadow-xl max-w-5xl w-full">
+              <div className="bg-zinc-900 p-6 rounded-2xl shadow-xl max-w-6xl w-full">
 
-                {activePanel == "Dashboard" && (
-                  <Dashboard />
-                )}
+                <div className='flex'>
+                  <Navbar activePage={activePanel} onPageChange={setActivePanel} />
 
-                {activePanel == "Members" && (
-                  <Members />
-                )}
+                  {activePanel == "Dashboard" && (
+                    <Dashboard />
+                  )}
 
-                {activePanel == "Ranks" && (
-                  <Ranks />
-                )}
+                  {activePanel == "Members" && (
+                    <Members />
+                  )}
+
+                  {activePanel == "Ranks" && (
+                    <Ranks />
+                  )}
+
+                </div>
 
               </div>
             </div>
           )}
+
           {
             activePanel == "DutyPanel" && (
               <DutyPanel

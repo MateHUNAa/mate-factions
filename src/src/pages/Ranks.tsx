@@ -1,4 +1,4 @@
-import { FactionRank, MockFactionRanks } from "@/components/EditMemberDialog";
+import { FactionRank, MockFactionRanks } from "@/components/members/EditMemberDialog";
 import InfoCard, { InfoCardBox } from "@/components/InfoCard";
 import CreateRankDialog from "@/components/ranks/CreateRankDialog";
 import RankCard, { RankCardProps } from "@/components/ranks/RankCard";

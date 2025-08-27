@@ -1,89 +1,43 @@
-import { easingDefinitionToFunction } from "framer-motion"
+import { RootState } from "@/store"
+import { useSelector } from "react-redux";
 
-export const PERMISSIONS = {
-    MANAGE_RANKS: "manageRanks",
-    MANAGE_MEMBERS: "manageMembers",
-    MANAGE_NEWS: "manageNews",
-    KICK_MEMBERS: "kickMembers",
-    STASH_ACCESS: "stashAccess"
-} as const
+export type Permission = string;
 
-export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS]
-export type RankName = (typeof RANKS)[keyof typeof RANKS]["name"]
-
-export const RANKS = {
-    LEADER: {
-        id: 100,
-        name: "leader",
-        color: "#ff0000",
-        permissions: [
-            PERMISSIONS.MANAGE_RANKS,
-            PERMISSIONS.MANAGE_MEMBERS,
-            PERMISSIONS.MANAGE_NEWS,
-            PERMISSIONS.KICK_MEMBERS,
-        ],
-    },
-    SUB_LEADER: {
-        id: 99,
-        name: "sub-leader",
-        color: "#ff0000",
-        permissions: [
-            PERMISSIONS.MANAGE_RANKS,
-            PERMISSIONS.MANAGE_MEMBERS,
-            PERMISSIONS.MANAGE_NEWS,
-            PERMISSIONS.KICK_MEMBERS,
-        ],
-    },
-    MEMBER: {
-        id: 2,
-        name: "member",
-        color: "#6c5ce7",
-        permissions: [
-            PERMISSIONS.STASH_ACCESS
-        ],
-    },
-    NEWCOMER: {
-        id: 1,
-        name: "newcomer",
-        color: "#a4b0be",
-        permissions: [],
-    },
+export interface Rank {
+    id: number;
+    name: string;
+    color: string;
+    permissions: Permission[]
 }
 
-export type rankId = keyof typeof RANKS
-
-// const RANKS_BY_NAME = new Map<string, typeof RANKS.LEADER>(
-//     Object.values(RANKS).map((r) => [r.name.toLowerCase(), r])
-// );
-
-export function hasPermission(userRank: RankName, permission: Permission): boolean {
-    const rank = Object.values(RANKS).find((r) => r.name === userRank.toLowerCase())
-    return rank ? rank.permissions.includes(permission) : false
+export function hasPermission(userRank: string, permission: Permission, ranks: Rank[]): boolean {
+    const rank = ranks.find(r => r.name.toLowerCase() === userRank.toLowerCase());
+    return rank ? rank.permissions.includes(permission) : false;
 }
 
-export function hasAnyPermission(userRank: RankName, permissions: Permission[]): boolean {
-    return permissions.some((permission) => hasPermission(userRank, permission))
+export function hasAnyPermission(userRank: string, permissions: Permission[], ranks: Rank[]): boolean {
+    return permissions.some((permission) => hasPermission(userRank, permission, ranks))
 }
 
-export function hasAllPermissions(userRank: RankName, permissions: Permission[]): boolean {
-    return permissions.every((permission) => hasPermission(userRank, permission))
+export function hasAllPermissions(userRank: string, permissions: Permission[], ranks: Rank[]): boolean {
+    return permissions.every((permission) => hasPermission(userRank, permission, ranks))
 }
 
-export function getRankPermissions(userRank: RankName): Permission[] {
-    const rank = Object.values(RANKS).find((r) => r.name === userRank.toLowerCase())
-    return rank ? rank.permissions : []
+export function getRankPermissions(userRank: string, ranks: Rank[]): Permission[] {
+    const rank = ranks.find(r => r.name.toLowerCase() === userRank.toLowerCase());
+    return rank ? rank.permissions : [];
 }
 
+export const selectRanks = (state: RootState) => state.ranks.ranks
+export const selectPermission = (state: RootState) => state.ranks.permissions
 
-export function canAccessPage(userRank: string, page: string): boolean {
-    switch (page) {
-        case "ranks":
-            return hasPermission(userRank, PERMISSIONS.MANAGE_RANKS)
-        case "members":
-            return hasPermission(userRank, PERMISSIONS.MANAGE_MEMBERS)
-        case "news":
-            return hasPermission(userRank, PERMISSIONS.MANAGE_NEWS)
-        default:
-            return true
-    }
+export const PAGE_PERMISSIONS: Record<string, Permission | null> = {
+    ranks: "manageRanks",
+    members: "manageMembers",
+    news: "manageNews",
+};
+
+
+export function useRanks() {
+    return useSelector(selectRanks);
 }

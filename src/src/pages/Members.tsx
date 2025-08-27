@@ -1,5 +1,5 @@
 import InfoCard, { InfoCardBox, InfoSubElement } from "@/components/InfoCard";
-import MemberTable from "../components/MemberTable";
+import MemberTable from "../components/members/MemberTable";
 import { Button } from "@/components/ui/button";
 import { UserCheck, UserPlus, Users } from "lucide-react";
 import React from "react";

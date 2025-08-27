@@ -83,6 +83,8 @@ regServerNuiCallback("requestFactionMembers", function(pid, idf, params)
             return { error = true, msg = ("No rank for player: `%s`"):format(memberIdf), msgType = "error" }
         end
 
+        rank.id = memberData.rank
+
         local Player = mCore.getPlayer(memberIdf)
 
         local status = "offline"

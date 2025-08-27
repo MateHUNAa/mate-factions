@@ -30,3 +30,9 @@ export const useMembers = () => {
 
     return members
 }
+
+export const countMembersInRank = (rankId: number) => {
+    const members = useMembers()
+
+    return members.filter(member => member.rank.id == rankId).length
+}

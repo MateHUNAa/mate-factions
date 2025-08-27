@@ -16,6 +16,7 @@ export const useRanks = () => {
             try {
                 const { data } = await fetchNui<{ data: Rank[] }>("requestFactionRanks");
 
+                console.log("useRanks: [requestFactionRanks]", data)
                 dispatch(setRanks(data));
             } catch (error) {
                 console.error("Error fetching ranks:", error);

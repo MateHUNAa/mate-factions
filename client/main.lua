@@ -27,7 +27,7 @@ function nuiServerCallback(name, otherParams)
   nuiCallback(name, (function(params, cb)
     print("serverCallback[Params]:", json.encode(params, { indent = true }))
     lib.callback(("mate-factions:%s"):format(name), false, (function(result)
-      print("Result: ", json.encode(result, { indent = true }))
+      print(("Result(%s): "):format(name), json.encode(result, { indent = true }))
       if result.msg and result.msgTyp ~= nil then
         mCore.Notify(lang.Title, result.msg, result.msgTyp, 5000)
       elseif result.msg then
@@ -88,6 +88,7 @@ end)
 nuiServerCallback("removeRank")
 nuiServerCallback("updateFactionMember")
 nuiServerCallback("updateFactionRank")
+nuiCallback("requestFactionRanks", getFactionRanks)
 
 -- Command suggestions
 local function addSuggestions()

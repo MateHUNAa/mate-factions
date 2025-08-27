@@ -8,6 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Button } from "../ui/button";
 import EditRankDialog from "./EditRankDialog";
 import { fetchNui } from "@/utils/fetchNui";
+import { countMembersInRank, useMembers } from "@/hooks/useMembers";
 
 export interface RankCardProps {
     rank: {
@@ -47,7 +48,7 @@ const possiblePermissions: Record<string, boolean> = {
 const RankCard: React.FC<RankCardProps> = ({ rank, className }) => {
     const [editOpen, setEditOpen] = useState<boolean>(false)
     const activePermissions = Object.entries(rank.permissions).filter(([_, value]) => value).map(([key, _]) => key as keyof typeof rank.permissions)
-
+    const members = useMembers()
 
     // TODO: Not sure tbh
     const getRankLevelBadge = (level: number) => {
@@ -59,6 +60,8 @@ const RankCard: React.FC<RankCardProps> = ({ rank, className }) => {
 
     const levelBadge = getRankLevelBadge(rank.id)
 
+    const memberCount = countMembersInRank(rank.id)
+    
     return (
         <>
             <Card className={cn("bg-zinc-800 border-zinc-600 hover:border-zinc-800 transition-colors", className)}>
@@ -83,7 +86,7 @@ const RankCard: React.FC<RankCardProps> = ({ rank, className }) => {
                                 <div className="flex items-center gap-4 mt-2">
                                     <div className="flex items-center gap-1 text-sm text-gray-400">
                                         <Users className="h-4 w-4 text-green-400" />
-                                        12 members {/** TODO: Count mebers in a rank */}
+                                        {`${memberCount}`} members
                                     </div>
                                     <div className="flex items-center gap-1 text-sm text-gray-400">
                                         <Shield className="h-4 w-4 text-blue-400" />

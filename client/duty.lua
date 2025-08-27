@@ -51,6 +51,7 @@ nuiCallback("ToggleDuty", function(_, cb)
     end
 
     local dutyState = LocalPlayer.state.factionDuty
+    local duty = false
     if dutyState then
         if dutyState.factionId ~= panel.visible then
             return Error("You are already in duty somewhere else.")
@@ -59,6 +60,7 @@ nuiCallback("ToggleDuty", function(_, cb)
         LocalPlayer.state:set('factionDuty', nil, true)
         LocalPlayer.state:set('factionBadge', nil, true)
 
+        duty = false
         Info(lang.info["duty_off"])
     else
         LocalPlayer.state:set('factionDuty', {
@@ -67,10 +69,12 @@ nuiCallback("ToggleDuty", function(_, cb)
             start = GetCloudTimeAsInt()
         }, true)
 
+        duty = true
         Info(lang.info["in_duty"])
-        
+
         TriggerServerEvent('mate-factions:requestClientFactions')
     end
+    TriggerServerEvent("mate-factions:ChangePlayerDuty", duty)
 
     panel:setVisible(false)
 end)

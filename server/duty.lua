@@ -30,6 +30,11 @@ lib.callback.register("mate-factions:getDutyData", (function(source)
 end))
 
 
+RegisterNetEvent("mate-factions:ChangePlayerDuty", function(duty)
+    local Player = mCore.getPlayer(source)
+    if not Player then return end
+    SetPlayerDuty(Player.identifier, duty)
+end)
 
 
 lib.callback.register("mate-factions:requestClientFactions", (function(source)

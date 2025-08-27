@@ -67,6 +67,7 @@ const Navbar: React.FC<Props> = ({ activePage, onPageChange }) => {
 
                         return (
                             <Button
+                                key={item.href}
                                 variant={isActive ? "default" : "ghost"}
                                 onClick={() => onPageChange(item.href)}
                                 className={cn(

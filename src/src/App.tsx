@@ -15,7 +15,7 @@ function App() {
   const [visible, setVisibility] = useState<boolean>(isEnvBrowser() ? true : false);
   const [dutyData, setDutyData] = useState<DutyData>()
   const [activePanel, setActivePanel] = useState<PanelType>("Ranks")
-  // useExitListener(setVisibility); //TODO: UnComment
+  useExitListener(setVisibility);
 
   useLoadUser()
 

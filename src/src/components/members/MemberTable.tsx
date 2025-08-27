@@ -151,6 +151,8 @@ const MemberTable: React.FC = () => {
                             <TableHead className="text-gray-400">Status</TableHead>
                             <TableHead className="text-gray-400">Join Date</TableHead>
                             <TableHead className="text-gray-400">Last Active</TableHead>
+                            <TableHead className="w-12"></TableHead>
+
                         </TableRow>
                     </TableHeader>
 
@@ -198,7 +200,12 @@ const MemberTable: React.FC = () => {
                                             {member.rank.name}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell className="text-white">{dayjs(member.joinDate).format("MMMM D, YYYY")}</TableCell>
+                                    <TableCell>
+                                        <Badge {...statusBadge} className={statusBadge.className}>
+                                            {member.status}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell className="text-white">{dayjs(member.joinDate).format("MMMM D, YYYY h:mm A")}</TableCell>
                                     <TableCell className="text-white">{dayjs(member.lastActive).format("MMMM D, YYYY h:mm A")}</TableCell>
                                     <TableCell>
                                         <DropdownMenu>

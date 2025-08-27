@@ -89,7 +89,7 @@ const Ranks: React.FC<Props> = ({ }) => {
                     </Badge>
                 </div>
 
-                <div className="space-y-3 overflow-y-auto max-h-[calc(5*5.9rem)] snap-y snap-mandatory scroll-smooth">
+                <div className="space-y-3 overflow-y-auto max-h-[calc(5*6.4rem)] snap-y snap-mandatory">
                     {ranksData.sort((a, b) => b.id - a.id).map((rank) => (
                         <RankCard key={rank.id} rank={rank} className="snap-start mr-2" />
                     ))}

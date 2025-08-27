@@ -66,7 +66,7 @@ const CreateRankDialog: React.FC = ({ }) => {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button className="text-white" variant={"outline"}>
+                <Button className="hover:text-white text-gray-400" variant={"outline"}>
                     <Plus className="size-4 " />
                     Create Rank
                 </Button>

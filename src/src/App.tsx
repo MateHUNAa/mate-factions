@@ -10,7 +10,7 @@ import Navbar from './components/Navbar';
 import { setCurrentUser, User } from './store/userSlice';
 import { Permission, Rank } from './lib/permission';
 import { useAppDispatch } from './store';
-import { setRanksAndPermissions } from './store/rankSlice';
+import { setPermissions, setRanks } from './store/rankSlice';
 
 export type PanelType = "off" | "DutyPanel" | "Dashboard" | "Members" | "Ranks"
 
@@ -28,7 +28,8 @@ function App() {
   })
 
   useNuiEvent("updateRanks", (data: { permissions: Permission[], ranks: Rank[] }) => {
-    dispatch(setRanksAndPermissions(data))
+    dispatch(setRanks(data.ranks))
+    dispatch(setPermissions(data.permissions))
   })
 
   useNuiEvent<{
@@ -42,7 +43,8 @@ function App() {
     }
 
     if (data.ranks && data.permissions) {
-      dispatch(setRanksAndPermissions({ ranks: data.ranks, permissions: data.permissions }))
+      dispatch(setRanks(data.ranks))
+      dispatch(setPermissions(data.permissions))
     }
 
     setActivePanel("Dashboard")

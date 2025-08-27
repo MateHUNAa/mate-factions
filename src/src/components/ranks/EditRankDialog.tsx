@@ -8,8 +8,10 @@ import { Textarea } from "../ui/textarea";
 import { Palette } from "lucide-react";
 import { Checkbox } from "../ui/checkbox";
 import { Button } from "../ui/button";
-import { useRanks } from "@/lib/permission";
+import { Rank, useRanks } from "@/lib/permission";
 import { fetchNui } from "@/utils/fetchNui";
+import { useAppDispatch } from "@/store";
+import { updateRank } from "@/store/rankSlice";
 
 interface Props {
     rank: {
@@ -24,7 +26,7 @@ interface Props {
 }
 
 const EditRankDialog: React.FC<Props> = ({ rank, open, onOpenChange }) => {
-
+    const dispatch = useAppDispatch()
     const ranks = useRanks()
     const [formData, setFormData] = useState({
         name: "",
@@ -60,6 +62,25 @@ const EditRankDialog: React.FC<Props> = ({ rank, open, onOpenChange }) => {
                 old: { id: rank.id },
                 new: formData
             })
+
+            if (success) {
+                const permissionsArray = Object.keys(formData.permissions).filter(
+                    (key) => formData.permissions[key]
+                );
+
+                dispatch(
+                    updateRank({
+                        id: rank.id,
+                        data: {
+                            name: formData.name,
+                            description: formData.description,
+                            color: formData.color,
+                            permissions: permissionsArray,
+                            id: formData.level,
+                        },
+                    })
+                );
+            }
         } catch (err) {
             console.error(err)
         }

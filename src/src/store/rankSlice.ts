@@ -6,26 +6,53 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface RankState {
     ranks: Rank[];
     permissions: Permission[];
-    loaded: boolean;
+    ranksLoaded: boolean;
+    permissionsLoaded: boolean;
 }
 
 const initialState: RankState = {
     ranks: [],
     permissions: [],
-    loaded: false
-}
+    ranksLoaded: false,
+    permissionsLoaded: false,
+};
 
 const rankSlice = createSlice({
     name: "ranks",
     initialState,
     reducers: {
-        setRanksAndPermissions(state, action: PayloadAction<{ ranks: Rank[], permissions: Permission[] }>) {
-            state.ranks = action.payload.ranks;
-            state.permissions = action.payload.permissions;
-            state.loaded = true
-        }
-    }
-})
+        // --- Ranks ---
+        setRanks(state, action: PayloadAction<Rank[]>) {
+            state.ranks = action.payload;
+            state.ranksLoaded = true;
+        },
+        addRank(state, action: PayloadAction<Rank>) {
+            state.ranks.push(action.payload);
+        },
+        updateRank(state, action: PayloadAction<{ id: number; data: Partial<Rank> }>) {
+            const index = state.ranks.findIndex((r) => r.id === action.payload.id);
+            if (index !== -1) {
+                state.ranks[index] = { ...state.ranks[index], ...action.payload.data };
+            }
+        },
+        removeRank(state, action: PayloadAction<number>) {
+            state.ranks = state.ranks.filter((r) => r.id !== action.payload);
+        },
 
-export const { setRanksAndPermissions } = rankSlice.actions
-export default rankSlice.reducer
+        // --- Permissions ---
+        setPermissions(state, action: PayloadAction<Permission[]>) {
+            state.permissions = action.payload;
+            state.permissionsLoaded = true;
+        },
+    },
+});
+
+export const {
+    setRanks,
+    addRank,
+    updateRank,
+    removeRank,
+    setPermissions,
+} = rankSlice.actions;
+
+export default rankSlice.reducer;

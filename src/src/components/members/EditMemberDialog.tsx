@@ -15,6 +15,7 @@ import { Rank, useRanks } from "@/lib/permission";
 import dayjs from "dayjs";
 import { Member, updateMember } from "@/store/memberSlice";
 import { useAppDispatch } from "@/store";
+import { useUser } from "@/store/userSlice";
 
 interface Props {
     member: Member;
@@ -49,6 +50,7 @@ const EditMemberDialog: React.FC<Props> = ({ member, open, onOpenChange }) => {
     })
 
     const ranks = useRanks()
+    const user = useUser()
 
     useEffect(() => {
         setFormData({
@@ -74,8 +76,9 @@ const EditMemberDialog: React.FC<Props> = ({ member, open, onOpenChange }) => {
                 ...formData
             })
 
-            if (success)
+            if (success) {
                 dispatch(updateMember(updatedMember))
+            }
         } catch (err) {
             console.error(err)
         }

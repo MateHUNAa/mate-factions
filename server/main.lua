@@ -126,6 +126,9 @@ function getLocalPlayer(pid)
     if not factionData then return { data = nil, msg = ("Failed to fetch `%s` factionData !"), msgType = "error", error = true } end
     if not memberData then return { data = nil, msg = "Failed to fetch your memberData !", msgType = "error", error = true } end
 
+    local rank = factionData.ranks[tostring(memberData.rank)]
+    rank.id = tostring(memberData.rank)
+    
     local player = {
         id          = pid,
         name        = Player.RPName,
@@ -134,7 +137,7 @@ function getLocalPlayer(pid)
         imageUrl    = Player.discord.img,
         faction     = factionName,
         factionData = factionData,
-        rank        = factionData.ranks[tostring(memberData.rank)],
+        rank        = rank,
         memberData  = memberData
     }
 

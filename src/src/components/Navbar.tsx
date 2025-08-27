@@ -9,6 +9,7 @@ import { hasPermission, useRanks } from "@/lib/permission";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { useUser } from "@/store/userSlice";
 
 interface Props {
     activePage: PanelType,
@@ -32,8 +33,11 @@ export const navigation: NavigationItem[] = [
 const Navbar: React.FC<Props> = ({ activePage, onPageChange }) => {
     const [collapsed, setCollapsed] = useState<boolean>(true)
     const ranks = useRanks()
-    const user = useSelector((state: RootState) => state.user.currentUser)
+    const user = useUser()
 
+    console.log(user)
+
+    if (!user) return null
 
     return (
         <div
@@ -61,9 +65,11 @@ const Navbar: React.FC<Props> = ({ activePage, onPageChange }) => {
                     {navigation.map((item) => {
                         const isActive = item.href === activePage
 
-                        // const shouldShow = !item.permission || hasPermission()
 
-                        // if (!shouldShow) return null
+
+                        const shouldShow = !item.permission || hasPermission(user?.rank?.id, item.permission, ranks)
+
+                        if (!shouldShow) return null
 
                         return (
                             <Button
@@ -71,8 +77,8 @@ const Navbar: React.FC<Props> = ({ activePage, onPageChange }) => {
                                 variant={isActive ? "default" : "ghost"}
                                 onClick={() => onPageChange(item.href)}
                                 className={cn(
-                                    "w-full justify-start gap-3 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                                    isActive && "bg-sidebar-accent text-sidebar-accent-foreground",
+                                    "w-full justify-start gap-3 text-white hover:bg-sidebar-accent hover:text-gray-400",
+                                    isActive && "bg-sidebar-accent text-gray-400",
                                     collapsed && "justify-center px-2",
                                 )}
                             >
@@ -95,7 +101,7 @@ const Navbar: React.FC<Props> = ({ activePage, onPageChange }) => {
                     </div>
                     {!collapsed && user && (
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-sidebar-foreground truncate">{user?.discordName || "NAME_NOT_FOUND"}</p>
+                            <p className="text-sm font-medium text-white truncate">{user?.discordName || "NAME_NOT_FOUND"}</p>
                         </div>
                     )}
                 </div>

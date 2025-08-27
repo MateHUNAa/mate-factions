@@ -1,4 +1,5 @@
 import { RootState } from "@/store"
+import { TheaterIcon } from "lucide-react";
 import { useSelector } from "react-redux";
 
 export type Permission = string;
@@ -11,21 +12,25 @@ export interface Rank {
     description: string;
 }
 
-export function hasPermission(userRank: string, permission: Permission, ranks: Rank[]): boolean {
-    const rank = ranks.find(r => r.name.toLowerCase() === userRank.toLowerCase());
+export function hasPermission(rankId: number, permission: Permission, ranks: Rank[]): boolean {
+    const rank = ranks.find(r => r.id == rankId);
+    console.log("[hasPermission]", rank)
+
+    if (rank?.permissions.includes("all")) return true;
+
     return rank ? rank.permissions.includes(permission) : false;
 }
 
-export function hasAnyPermission(userRank: string, permissions: Permission[], ranks: Rank[]): boolean {
-    return permissions.some((permission) => hasPermission(userRank, permission, ranks))
+export function hasAnyPermission(rankId: number, permissions: Permission[], ranks: Rank[]): boolean {
+    return permissions.some((permission) => hasPermission(rankId, permission, ranks))
 }
 
-export function hasAllPermissions(userRank: string, permissions: Permission[], ranks: Rank[]): boolean {
-    return permissions.every((permission) => hasPermission(userRank, permission, ranks))
+export function hasAllPermissions(rankId: number, permissions: Permission[], ranks: Rank[]): boolean {
+    return permissions.every((permission) => hasPermission(rankId, permission, ranks))
 }
 
-export function getRankPermissions(userRank: string, ranks: Rank[]): Permission[] {
-    const rank = ranks.find(r => r.name.toLowerCase() === userRank.toLowerCase());
+export function getRankPermissions(rankId: number, ranks: Rank[]): Permission[] {
+    const rank = ranks.find(r => r.id == rankId);
     return rank ? rank.permissions : [];
 }
 

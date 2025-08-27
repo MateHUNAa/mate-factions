@@ -32,6 +32,10 @@ function App() {
     dispatch(setPermissions(data.permissions))
   })
 
+  useNuiEvent("updateLocalPlayer", (data: User) => {
+    dispatch(setCurrentUser(data))
+  })
+
   useNuiEvent<{
     localPlayer?: { data: User },
     ranks?: Rank[],

@@ -87,8 +87,25 @@ nuiServerCallback("createRank", function()
 end)
 nuiServerCallback("removeRank")
 nuiServerCallback("updateFactionMember")
+
+--[[
+, function()
+  local localPlayer = lib.callback.await("mate-factions:GetLocalPlayer", false)
+
+  sendNUI("updateLocalPlayer", localPlayer)
+end
+]]
 nuiServerCallback("updateFactionRank")
 nuiCallback("requestFactionRanks", getFactionRanks)
+
+
+
+
+
+
+
+
+
 
 -- Command suggestions
 local function addSuggestions()

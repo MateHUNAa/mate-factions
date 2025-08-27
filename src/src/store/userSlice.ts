@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
 import { RootState } from ".";
+import { Rank } from "@/lib/permission";
 
 export interface MemberData {
     rank: number;
@@ -18,7 +19,7 @@ export interface User {
     imageUrl: string;
     identifier: string;
     memberData: MemberData;
-    rank: string;
+    rank: Rank;
 }
 
 interface UserState {
@@ -40,6 +41,11 @@ const userSlice = createSlice({
         },
         clearCurrentUser(state) {
             state.currentUser = null
+        },
+        updateUserRank(state, action: PayloadAction<Rank>) {
+            if (!state.currentUser) return
+
+            state.currentUser.rank = action.payload
         }
     }
 })
@@ -48,5 +54,5 @@ export function useUser() {
     return useSelector((state: RootState) => state.user.currentUser)
 }
 
-export const { setCurrentUser, clearCurrentUser } = userSlice.actions;
+export const { setCurrentUser, clearCurrentUser,updateUserRank } = userSlice.actions;
 export default userSlice.reducer;

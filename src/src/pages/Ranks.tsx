@@ -1,5 +1,5 @@
 import { MockFactionRanks } from "@/components/members/EditMemberDialog";
-import InfoCard, { InfoCardBox } from "@/components/InfoCard";
+import InfoCard, { InfoCardBox, InfoSubElement } from "@/components/InfoCard";
 import CreateRankDialog from "@/components/ranks/CreateRankDialog";
 import RankCard from "@/components/ranks/RankCard";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +10,7 @@ import { isEnvBrowser } from "@/utils/misc";
 import { Search, Settings, Shield, Users } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Rank, useRanks } from "@/lib/permission";
+import { useMembers } from "@/hooks/useMembers";
 
 interface Props {
 }
@@ -20,6 +21,28 @@ const Ranks: React.FC<Props> = ({ }) => {
     const [totalMembers, setTotalMembers] = useState()
 
     const ranksData = useRanks()
+    const members = useMembers()
+
+    const rankCounts: Record<number, number> = {}
+
+    members.forEach((m) => {
+        if (!rankCounts[m.rank.id])
+            rankCounts[m.rank.id] = 0
+
+        rankCounts[m.rank.id]++
+    })
+    let topRankId: number | null = null
+    let topRankCount = 0
+
+    for (const [rankIdStr, count] of Object.entries(rankCounts)) {
+        const rankId = Number(rankIdStr)
+        if (count > topRankCount) {
+            topRankCount = count
+            topRankId = rankId
+        }
+    }
+
+    const topRankName = ranksData.find((r) => r.id == topRankId)?.name ?? "N/A"
 
     if (!ranksData || ranksData.at.length <= 0) return null
 
@@ -39,10 +62,14 @@ const Ranks: React.FC<Props> = ({ }) => {
             {/* Stats Card */}
 
             <InfoCardBox>
-                <InfoCard title="Total Ranks" Icon={Shield} content="8" />
-                <InfoCard title="Admin Ranks" Icon={Settings} content="8" />
-                <InfoCard title="Member Ranks" Icon={Users} content="8" />
-                <InfoCard title="Total Members" Icon={Users} content="8" />
+                <InfoCard title="Total Ranks" Icon={Shield} content={`${ranksData.length}`} />
+                <InfoCard title="Members on Duty" Icon={Settings} content={`${members.filter(m => m.status === "online").length}`} />
+                <InfoCard
+                    title="Most Popular Rank"
+                    Icon={Shield}
+                    content={`${topRankName} ${topRankCount}`}
+                />
+                <InfoCard title="Total Members" Icon={Users} content={`${members.length}`} />
             </InfoCardBox>
 
             {/* Search and Filters */}

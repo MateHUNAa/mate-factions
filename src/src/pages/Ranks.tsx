@@ -9,11 +9,13 @@ import React, { useState } from "react";
 interface Props {
 }
 
+
+
 const Ranks: React.FC<Props> = ({ }) => {
     const [totalMembers, setTotalMembers] = useState()
 
     return (
-        <main className="flex-1 overflow-auto space-y-2">
+        <main className="flex-1 overflow-auto space-y-5">
             <div className="p-6 space-y-6">
                 {/* Header */}
                 <div className="flex items-center justify-between">
@@ -40,16 +42,31 @@ const Ranks: React.FC<Props> = ({ }) => {
                 <CardContent className="p-4">
                     <div className="flex flex-col sm:flex-row gap-4">
                         <div className="relative flex-1">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input placeholder="Search ranks..." className="pl-10 bg-input border-zinc-600 text-foreground" />
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white" />
+                            <Input placeholder="Search ranks..." className="pl-10 bg-input border-zinc-600 text-white" />
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 text-white">
                             <Badge variant="secondary">All Ranks</Badge>
                             <Badge variant="outline">Admin Only</Badge>
                         </div>
                     </div>
                 </CardContent>
             </Card>
+
+            {/* Ranks Hierarchy */}
+            <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                    <Shield className="size-5 text-blue-400" />
+                    <h2 className="font-heading text-xl font-semibold text-white">Rank Hierarchy</h2>
+                    <Badge variant={"outline"} className="ml-auto text-white">
+                        Sorted by level
+                    </Badge>
+                </div>
+
+                <div className="space-y-3">
+
+                </div>
+            </div>
         </main>
     );
 };

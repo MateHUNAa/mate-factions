@@ -1,4 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { useSelector } from "react-redux";
+import { RootState } from ".";
 
 export interface MemberData {
     rank: number;
@@ -41,6 +43,10 @@ const userSlice = createSlice({
         }
     }
 })
+
+export function useUser() {
+    return useSelector((state: RootState) => state.user.currentUser)
+}
 
 export const { setCurrentUser, clearCurrentUser } = userSlice.actions;
 export default userSlice.reducer;

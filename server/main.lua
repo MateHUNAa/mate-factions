@@ -1,7 +1,7 @@
 ESX = exports['es_extended']:getSharedObject()
 mCore = exports["mCore"]:getSharedObj()
 local inv = exports["ox_inventory"]
-
+local lang = Loc[Config.lan]
 isLoaded = false
 
 
@@ -145,4 +145,24 @@ end))
 
 lib.callback.register("mate-factions:GetLocalPlayer", function(source)
     return getLocalPlayer(source)
+end)
+
+
+regServerNuiCallback("createRank", function(pid, idf, params)
+    local Player = mCore.getPlayer(pid)
+    if not Player then return end
+
+    local factionId, factionData, memberData = GetPlayerFaction(Player.identifier)
+
+    if not factionId then return { data = nil, msg = "This player is not part of a factionId !", msgType = "error", error = true } end
+    if not factionData then return { data = nil, msg = ("Failed to fetch `%s` factionData !"), msgType = "error", error = true } end
+    if not memberData then return { data = nil, msg = "Failed to fetch your memberData !", msgType = "error", error = true } end
+
+    if not MemberHasPermission(idf, factionId, "manageRanks") then
+        return { msg = (lang.error["permission_missing"]):format("manageRanks"), msgType = "error", error = false }
+    end
+
+    AddRank(factionId, params.level, params.name, params.permissions, params.description, params.color)
+
+    return { msg = (lang.success["rank_created"]):format(params.name), msgType = "success" }
 end)

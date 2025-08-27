@@ -7,6 +7,10 @@ import { Input } from "../ui/input";
 import { Slider } from "../ui/slider";
 import { Textarea } from "../ui/textarea";
 import { Checkbox } from "../ui/checkbox";
+import { fetchNui } from "@/utils/fetchNui";
+import { useUser } from "@/store/userSlice";
+import { useRanks } from "@/lib/permission";
+import { P } from "framer-motion/dist/types.d-Cjd591yU";
 
 
 export const permissions = [
@@ -32,23 +36,36 @@ export const colorPresets = [
 
 const CreateRankDialog: React.FC = ({ }) => {
     const [open, setOpen] = useState<boolean>(false)
+    const user = useUser()
+    const ranks = useRanks()
+
     const [formData, setFormData] = useState({
         name: "",
         description: "",
-        level: [5],
+        level: 5,
         color: colorPresets[0],
         permissions: {} as Record<string, boolean>,
     })
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
+        if (ranks.some((rank) => Number(rank.id) === formData.level))
+            return
+
         console.log("Createing Rank: ", formData)
         setOpen(false)
+
+
+        fetchNui("createRank", {
+            factionId: user?.faction,
+            ...formData
+        })
+
         setFormData({
             name: "",
             color: colorPresets[0],
             description: "",
-            level: [5],
+            level: 5,
             permissions: {}
         })
     }
@@ -62,6 +79,8 @@ const CreateRankDialog: React.FC = ({ }) => {
             }
         })
     }
+
+    if (!ranks || ranks.length <= 0) return null
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -97,8 +116,8 @@ const CreateRankDialog: React.FC = ({ }) => {
                             <Label className="text-white/80">Rank Level</Label>
                             <div className="px-3">
                                 <Slider
-                                    value={formData.level}
-                                    onValueChange={(value) => setFormData({ ...formData, level: value })}
+                                    value={[formData.level]}
+                                    onValueChange={(value) => setFormData({ ...formData, level: value[0] })}
                                     max={98}
                                     min={1}
                                     step={1}
@@ -106,9 +125,12 @@ const CreateRankDialog: React.FC = ({ }) => {
                                 />
                                 <div className="flex justify-between text-xs text-gray-300 mt-2">
                                     <span>1</span>
-                                    <span>Level {formData.level[0]}</span>
+                                    <span>Level {formData.level}</span>
                                     <span>98</span>
                                 </div>
+                                {ranks.some((rank) => Number(rank.id) === formData.level) && (
+                                    <p className="text-red-500 text-xs mt-1">This level is already assigned.</p>
+                                )}
                             </div>
                         </div>
                     </div>

@@ -53,23 +53,10 @@ end)
 
 RegisterCommand("mate-factions", (function(src, args, raw)
   local localPlayer = lib.callback.await("mate-factions:GetLocalPlayer", false)
-  local faction = lib.callback.await("mate-faction:GetPlayerFaction", false)
-
-  print(json.encode(faction, { indent = true }))
-
-  local ranks = {}
-
-  for id, data in pairs(faction.factionData.ranks) do
-    table.insert(ranks, {
-      id = id,
-      name = data.name,
-      permissions = data.permissions
-    })
-  end
 
   sendNUI("open", {
     localPlayer = localPlayer,
-    ranks       = ranks,
+    ranks       = getFactionRanks(),
     permissions = Config.PermissionList
   })
 
@@ -91,6 +78,14 @@ end)
 
 nuiServerCallback("requestLocalUser")
 nuiServerCallback("requestFactionMembers")
+nuiServerCallback("createRank", function()
+  Wait(150)
+  sendNUI("updateRanks", {
+    permissions = Config.PermissionList,
+    ranks = getFactionRanks()
+  })
+end)
+nuiServerCallback("removeRank")
 
 -- Command suggestions
 local function addSuggestions()

@@ -27,7 +27,6 @@ function LoadFactionMembers()
         if faction then
             faction.members[row.identifier] = {
                 rank      = row.rank,
-                title     = row.title,
                 on_duty   = 0,
                 joined_at = row.joined_at
             }
@@ -91,7 +90,8 @@ function InsertFaction(name, label, type)
             ranks = Config.DefaultRanks,
             permissions = {},
             allow_offduty = false,
-            offduty_name = nil
+            offduty_name = nil,
+            members = {}
         }
 
         TriggerClientEvent("mate-factions:FactionCreated", -1, name, Factions[name])
@@ -149,6 +149,11 @@ function SetPlayerFaction(identifier, factionId)
     end)
 
     if ok then
+        Factions[factionId].members[identifier] = {
+            rank      = 1,
+            on_duty   = 0,
+            joined_at = os.time()
+        }
         return true, nil, handleErr
     else
         return false, "sql_error", handleErr
@@ -286,9 +291,23 @@ function AddRank(factionId, rankId, name, permissions, description, color)
     local faction = Factions[factionId]
     if not faction then return false end
 
+    local normalizedPermissions = {}
+    if type(permissions) == "table" then
+        local isArray = (#permissions > 0)
+        if isArray then
+            for _, perm in pairs(permissions) do
+                normalizedPermissions[perm] = true
+            end
+        else
+            normalizedPermissions = permissions
+        end
+    end
+
+
+
     faction.ranks[tostring(rankId)] = {
         name = name,
-        permissions = permissions or {},
+        permissions = normalizedPermissions or {},
         description = description or "Description is not set.",
         color = color or "#ff0000"
     }
@@ -325,6 +344,8 @@ function MemberHasPermission(identifier, factionId, permission)
     local rankData = faction.ranks[tostring(member.rank)]
     if not rankData then return false end
 
+
+    print("[MemberHasPermission]: rankData", json.encode(rankData, { indent = true }))
     if rankData.permissions and rankData.permissions["all"] then
         return true
     end

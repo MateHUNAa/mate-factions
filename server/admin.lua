@@ -87,9 +87,9 @@ RegisterCommand("setfactionleader", function(source, args, raw)
 
 
 
-    local targetId = args[1]
+    local targetId  = args[1]
     local factionId = args[2]
-    local isLeader = tonumber(args[3])
+    local isLeader  = tonumber(args[3])
 
     if not targetId then
         Logger:Debug("[setfactionleader]: Missing arg: Name")
@@ -109,7 +109,7 @@ RegisterCommand("setfactionleader", function(source, args, raw)
             5000)
     end
 
-    local targetPlayer = mCore.getPlayer(targetId)
+    local targetPlayer = mCore.getPlayer(tonumber(targetId))
     if not targetPlayer then
         return mCore.Notify(source, lang.Title, lang.error["player_missing"], "error", 5000)
     end

@@ -36,7 +36,7 @@ local function UpdateFactionCache()
     return cachedFactions
 end
 
--- FIXME: Markers does not update after a new faction is set for a player, 
+-- FIXME: Markers does not update after a new faction is set for a player,
 local function UpdatePlayerFactionCache()
     local now = GetGameTimer()
     if not playerFactions or (now - lastUpdate) > CACHE_INTERVAL then
@@ -71,3 +71,30 @@ function CanUseFactionGarage(factionId, isGarage)
 end
 
 exports("CanUseFactionGarage", CanUseFactionGarage)
+
+
+function getFactionRanks()
+    local faction = lib.callback.await("mate-faction:GetPlayerFaction", false)
+
+    print(json.encode(faction, { indent = true }))
+
+    local ranks = {}
+
+    for id, data in pairs(faction.factionData.ranks) do
+        local perms = {}
+
+        for key, _ in pairs(data.permissions) do
+            table.insert(perms, key)
+        end
+        
+        table.insert(ranks, {
+            id = id,
+            name = data.name,
+            permissions = perms
+        })
+    end
+
+    return ranks
+end
+
+exports("GetFactionRanks", getFactionRanks)

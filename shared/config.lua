@@ -35,12 +35,12 @@ Config.DefaultRanks = {
      },
      ["99"] = {
           name = "Sub-Leader",
-          permissions = { "manage_ranks", "invite" },
+          permissions = { ["manageRanks"] = true, ["invite"] = true },
           description = "Description is not set."
      },
      ["100"] = {
           name = "Leader",
-          permissions = { "all" },
+          permissions = { ["all"] = true },
           description = "Description is not set."
      },
 

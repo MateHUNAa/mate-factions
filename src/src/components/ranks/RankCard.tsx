@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "../ui/button";
 import EditRankDialog from "./EditRankDialog";
+import { fetchNui } from "@/utils/fetchNui";
 
 export interface RankCardProps {
     rank: {
@@ -111,7 +112,7 @@ const RankCard: React.FC<RankCardProps> = ({ rank, className }) => {
                                     View Members
                                 </DropdownMenuItem>
 
-                                <DropdownMenuItem className="gap-2 text-red-400 focus:text-red-500">
+                                <DropdownMenuItem className="gap-2 text-red-400 focus:text-red-500" onClick={() => fetchNui("removeRank", rank)}>
                                     <Trash className="size-4" />
                                     Delete Rank
                                 </DropdownMenuItem>

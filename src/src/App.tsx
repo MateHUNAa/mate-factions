@@ -27,6 +27,10 @@ function App() {
     setDutyData(data)
   })
 
+  useNuiEvent("updateRanks", (data: { permissions: Permission[], ranks: Rank[] }) => {
+    dispatch(setRanksAndPermissions(data))
+  })
+
   useNuiEvent<{
     localPlayer?: { data: User },
     ranks?: Rank[],

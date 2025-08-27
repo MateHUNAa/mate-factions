@@ -36,6 +36,69 @@ function LoadFactionMembers()
     Logger:Info("Loaded faction members")
 end
 
+function SaveFactionData(factionId, saveMembers)
+    local faction = Factions[factionId]
+    if not faction then return false, "faction_missing" end
+
+    local ok, err = pcall(function()
+        MySQL.update.await([[
+            UPDATE factions
+            SET
+                label = ?,
+                type = ?,
+                ranks = ?,
+                permissions = ?,
+                settings = ?,
+                allow_offduty = ?,
+                offduty_name = ?,
+                duty_point = ?,
+                stash = ?
+            WHERE name = ?
+        ]], {
+            faction.label,
+            faction.type,
+            json.encode(faction.ranks),
+            json.encode(faction.permissions),
+            json.encode(faction.settings),
+            faction.allow_offduty and 1 or 0,
+            faction.offduty_name,
+            faction.duty_point and json.encode(faction.duty_point) or nil,
+            faction.stash and json.encode(faction.stash) or nil,
+            factionId
+        })
+    end)
+
+    if not ok then
+        Logger:Error(("SaveFactionData failed for `%s`: %s"):format(factionId, err))
+        return false, "sql_error"
+    end
+
+    if saveMembers then
+        SaveFactionMembers(factionId)
+    end
+
+    return true
+end
+
+function SaveFactionMembers(factionId)
+    local faction = Factions[factionId]
+    if not faction then return false, "faction_missing" end
+
+    for identifier, member in pairs(faction.members) do
+        MySQL.update.await([[
+            INSERT INTO faction_members (identifier, faction_name, rank, on_duty, joined_at)
+            VALUES (?,?,?,?,FROM_UNIXTIME(?))
+            ON DUPLICATE KEY UPDATE rank = VALUES(rank), on_duty = VALUES(on_duty), joined_at = VALUES(joined_at)
+        ]], {
+            identifier,
+            factionId,
+            member.rank,
+            member.on_duty,
+            member.joined_at
+        })
+    end
+end
+
 function GetFactionConfig(factionName)
     return Factions[factionName] or nil
 end
@@ -232,7 +295,6 @@ function SetPlayerRank(identifier, factionId, newRank)
         return false, "faction_missing", handleErr
     end
 
-    -- validate rank using helper
     local validPrio, rankData = GetValidRank(newRank, factionConfig.ranks)
     if not validPrio then
         return false, "rank_missing", handleErr

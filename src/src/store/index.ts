@@ -2,11 +2,13 @@ import { configureStore, Action, ThunkAction } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import ranksReducer from "./rankSlice"
 import userReducer from "./userSlice"
+import membersReducer from "./memberSlice"
 
 export const store = configureStore({
   reducer: {
     ranks: ranksReducer,
-    user: userReducer
+    user: userReducer,
+    members: membersReducer
   },
 });
 

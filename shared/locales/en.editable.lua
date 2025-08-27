@@ -21,7 +21,8 @@ Loc["en"] = {
           ["duty_point_set"] = "Duty point updated for faction: %s",
           ["stash_placed"] = "You successfully placed a stash for %s",
           ["rank_created"] = "You successfully created a rank: `%s`",
-          ["rank_deleted"] = "You successfully delted a rank: `%s`"
+          ["rank_deleted"] = "You successfully delted a rank: `%s`",
+          ["member_updated"] = "Updated member `%s` successfully!"
      },
      info    = {
           ["faction_set"] = "You were set to faction %s",

@@ -186,3 +186,58 @@ regServerNuiCallback("removeRank", function(pid, idf, params)
 
     return { msg = (lang.success["rank_deleted"]):format(params.name), msgType = "success" }
 end)
+
+regServerNuiCallback("updateFactionMember", function(pid, idf, params)
+    local Player = mCore.getPlayer(pid)
+    if not Player then return end
+
+    local factionId, factionData, memberData = GetPlayerFaction(Player.identifier)
+
+    if not factionId then return { data = nil, msg = "This player is not part of a factionId !", msgType = "error", error = true } end
+    if not factionData then return { data = nil, msg = ("Failed to fetch `%s` factionData !"), msgType = "error", error = true } end
+    if not memberData then return { data = nil, msg = "Failed to fetch your memberData !", msgType = "error", error = true } end
+
+    if not MemberHasPermission(idf, factionId, "manageMembers") then
+        return { msg = (lang.error["permission_missing"]):format("manageMembers"), msgType = "error", error = false }
+    end
+
+    local targetMember = factionData.members[params.target.identifier]
+    if not targetMember then
+        return { msg = lang.error["player_missing"], msgType = "error" }
+    end
+
+    if params.rankId and params.rankId ~= -1 then
+        local validRank, rankData = GetValidRank(params.rankId, factionData.ranks)
+        if validRank then
+            targetMember.rank = validRank
+        end
+    end
+
+    if params.notes then
+        targetMember.notes = params.notes
+    end
+
+    local ok, err = pcall(function()
+        MySQL.update.await([[
+            INSERT INTO faction_members (identifier, faction_name, rank, on_duty, joined_at)
+            VALUES (?,?,?,?,FROM_UNIXTIME(?))
+            ON DUPLICATE KEY UPDATE
+                rank = VALUES(rank),
+                on_duty = VALUES(on_duty),
+                joined_at = VALUES(joined_at)
+        ]], {
+            params.target.identifier,
+            factionId,
+            targetMember.rank,
+            targetMember.on_duty or 0,
+            targetMember.joined_at or os.time()
+        })
+    end)
+
+    if not ok then
+        Logger:Error(("Failed to update faction member `%s`: %s"):format(params.target.name, err))
+        return { msg = "Database error!", msgType = "error", error = true }
+    end
+
+    return { msg = (lang.success["member_updated"]):format(params.target.name), msgType = "success" }
+end)

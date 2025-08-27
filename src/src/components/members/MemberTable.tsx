@@ -11,19 +11,8 @@ import EditMemberDialog from "./EditMemberDialog";
 import { isEnvBrowser } from "@/utils/misc";
 import dayjs from "dayjs";
 import { Rank } from "@/lib/permission";
-
-export interface Member {
-    identifier: string;
-    rank: Rank;
-    rankColor: string;
-    joinDate: string;
-    lastActive: string;
-    status: string;
-    avatar: string;
-    totalPosts: number;
-    name: string;
-    faction: string;
-}
+import { Member, MockMembers } from "@/store/memberSlice";
+import { useMembers } from "@/hooks/useMembers";
 
 const getStatusColor = (status: string) => {
     switch (status) {
@@ -51,68 +40,12 @@ const getStatusBadge = (status: string) => {
     }
 }
 
-
-const MockMembers = (count: number): Member[] => {
-    const members: Member[] = []
-    const ranks: Rank[] = [
-        { name: "Leader", color: "#ff0000", description: "", id: 100, permissions: [] },
-        { name: "Captain", color: "#ff8800", description: "", id: 99, permissions: [] },
-        { name: "Sergeant", color: "#ffaa00", description: "", id: 2, permissions: [] },
-        { name: "Member", color: "#00aa00", description: "", id: 1, permissions: [] },
-    ]
-    const statuses = ["online", "offline", "busy", "away"]
-    const factions = ["Police", "EMS", "Mechanic", "Gang"]
-
-    for (let i = 0; i < count; i++) {
-        const rank = ranks[Math.floor(Math.random() * ranks.length)]
-        const status = statuses[Math.floor(Math.random() * statuses.length)]
-        const faction = factions[Math.floor(Math.random() * factions.length)]
-
-        members.push({
-            identifier: `license:${Math.random().toString(36).substring(2, 10)}`,
-            rank: rank,
-            rankColor: rank.color,
-            joinDate: dayjs(new Date(
-                Date.now() - Math.floor(Math.random() * 1000 * 60 * 60 * 24 * 365)
-            )).format("MMMM D, YYYY"),
-            lastActive: dayjs(new Date(
-                Date.now() - Math.floor(Math.random() * 1000 * 60 * 60 * 24 * 30)
-            )).format("MMMM D, YYYY h:mm A"),
-            status,
-            avatar: `https://cdn.discordapp.com/avatars/575342593630797825/d35c0ebf35bc2499a2a29771b0233f9a?size=1024`, // Random avatar
-            totalPosts: Math.floor(Math.random() * 500),
-            name: `Member_${i}`,
-            faction,
-        })
-    }
-
-    return members
-}
-
 const MemberTable: React.FC = () => {
     const [selectedMembers, setSelectedMembers] = useState<string[]>([])
     const [editingMember, setEditingMember] = useState<Member | null>(null)
-    const [members, setMembers] = useState<Member[]>()
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                if (isEnvBrowser()) {
-                    setMembers(MockMembers(39))
-                    return
-                }
-
-                const { data } = await fetchNui<{ data: Member[] }>("requestFactionMembers")
-                setMembers(data)
-            } catch (error) {
-                console.error("Error:", error);
-            }
-        };
-
-        fetchData();
-    }, [])
 
 
+    const members = useMembers()
 
     if (!members || members.length <= 0) return null // TODO: Return a loading state!
 
@@ -196,7 +129,7 @@ const MemberTable: React.FC = () => {
                                         </div>
                                     </TableCell>
                                     <TableCell>
-                                        <Badge variant={"default"} style={{ borderColor: member.rankColor, color: member.rankColor }}>
+                                        <Badge variant={"default"} style={{ borderColor: member.rank.color, color: member.rank.color }}>
                                             {member.rank.name}
                                         </Badge>
                                     </TableCell>

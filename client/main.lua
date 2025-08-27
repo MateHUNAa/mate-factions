@@ -86,6 +86,7 @@ nuiServerCallback("createRank", function()
   })
 end)
 nuiServerCallback("removeRank")
+nuiServerCallback("updateFactionMember")
 
 -- Command suggestions
 local function addSuggestions()

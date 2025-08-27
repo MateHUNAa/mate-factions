@@ -26,22 +26,26 @@ Config.DefaultRanks = {
      ["1"] = {
           name = "Recruit",
           permissions = {},
-          description = "Description is not set."
+          description = "Description is not set.",
+          color = "#64748B"
      },
      ["2"] = {
           name = "Member",
           permissions = {},
-          description = "Description is not set."
+          description = "Description is not set.",
+          color = "#3B82F6"
      },
      ["99"] = {
           name = "Sub-Leader",
           permissions = { ["manageRanks"] = true, ["invite"] = true },
-          description = "Description is not set."
+          description = "Description is not set.",
+          color = "#6366F1"
      },
      ["100"] = {
           name = "Leader",
           permissions = { ["all"] = true },
-          description = "Description is not set."
+          description = "Description is not set.",
+          color = "#F59E0B"
      },
 
 }

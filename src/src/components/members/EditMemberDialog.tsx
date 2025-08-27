@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Member } from "./MemberTable";
 import { fetchNui } from "@/utils/fetchNui";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,6 +13,8 @@ import { AlertCircle, ArrowDownCircle, ArrowUpCircle, Calendar, Divide, Mail, Me
 import { Button } from "@/components/ui/button";
 import { Rank, useRanks } from "@/lib/permission";
 import dayjs from "dayjs";
+import { Member, updateMember } from "@/store/memberSlice";
+import { useAppDispatch } from "@/store";
 
 interface Props {
     member: Member;
@@ -41,10 +42,10 @@ export const MockFactionRanks = (count: number): Rank[] => {
 };
 
 const EditMemberDialog: React.FC<Props> = ({ member, open, onOpenChange }) => {
+    const dispatch = useAppDispatch()
     const [formData, setFormData] = useState({
         name: "",
         rank: "",
-        notes: ""
     })
 
     const ranks = useRanks()
@@ -53,13 +54,31 @@ const EditMemberDialog: React.FC<Props> = ({ member, open, onOpenChange }) => {
         setFormData({
             name: member.name,
             rank: member.rank.name.toLowerCase(),
-            notes: ""
         })
     }, [member])
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        console.log("Updateing Member: ", formData)
+
+        const updatedMember: Member = {
+            ...member,
+            name: formData.name,
+            rank: ranks.find(r => r.id === selectedRank?.id) || member.rank,
+        }
+
+        try {
+            await fetchNui("updateFactionMember", {
+                faction: member.faction,
+                rankId: selectedRank?.id || -1,
+                target: member,
+                ...formData
+            })
+        } catch (err) {
+            console.error(err)
+        }
+
+        dispatch(updateMember(updatedMember))
+
         onOpenChange(false)
     }
 
@@ -100,7 +119,7 @@ const EditMemberDialog: React.FC<Props> = ({ member, open, onOpenChange }) => {
                                 <h3 className="font-heading text-lg font-semibold text-white">{member.name}</h3>
                                 {/* <p className="text-sm text-gray-400">member.mail</p> */}
                                 <div className="flex items-center gap-2 mt-2">
-                                    <Badge variant={"default"} style={{ borderColor: member.rankColor, color: member.rankColor }}>
+                                    <Badge variant={"default"} style={{ borderColor: member.rank.color, color: member.rank.color }}>
                                         {member.rank.name}
                                     </Badge>
                                     <Badge variant={"secondary"}>{member.status}</Badge>

@@ -330,6 +330,20 @@ function RemoveRank(factionId, rankId)
         json.encode(faction.ranks),
         factionId
     })
+
+    for idf, member in pairs(faction.members) do
+        if tonumber(member.rank) == tonumber(rankId) then
+            local newRankId, newRank = GetValidRank(member.rank, faction.ranks)
+            if newRankId then
+                member.rank = newRankId
+
+                MySQL.update.await("UPDATE faction_members SET rank = ? WHERE identifier = ? AND faction_name = ?",
+                    { newRankId, idf, factionId })
+            else
+                Logger:Error(("[^4RemoveRank^0]: Corrupted faction ! No ranks found in `%s`"):format(factionId))
+            end
+        end
+    end
 end
 
 exports("RemoveRank", RemoveRank)

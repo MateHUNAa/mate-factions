@@ -166,3 +166,23 @@ regServerNuiCallback("createRank", function(pid, idf, params)
 
     return { msg = (lang.success["rank_created"]):format(params.name), msgType = "success" }
 end)
+
+
+regServerNuiCallback("removeRank", function(pid, idf, params)
+    local Player = mCore.getPlayer(pid)
+    if not Player then return end
+
+    local factionId, factionData, memberData = GetPlayerFaction(Player.identifier)
+
+    if not factionId then return { data = nil, msg = "This player is not part of a factionId !", msgType = "error", error = true } end
+    if not factionData then return { data = nil, msg = ("Failed to fetch `%s` factionData !"), msgType = "error", error = true } end
+    if not memberData then return { data = nil, msg = "Failed to fetch your memberData !", msgType = "error", error = true } end
+
+    if not MemberHasPermission(idf, factionId, "manageRanks") then
+        return { msg = (lang.error["permission_missing"]):format("manageRanks"), msgType = "error", error = false }
+    end
+
+    RemoveRank(factionId, params.id)
+
+    return { msg = (lang.success["rank_deleted"]):format(params.name), msgType = "success" }
+end)

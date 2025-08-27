@@ -22,12 +22,13 @@ Config.PermissionList = {
      "stashAccess",
 }
 
+Config.AutoSyncDefaultRanks = true
 Config.DefaultRanks = {
      ["1"] = {
           name = "Recruit",
           permissions = {},
           description = "Description is not set.",
-          color = "#64748B"
+          color = "#64748B",
      },
      ["2"] = {
           name = "Member",

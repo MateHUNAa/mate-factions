@@ -1,40 +1,4 @@
 local lang = Loc[Config.lan]
-function LoadFactions()
-    local res = MySQL.query.await("SELECT * FROM factions")
-    for _, row in pairs(res) do
-        Factions[row.name] = {
-            label         = row.label,
-            type          = row.type,
-            ranks         = json.decode(row.ranks or "{}"),
-            permissions   = json.decode(row.permissions or "{}"),
-            settings      = json.decode(row.settings or '{"allowDuty":true,"payment":true,"robbery":false}'),
-            allow_offduty = row.allow_offduty == 1,
-            offduty_name  = row.offduty_name,
-            members       = {},
-            duty_point    = row.duty_point and json.decode(row.duty_point) or nil,
-            stash         = row.stash and json.decode(row.stash) or nil,
-        }
-    end
-
-    Logger:Info(("Loaded %s factions"):format(#res))
-    return true
-end
-
-function LoadFactionMembers()
-    local res = MySQL.query.await("SELECT * FROM faction_members")
-    for _, row in pairs(res) do
-        local faction = Factions[row.faction_name]
-        if faction then
-            faction.members[row.identifier] = {
-                rank      = row.rank,
-                on_duty   = 0,
-                joined_at = row.joined_at
-            }
-        end
-    end
-
-    Logger:Info("Loaded faction members")
-end
 
 function SaveFactionData(factionId, saveMembers)
     local faction = Factions[factionId]

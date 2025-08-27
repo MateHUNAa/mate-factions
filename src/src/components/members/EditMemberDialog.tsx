@@ -67,17 +67,19 @@ const EditMemberDialog: React.FC<Props> = ({ member, open, onOpenChange }) => {
         }
 
         try {
-            await fetchNui("updateFactionMember", {
+            const { success } = await fetchNui<{ success: boolean }>("updateFactionMember", {
                 faction: member.faction,
                 rankId: selectedRank?.id || -1,
                 target: member,
                 ...formData
             })
+
+            if (success)
+                dispatch(updateMember(updatedMember))
         } catch (err) {
             console.error(err)
         }
 
-        dispatch(updateMember(updatedMember))
 
         onOpenChange(false)
     }

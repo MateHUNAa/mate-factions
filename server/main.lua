@@ -219,8 +219,8 @@ regServerNuiCallback("updateFactionMember", function(pid, idf, params)
 
     local ok, err = pcall(function()
         MySQL.update.await([[
-            INSERT INTO faction_members (identifier, faction_name, rank, on_duty, joined_at)
-            VALUES (?,?,?,?,FROM_UNIXTIME(?))
+            INSERT INTO faction_members (identifier, faction_name, rank, on_duty)
+            VALUES (?,?,?,?)
             ON DUPLICATE KEY UPDATE
                 rank = VALUES(rank),
                 on_duty = VALUES(on_duty),
@@ -230,7 +230,6 @@ regServerNuiCallback("updateFactionMember", function(pid, idf, params)
             factionId,
             targetMember.rank,
             targetMember.on_duty or 0,
-            targetMember.joined_at or os.time()
         })
     end)
 
@@ -239,5 +238,5 @@ regServerNuiCallback("updateFactionMember", function(pid, idf, params)
         return { msg = "Database error!", msgType = "error", error = true }
     end
 
-    return { msg = (lang.success["member_updated"]):format(params.target.name), msgType = "success" }
+    return { success = true, msg = (lang.success["member_updated"]):format(params.target.name), msgType = "success" }
 end)

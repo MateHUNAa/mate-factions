@@ -27,7 +27,7 @@ export interface FactionRank {
     color: string;
 }
 
-const MockFactionRanks = (count: number): FactionRank[] => {
+export const MockFactionRanks = (count: number): FactionRank[] => {
     const ranks: FactionRank[] = [];
     const colors = ["#0ea5e9", "#22c55e", "#facc15", "#f87171", "#a855f7", "#f97316"];
 

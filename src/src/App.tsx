@@ -5,13 +5,14 @@ import { useExitListener } from './hooks/useExitListener';
 import DutyPanel, { DutyData } from './pages/DutyPanel';
 import Dashboard from './pages/Dashboard';
 import Members from './pages/Members';
+import Ranks from './pages/Ranks';
 
-export type PanelType = "off" | "DutyPanel" | "Dashboard" | "Members"
+export type PanelType = "off" | "DutyPanel" | "Dashboard" | "Members" | "Ranks"
 
 function App() {
   const [visible, setVisibility] = useState<boolean>(isEnvBrowser() ? true : false);
   const [dutyData, setDutyData] = useState<DutyData>()
-  const [activePanel, setActivePanel] = useState<PanelType>("Members")
+  const [activePanel, setActivePanel] = useState<PanelType>("Ranks")
   // useExitListener(setVisibility); //TODO: UnComment
 
   useNuiEvent("DutyPage", (data: DutyData) => {
@@ -37,6 +38,10 @@ function App() {
 
                 {activePanel == "Members" && (
                   <Members />
+                )}
+
+                {activePanel == "Ranks" && (
+                  <Ranks />
                 )}
 
               </div>

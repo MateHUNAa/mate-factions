@@ -9,6 +9,7 @@ import { Button } from "./ui/button";
 import { Edit, Eye, MoreHorizontal, Shield, UserX } from "lucide-react";
 import EditMemberDialog from "./EditMemberDialog";
 import { isEnvBrowser } from "@/utils/misc";
+import dayjs from "dayjs";
 
 export interface Member {
     identifier: string;
@@ -71,12 +72,12 @@ const MockMembers = (count: number): Member[] => {
             identifier: `license:${Math.random().toString(36).substring(2, 10)}`,
             rank: rank.rank,
             rankColor: rank.color,
-            joinDate: new Date(
+            joinDate: dayjs(new Date(
                 Date.now() - Math.floor(Math.random() * 1000 * 60 * 60 * 24 * 365)
-            ).toISOString().split("T")[0],
-            lastActive: new Date(
+            )).format("MMMM D, YYYY"),
+            lastActive: dayjs(new Date(
                 Date.now() - Math.floor(Math.random() * 1000 * 60 * 60 * 24 * 30)
-            ).toISOString(),
+            )).format("MMMM D, YYYY h:mm A"),
             status,
             avatar: `https://cdn.discordapp.com/avatars/575342593630797825/d35c0ebf35bc2499a2a29771b0233f9a?size=1024`, // Random avatar
             totalPosts: Math.floor(Math.random() * 500),
@@ -170,21 +171,25 @@ const MemberTable: React.FC = () => {
                                     <TableCell>
                                         <div className="flex items-center gap-3">
                                             <div className="relative">
-                                                <Avatar className="size-8">
-                                                    <AvatarFallback className="text-xs bg-primary text-white">
-                                                        {member.avatar}
-                                                    </AvatarFallback>
-                                                    <AvatarImage src={member.avatar} />
 
-                                                </Avatar>
+                                                <div className="block relative">
+                                                    <Avatar className="size-8">
+                                                        <AvatarFallback className="text-xs bg-primary text-white">
+                                                            {member.avatar}
+                                                        </AvatarFallback>
+                                                        <AvatarImage src={member.avatar} />
 
-                                                <div
-                                                    className={`absolute z-10 bottom-9 left-5 size-3 rounded-full border-2 border-zinc-700/80 ${getStatusColor(member.status)}`}
-                                                />
+                                                    </Avatar>
+
+                                                    <div
+                                                        className={`absolute z-10 bottom-0 right-8 size-3 rounded-full border-2 border-zinc-700/80 ${getStatusColor(member.status)}`}
+                                                    />
+                                                </div>
+
 
                                                 <div>
                                                     <div className="font-medium text-white">{member.name}</div>
-                                                    <div className="text-xs text-gray-400">Member.Email</div>
+                                                    {/* <div className="text-xs text-gray-400">Member.Email</div> */}
                                                 </div>
                                             </div>
                                         </div>

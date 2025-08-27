@@ -10,17 +10,17 @@ import { Edit, Eye, MoreHorizontal, Shield, UserX } from "lucide-react";
 import EditMemberDialog from "./EditMemberDialog";
 import { isEnvBrowser } from "@/utils/misc";
 import dayjs from "dayjs";
+import { Rank } from "@/lib/permission";
 
 export interface Member {
     identifier: string;
-    rank: string;
+    rank: Rank;
     rankColor: string;
     joinDate: string;
     lastActive: string;
     status: string;
     avatar: string;
     totalPosts: number;
-    reputation?: number; // NOT USED YET
     name: string;
     faction: string;
 }
@@ -54,11 +54,11 @@ const getStatusBadge = (status: string) => {
 
 const MockMembers = (count: number): Member[] => {
     const members: Member[] = []
-    const ranks = [
-        { rank: "Leader", color: "#ff0000" },
-        { rank: "Captain", color: "#ff8800" },
-        { rank: "Sergeant", color: "#ffaa00" },
-        { rank: "Member", color: "#00aa00" },
+    const ranks: Rank[] = [
+        { name: "Leader", color: "#ff0000", description: "", id: 100, permissions: [] },
+        { name: "Captain", color: "#ff8800", description: "", id: 99, permissions: [] },
+        { name: "Sergeant", color: "#ffaa00", description: "", id: 2, permissions: [] },
+        { name: "Member", color: "#00aa00", description: "", id: 1, permissions: [] },
     ]
     const statuses = ["online", "offline", "busy", "away"]
     const factions = ["Police", "EMS", "Mechanic", "Gang"]
@@ -70,7 +70,7 @@ const MockMembers = (count: number): Member[] => {
 
         members.push({
             identifier: `license:${Math.random().toString(36).substring(2, 10)}`,
-            rank: rank.rank,
+            rank: rank,
             rankColor: rank.color,
             joinDate: dayjs(new Date(
                 Date.now() - Math.floor(Math.random() * 1000 * 60 * 60 * 24 * 365)
@@ -151,7 +151,6 @@ const MemberTable: React.FC = () => {
                             <TableHead className="text-gray-400">Status</TableHead>
                             <TableHead className="text-gray-400">Join Date</TableHead>
                             <TableHead className="text-gray-400">Last Active</TableHead>
-                            <TableHead className="text-gray-400">Posts</TableHead>
                         </TableRow>
                     </TableHeader>
 
@@ -170,7 +169,7 @@ const MemberTable: React.FC = () => {
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex items-center gap-3">
-                                            <div className="relative">
+                                            <div className="relative flex items-center">
 
                                                 <div className="block relative">
                                                     <Avatar className="size-8">
@@ -182,13 +181,13 @@ const MemberTable: React.FC = () => {
                                                     </Avatar>
 
                                                     <div
-                                                        className={`absolute z-10 bottom-0 right-8 size-3 rounded-full border-2 border-zinc-700/80 ${getStatusColor(member.status)}`}
+                                                        className={`absolute z-10 bottom-0 right-0 size-3 rounded-full border-2 border-zinc-700/80 ${getStatusColor(member.status)}`}
                                                     />
                                                 </div>
 
 
                                                 <div>
-                                                    <div className="font-medium text-white">{member.name}</div>
+                                                    <div className="font-medium text-white ml-1">{member.name}</div>
                                                     {/* <div className="text-xs text-gray-400">Member.Email</div> */}
                                                 </div>
                                             </div>
@@ -196,12 +195,11 @@ const MemberTable: React.FC = () => {
                                     </TableCell>
                                     <TableCell>
                                         <Badge variant={"default"} style={{ borderColor: member.rankColor, color: member.rankColor }}>
-                                            {member.rank}
+                                            {member.rank.name}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell className="text-white">{member.joinDate}</TableCell>
-                                    <TableCell className="text-white">{member.lastActive}</TableCell>
-                                    <TableCell className="text-white/80">{member.totalPosts.toLocaleString()}</TableCell>
+                                    <TableCell className="text-white">{dayjs(member.joinDate).format("MMMM D, YYYY")}</TableCell>
+                                    <TableCell className="text-white">{dayjs(member.lastActive).format("MMMM D, YYYY h:mm A")}</TableCell>
                                     <TableCell>
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>

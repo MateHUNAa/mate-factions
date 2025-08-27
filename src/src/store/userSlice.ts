@@ -1,5 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+export interface MemberData {
+    rank: number;
+    title?: string | null;
+    on_duty: number;
+    joined_at: string;
+}
+
 export interface User {
     id: number;
     name: string;
@@ -7,6 +14,9 @@ export interface User {
     factionData: undefined;
     discordName: string;
     imageUrl: string;
+    identifier: string;
+    memberData: MemberData;
+    rank: string;
 }
 
 interface UserState {

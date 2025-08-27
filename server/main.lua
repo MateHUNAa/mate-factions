@@ -61,6 +61,88 @@ lib.callback.register("mate-faction:GetPlayerFaction", (function(src)
     return nil
 end))
 
+regServerNuiCallback("requestFactionMembers", function(pid, idf, params)
+    local factionName, factionData, myData = GetPlayerFaction(idf)
+
+    if not factionName then return { data = nil, msg = "This player is not part of a faction !", msgType = "error", error = true } end
+    if not factionData then return { data = nil, msg = ("Failed to fetch `%s` factionData !"), msgType = "error", error = true } end
+    if not myData then return { data = nil, msg = "Failed to fetch your memberData !", msgType = "error", error = true } end
+
+    local members = {}
+
+    local function GetPlayerAvatar(idf)
+        return MySQL.single.await("SELECT discord_url, discord_name FROM users WHERE identifier = ?", { idf })
+    end
+
+    for memberIdf, memberData in pairs(factionData.members) do
+        local rank = factionData.ranks[tostring(memberData.rank)]
+
+        if not rank then
+            local newPrio, newRank = GetValidRank(memberData.rank, factionData.ranks)
+            SetPlayerRank(memberIdf, factionName, newPrio)
+            return { error = true, msg = ("No rank for player: `%s`"):format(memberIdf), msgType = "error" }
+        end
+
+        local Player = mCore.getPlayer(memberIdf)
+
+        local status = "offline"
+        if Player then
+            status = (memberData.on_duty and memberData.on_duty >= 1) and "online" or "away"
+        end
+
+        local stuff = GetPlayerAvatar(memberIdf) or {}
+        table.insert(members, {
+            identifier = memberIdf,
+            rank       = rank,
+            rankColor  = rank.color or "#ff0000",
+            joinDate   = memberData.joined_at,
+            lastActive = memberData.lastActive or 0,
+            status     = status,
+            avatar     = stuff.discord_url or "",
+            name       = stuff.discord_name or memberIdf,
+            faction    = factionName
+        })
+    end
+
+    return {
+        data = members
+    }
+end)
+
 AddEventHandler('esx:playerLoaded', function(playerId, xPlayer, isNew)
     TriggerClientEvent("mate-factions:AddAllDutyMarker", playerId, Factions)
+end)
+
+function getLocalPlayer(pid)
+    local Player = mCore.getPlayer(pid)
+
+    if not Player then return { msg = "Failed to fetch LocalPlayer", msgType = "error", error = true } end
+
+    local factionName, factionData, memberData = GetPlayerFaction(Player.identifier)
+
+    if not factionName then return { data = nil, msg = "This player is not part of a faction !", msgType = "error", error = true } end
+    if not factionData then return { data = nil, msg = ("Failed to fetch `%s` factionData !"), msgType = "error", error = true } end
+    if not memberData then return { data = nil, msg = "Failed to fetch your memberData !", msgType = "error", error = true } end
+
+    local player = {
+        id          = pid,
+        name        = Player.RPName,
+        identifier  = Player.identifier,
+        discordName = Player.Name,
+        imageUrl    = Player.discord.img,
+        faction     = factionName,
+        factionData = factionData,
+        rank        = factionData.ranks[tostring(memberData.rank)],
+        memberData  = memberData
+    }
+
+    return { data = player, msg = "Success. " }
+end
+
+regServerNuiCallback("requestLocalUser", (function(pid, idf, params, otherParams)
+    return getLocalPlayer(pid)
+end))
+
+lib.callback.register("mate-factions:GetLocalPlayer", function(source)
+    return getLocalPlayer(source)
 end)

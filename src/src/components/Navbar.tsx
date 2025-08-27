@@ -30,7 +30,7 @@ export const navigation: NavigationItem[] = [
 
 
 const Navbar: React.FC<Props> = ({ activePage, onPageChange }) => {
-    const [collapsed, setCollapsed] = useState<boolean>(false)
+    const [collapsed, setCollapsed] = useState<boolean>(true)
     const ranks = useRanks()
     const user = useSelector((state: RootState) => state.user.currentUser)
 
@@ -89,7 +89,7 @@ const Navbar: React.FC<Props> = ({ activePage, onPageChange }) => {
                 <div className={cn("flex items-center gap-3", collapsed && "justify-center")}>
                     <div className="h-8 w-8 rounded-full bg-sidebar-accent flex items-center justify-center">
                         <Avatar>
-                            <AvatarFallback>{user?.discordName.charAt(0) || "U"}</AvatarFallback>
+                            <AvatarFallback>{user?.discordName?.charAt(0) || "U"}</AvatarFallback>
                             <AvatarImage src={user?.imageUrl} />
                         </Avatar>
                     </div>

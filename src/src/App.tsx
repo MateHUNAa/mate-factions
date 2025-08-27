@@ -7,7 +7,10 @@ import Dashboard from './pages/Dashboard';
 import Members from './pages/Members';
 import Ranks from './pages/Ranks';
 import Navbar from './components/Navbar';
-import { useLoadUser } from './hooks/useLoadUser';
+import { setCurrentUser, User } from './store/userSlice';
+import { Permission, Rank } from './lib/permission';
+import { useAppDispatch } from './store';
+import { setRanksAndPermissions } from './store/rankSlice';
 
 export type PanelType = "off" | "DutyPanel" | "Dashboard" | "Members" | "Ranks"
 
@@ -15,9 +18,8 @@ function App() {
   const [visible, setVisibility] = useState<boolean>(isEnvBrowser() ? true : false);
   const [dutyData, setDutyData] = useState<DutyData>()
   const [activePanel, setActivePanel] = useState<PanelType>("Ranks")
+  const dispatch = useAppDispatch()
   useExitListener(setVisibility);
-
-  useLoadUser()
 
   useNuiEvent("DutyPage", (data: DutyData) => {
     setVisibility(data.visible)
@@ -25,7 +27,23 @@ function App() {
     setDutyData(data)
   })
 
-  useNuiEvent("open", () => setVisibility(true))
+  useNuiEvent<{
+    localPlayer?: { data: User },
+    ranks?: Rank[],
+    permissions?: Permission[]
+  }>("open", (data) => {
+    if (data.localPlayer) {
+      dispatch(setCurrentUser(data.localPlayer.data))
+      console.log(data.localPlayer)
+    }
+
+    if (data.ranks && data.permissions) {
+      dispatch(setRanksAndPermissions({ ranks: data.ranks, permissions: data.permissions }))
+    }
+
+    setActivePanel("Dashboard")
+    setVisibility(true)
+  })
   useNuiEvent("close", () => setVisibility(false))
 
   return (

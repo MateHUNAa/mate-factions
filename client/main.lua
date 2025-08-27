@@ -52,7 +52,27 @@ exports("Close", function(...)
 end)
 
 RegisterCommand("mate-factions", (function(src, args, raw)
-  sendNUI("open")
+  local localPlayer = lib.callback.await("mate-factions:GetLocalPlayer", false)
+  local faction = lib.callback.await("mate-faction:GetPlayerFaction", false)
+
+  print(json.encode(faction, { indent = true }))
+
+  local ranks = {}
+
+  for id, data in pairs(faction.factionData.ranks) do
+    table.insert(ranks, {
+      id = id,
+      name = data.name,
+      permissions = data.permissions
+    })
+  end
+
+  sendNUI("open", {
+    localPlayer = localPlayer,
+    ranks       = ranks,
+    permissions = Config.PermissionList
+  })
+
   visible = true
   SetNuiFocus(true, true)
 end))
@@ -63,6 +83,16 @@ exports("Open", function(...)
 end)
 
 
+
+
+
+
+
+
+nuiServerCallback("requestLocalUser")
+nuiServerCallback("requestFactionMembers")
+
+-- Command suggestions
 local function addSuggestions()
   TriggerEvent('chat:addSuggestion', '/showfactions', 'Frakciók listázása')
 

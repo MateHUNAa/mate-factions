@@ -10,7 +10,8 @@ Loc["en"] = {
           ["duty_point_set"] = "Failed to place duty point !",
           ["wait"] = "Please wait...",
           ["stash_place_failed"] = "Failed to place the stash!",
-          ["same_faction"] = "This player already in this faction !"
+          ["same_faction"] = "This player already in this faction !",
+          ["rank_missing"] = "Rank is missing with the givven priority!"
      },
      success = {
           ["faction_created"] = "Faction %s created !",

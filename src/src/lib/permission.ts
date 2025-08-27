@@ -7,7 +7,8 @@ export interface Rank {
     id: number;
     name: string;
     color: string;
-    permissions: Permission[]
+    permissions: Permission[],
+    description: string;
 }
 
 export function hasPermission(userRank: string, permission: Permission, ranks: Rank[]): boolean {

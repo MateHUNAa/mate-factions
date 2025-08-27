@@ -207,6 +207,62 @@ exports("SetFactionLeader", SetFactionLeader)
 -- Ranking System
 --
 
+function SetPlayerRank(identifier, factionId, newRank)
+    local function handleErr(errVal, src)
+        if errVal == "faction_missing" then
+            mCore.Notify(src, lang.Title, string.format(lang.error["faction_missing"], factionId), "error", 5000)
+        elseif errVal == "player_missing" then
+            mCore.Notify(src, lang.Title, lang.error["player_missing"], "error", 5000)
+        elseif errVal == "rank_missing" then
+            mCore.Notify(src, lang.Title, lang.error["rank_missing"], "error", 5000)
+        elseif errVal == "sql_error" then
+            mCore.Notify(src, lang.Title, lang.error["db_err"], "error", 5000)
+        else
+            mCore.Notify(src, lang.Title, lang.error["unknown_error"], "error", 5000)
+        end
+    end
+
+    local factionConfig = Factions[factionId]
+    if not factionConfig then
+        return false, "faction_missing", handleErr
+    end
+
+    -- validate rank using helper
+    local validPrio, rankData = GetValidRank(newRank, factionConfig.ranks)
+    if not validPrio then
+        return false, "rank_missing", handleErr
+    end
+
+    -- update database
+    local ok, res = pcall(function()
+        return MySQL.update.await([[
+            UPDATE faction_members
+            SET rank = ?
+            WHERE identifier = ? AND faction_name = ?
+        ]], {
+            validPrio,
+            identifier,
+            factionId
+        })
+    end)
+
+    if ok then
+        if res == 0 then
+            return false, "player_missing", handleErr
+        end
+
+        -- update in-memory cache
+        if factionConfig.members[identifier] then
+            factionConfig.members[identifier].rank = validPrio
+        end
+
+        return true, nil, handleErr
+    else
+        return false, "sql_error", handleErr
+    end
+end
+
+exports("SetPlayerRank", SetPlayerRank)
 function GetFactionMemeberRank(identifier, factionId)
     local member = Factions[factionId] and Factions[factionId].members[identifier]
     if not member then return nil end
@@ -226,13 +282,15 @@ end
 
 exports("IsLeader", IsLeader)
 
-function AddRank(factionId, rankId, name, permissions)
+function AddRank(factionId, rankId, name, permissions, description, color)
     local faction = Factions[factionId]
     if not faction then return false end
 
     faction.ranks[tostring(rankId)] = {
         name = name,
-        permissions = permissions or {}
+        permissions = permissions or {},
+        description = description or "Description is not set.",
+        color = color or "#ff0000"
     }
 
     MySQL.update.await("UPDATE factions SET ranks = ? WHERE name = ?", {
@@ -293,4 +351,58 @@ exports("GetFactionSetting", GetFactionSetting)
 
 function SetFactionSetting(factionId, setting, value)
     -- TODO: Allow admins to change faction.settings
+end
+
+function GetPlayerFaction(identifier)
+    for factionName, factionData in pairs(Factions) do
+        local memberData = factionData.members[identifier]
+        if memberData then
+            return factionName, factionData, memberData
+        end
+    end
+
+    return nil, nil, nil
+end
+
+exports("GetPlayerFaction", GetPlayerFaction)
+
+--- Finds the closest valid rank for a given priority
+---@param targetPrio number
+---@param ranks table
+function GetValidRank(targetPrio, ranks)
+    local prio = tonumber(targetPrio)
+    if not prio then return nil, nil end
+
+    local rank = ranks[tostring(prio)]
+    if rank then
+        return prio, rank
+    end
+
+    local priorities = {}
+    for prioStr, _ in pairs(ranks) do
+        table.insert(priorities, tonumber(prioStr))
+    end
+
+    if #priorities == 0 then
+        return nil, nil -- No ranks exists at all
+    end
+
+    table.sort(priorities, function(a, b)
+        return a < b
+    end)
+
+    local closest = nil
+    for _, p in ipairs(priorities) do
+        if p <= prio then
+            closest = p
+        else
+            break
+        end
+    end
+
+    if not closest then
+        closest = priorities[1]
+    end
+
+    return closest, ranks[tostring(closest)]
 end

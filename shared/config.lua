@@ -14,23 +14,34 @@ Config.ApprovedLicenses = {
      "xbl:123"
 }
 
+Config.PermissionList = {
+     "manageRanks",
+     "manageMembers",
+     "manageNews",
+     "kickMembers",
+     "stashAccess",
+}
 
 Config.DefaultRanks = {
      ["1"] = {
           name = "Recruit",
-          permissions = {}
+          permissions = {},
+          description = "Description is not set."
      },
      ["2"] = {
           name = "Member",
-          permissions = {}
+          permissions = {},
+          description = "Description is not set."
      },
      ["99"] = {
           name = "Sub-Leader",
-          permissions = { "manage_ranks", "invite" }
+          permissions = { "manage_ranks", "invite" },
+          description = "Description is not set."
      },
      ["100"] = {
           name = "Leader",
-          permissions = { "all" }
+          permissions = { "all" },
+          description = "Description is not set."
      },
 
 }

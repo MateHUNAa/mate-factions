@@ -12,6 +12,8 @@ import { isEnvBrowser } from "@/utils/misc";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Divide, Mail, MessageSquare, UserX } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Rank, useRanks } from "@/lib/permission";
+import dayjs from "dayjs";
 
 interface Props {
     member: Member;
@@ -19,16 +21,8 @@ interface Props {
     onOpenChange: (open: boolean) => void;
 }
 
-export interface FactionRank {
-    name: string;
-    permissions: string[];
-    id: number;
-    color: string;
-    description: string;
-}
-
-export const MockFactionRanks = (count: number): FactionRank[] => {
-    const ranks: FactionRank[] = [];
+export const MockFactionRanks = (count: number): Rank[] => {
+    const ranks: Rank[] = [];
     const colors = ["#0ea5e9", "#22c55e", "#facc15", "#f87171", "#a855f7", "#f97316"];
 
     for (let i = 1; i <= count; i++) {
@@ -53,28 +47,12 @@ const EditMemberDialog: React.FC<Props> = ({ member, open, onOpenChange }) => {
         notes: ""
     })
 
-    const [ranks, setRanks] = useState<FactionRank[]>()
+    const ranks = useRanks()
 
     useEffect(() => {
-        const fetchRanks = async () => {
-            try {
-                if (isEnvBrowser()) {
-                    const data = MockFactionRanks(5)
-                    setRanks(data)
-                    return;
-                }
-
-                const { data } = await fetchNui<{ data: FactionRank[] }>("requestFactionRanks")
-                setRanks(data)
-            } catch (error) {
-                console.error("Error:", error);
-            }
-        };
-
-        fetchRanks();
         setFormData({
             name: member.name,
-            rank: member.rank.toLowerCase(),
+            rank: member.rank.name.toLowerCase(),
             notes: ""
         })
     }, [member])
@@ -120,10 +98,10 @@ const EditMemberDialog: React.FC<Props> = ({ member, open, onOpenChange }) => {
                             </Avatar>
                             <div className="flex-1">
                                 <h3 className="font-heading text-lg font-semibold text-white">{member.name}</h3>
-                                <p className="text-sm text-gray-400">member.mail</p>
+                                {/* <p className="text-sm text-gray-400">member.mail</p> */}
                                 <div className="flex items-center gap-2 mt-2">
                                     <Badge variant={"default"} style={{ borderColor: member.rankColor, color: member.rankColor }}>
-                                        {member.rank}
+                                        {member.rank.name}
                                     </Badge>
                                     <Badge variant={"secondary"}>{member.status}</Badge>
                                 </div>
@@ -132,7 +110,7 @@ const EditMemberDialog: React.FC<Props> = ({ member, open, onOpenChange }) => {
 
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
+                                {/* <div className="space-y-2">
                                     <Label htmlFor="username" className="text-gray-400">Username</Label>
                                     <Input
                                         id="username"
@@ -140,7 +118,7 @@ const EditMemberDialog: React.FC<Props> = ({ member, open, onOpenChange }) => {
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                         className="bg-zinc-800/70 border-zinc-700/80 text-white/80"
                                     />
-                                </div>
+                                </div> */}
                                 {/* formData ++ */}
                             </div>
 
@@ -163,7 +141,7 @@ const EditMemberDialog: React.FC<Props> = ({ member, open, onOpenChange }) => {
                                     </SelectContent>
                                 </Select>
                                 {selectedRank && (
-                                    <p className="text-xs text-gray-400">This will change the member's raml to {selectedRank.name}</p>
+                                    <p className="text-xs text-gray-400">This will change the member rank to {selectedRank.name}</p>
                                 )}
                             </div>
                         </form>
@@ -175,21 +153,6 @@ const EditMemberDialog: React.FC<Props> = ({ member, open, onOpenChange }) => {
 
                     <TabsContent value="activity" className="space-y-4 min-h-[36vh]">
                         <div className="grid grid-cols-2 gap-4">
-
-                            <Card className="bg-zinc-800/80 ring-2 ring-zinc-700 border-0">
-                                <CardHeader className="pb-2">
-                                    <CardTitle className="text-sm flex items-center gap-2 text-white">
-                                        <MessageSquare className="size-4 text-white" />
-                                        Total Posts
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="text-2xl font-bold text-gray-400">
-                                        {member.totalPosts.toLocaleString()}
-                                    </div>
-                                </CardContent>
-                            </Card>
-
                             <Card className="bg-zinc-800/80 ring-2 ring-zinc-700 border-0">
                                 <CardHeader className="pb-2">
                                     <CardTitle className="text-sm flex items-center gap-2 text-white">
@@ -199,7 +162,7 @@ const EditMemberDialog: React.FC<Props> = ({ member, open, onOpenChange }) => {
                                 </CardHeader>
                                 <CardContent>
                                     <div className="text-2xl font-bold text-gray-400">
-                                        {member.joinDate}
+                                        {dayjs(member.joinDate).format("MMMM DD, YYYY h:mm")}
                                     </div>
                                 </CardContent>
                             </Card>

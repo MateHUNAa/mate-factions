@@ -19,6 +19,34 @@ interface RankCardProps {
     }
 }
 
+export function MockRanks(count: number): RankCardProps[] {
+    const colors = ["#FF5733", "#33FF57", "#3357FF", "#FF33A6", "#33FFF6"];
+    const names = ["Recruit", "Member", "Sergeant", "Lieutenant", "Captain", "Chief"];
+
+    const mockedRanks: RankCardProps[] = [];
+
+    for (let i = 1; i <= count; i++) {
+        mockedRanks.push({
+            rank: {
+                id: i,
+                name: names[i % names.length] + " " + i,
+                level: i,
+                color: colors[i % colors.length],
+                permissions: {
+                    manageRanks: i % 5 === 0,
+                    manageMembers: i % 3 === 0,
+                    manageNews: i % 2 === 0,
+                    kickMembers: i % 4 === 0,
+                    stashAccess: true,
+                },
+                description: `This is the description for rank ${i}.`
+            }
+        });
+    }
+
+    return mockedRanks
+}
+
 const permissionIcons = {
     manageRanks: Shield,
     manageMembers: Users,

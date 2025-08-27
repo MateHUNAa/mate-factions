@@ -90,7 +90,9 @@ function getFactionRanks()
         table.insert(ranks, {
             id = id,
             name = data.name,
-            permissions = perms
+            permissions = perms,
+            color = data.color,
+            description = data.description
         })
     end
 

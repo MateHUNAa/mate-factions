@@ -11,8 +11,8 @@ Loc["en"] = {
           ["wait"] = "Please wait...",
           ["stash_place_failed"] = "Failed to place the stash!",
           ["same_faction"] = "This player already in this faction !",
-          ["rank_missing"] = "Rank is missing with the givven priority!",
-          ["permission_missing"] = "You don't have `%s` permission to do this action !"
+          ["rank_missing"] = "Rank not found!",
+          ["permission_missing"] = "You don't have `%s` permission to do this action !",
      },
      success = {
           ["faction_created"] = "Faction %s created !",
@@ -22,7 +22,8 @@ Loc["en"] = {
           ["stash_placed"] = "You successfully placed a stash for %s",
           ["rank_created"] = "You successfully created a rank: `%s`",
           ["rank_deleted"] = "You successfully delted a rank: `%s`",
-          ["member_updated"] = "Updated member `%s` successfully!"
+          ["member_updated"] = "Updated member `%s` successfully!",
+          ["rank_updated"] = "Update rank `%s` successfully"
      },
      info    = {
           ["faction_set"] = "You were set to faction %s",

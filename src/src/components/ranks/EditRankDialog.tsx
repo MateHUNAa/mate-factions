@@ -8,6 +8,8 @@ import { Textarea } from "../ui/textarea";
 import { Palette } from "lucide-react";
 import { Checkbox } from "../ui/checkbox";
 import { Button } from "../ui/button";
+import { useRanks } from "@/lib/permission";
+import { fetchNui } from "@/utils/fetchNui";
 
 interface Props {
     rank: {
@@ -22,40 +24,57 @@ interface Props {
 }
 
 const EditRankDialog: React.FC<Props> = ({ rank, open, onOpenChange }) => {
+
+    const ranks = useRanks()
     const [formData, setFormData] = useState({
         name: "",
         description: "",
-        level: [5],
+        level: 5,
         color: colorPresets[0],
-        permissions: [] as string[]
+        permissions: {} as Record<string, boolean>,
     })
-
     useEffect(() => {
         if (rank) {
+            let perms: Record<string, boolean> = {}
+
+            rank.permissions.forEach(r => perms[r] = true)
+
+
             setFormData({
                 name: rank.name,
                 description: rank.description,
-                level: [rank.id],
+                level: rank.id,
                 color: rank.color,
-                permissions: rank.permissions || []
+                permissions: perms || {}
             })
         }
     }, [rank])
 
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         console.log("Updateing rank: ", formData)
+
+        try {
+            const { success } = await fetchNui<{ success: boolean }>("updateFactionRank", {
+                old: { id: rank.id },
+                new: formData
+            })
+        } catch (err) {
+            console.error(err)
+        }
+
         onOpenChange(false)
     }
 
-    const handlePermissionChange = (permissionId: string, checked: boolean) => {
-        setFormData((prev) => {
-            const newPerms = checked
-                ? [...prev.permissions, permissionId]
-                : prev.permissions.filter((perm) => perm !== permissionId)
 
-            return { ...prev, permissions: newPerms }
+    const handlePermissionChange = (permissionId: string, checked: boolean) => {
+        setFormData({
+            ...formData,
+            permissions: {
+                ...formData.permissions,
+                [permissionId]: checked
+            }
         })
     }
 
@@ -86,8 +105,8 @@ const EditRankDialog: React.FC<Props> = ({ rank, open, onOpenChange }) => {
                             <Label className="text-white/80">Rank Level</Label>
                             <div className="px-3">
                                 <Slider
-                                    value={formData.level}
-                                    onValueChange={(value) => setFormData({ ...formData, level: value })}
+                                    value={[formData.level]}
+                                    onValueChange={(value) => setFormData({ ...formData, level: value[0] })}
                                     max={98}
                                     min={1}
                                     step={1}
@@ -95,9 +114,12 @@ const EditRankDialog: React.FC<Props> = ({ rank, open, onOpenChange }) => {
                                 />
                                 <div className="flex justify-between text-xs text-gray-300 mt-2">
                                     <span>1</span>
-                                    <span>Level {formData.level[0]}</span>
+                                    <span>Level {formData.level}</span>
                                     <span>98</span>
                                 </div>
+                                {ranks.some((rank) => Number(rank.id) === formData.level) && (
+                                    <p className="text-red-500 text-xs mt-1">This level is already assigned.</p>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -144,33 +166,25 @@ const EditRankDialog: React.FC<Props> = ({ rank, open, onOpenChange }) => {
                     <div className="space-y-4">
                         <Label className="text-white/80">Permissions</Label>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {permissions.map((perm) => {
-                                const isChecked = formData.permissions.includes(perm.id)
-                                return (
-                                    <div
-                                        key={perm.id}
-                                        className="flex items-start space-x-3 p-3 rounded-lg bg-zinc-900/50 border border-zinc-700"
-                                    >
-                                        <Checkbox
-                                            id={perm.id}
-                                            checked={isChecked}
-                                            onCheckedChange={(checked) =>
-                                                handlePermissionChange(perm.id, checked === true)
-                                            }
-                                            className="text-white data-[state=checked]:text-green-400"
-                                        />
-                                        <div className="grid gap-1.5 leading-none">
-                                            <Label
-                                                htmlFor={perm.id}
-                                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-white"
-                                            >
-                                                {perm.label}
-                                            </Label>
-                                            <p className="text-xs text-gray-400">{perm.description}</p>
-                                        </div>
+                            {permissions.map((perm) => (
+                                <div
+                                    key={perm.id}
+                                    className="flex items-start space-x-3 p-3 rounded-lg bg-zinc-900/50 border border-zinc-700"
+                                >
+                                    <Checkbox
+                                        id={perm.id}
+                                        checked={formData.permissions[perm.id] || false}
+                                        onCheckedChange={(checked) => handlePermissionChange(perm.id, checked as boolean)}
+                                        className="text-white data-[state=checked]:text-green-400"
+                                    />
+                                    <div className="grid gap-1.5 leading-none">
+                                        <Label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-white">
+                                            {perm.label}
+                                        </Label>
+                                        <p className="text-xs text-gray-400">{perm.description}</p>
                                     </div>
-                                )
-                            })}
+                                </div>
+                            ))}
                         </div>
                     </div>
 

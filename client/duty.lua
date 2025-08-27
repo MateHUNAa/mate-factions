@@ -61,7 +61,7 @@ nuiCallback("ToggleDuty", function(_, cb)
         LocalPlayer.state:set('factionBadge', nil, true)
 
         duty = false
-        Info(lang.info["duty_off"])
+        Info(lang.info["off_duty"])
     else
         LocalPlayer.state:set('factionDuty', {
             factionId = panel.visible,

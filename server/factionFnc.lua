@@ -337,6 +337,8 @@ function RemoveRank(factionId, rankId)
             if newRankId then
                 member.rank = newRankId
 
+                Logger:Debug(("[RemoveRank]: (%s): old RankId was: %s, New RankId : %s"):format(idf, rankId, newRankId))
+
                 MySQL.update.await("UPDATE faction_members SET rank = ? WHERE identifier = ? AND faction_name = ?",
                     { newRankId, idf, factionId })
             else
@@ -344,6 +346,8 @@ function RemoveRank(factionId, rankId)
             end
         end
     end
+
+    return true
 end
 
 exports("RemoveRank", RemoveRank)

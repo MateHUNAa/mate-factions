@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { isEnvBrowser } from "@/utils/misc";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, Divide, Mail, MessageSquare, UserX } from "lucide-react";
+import { AlertCircle, ArrowDownCircle, ArrowUpCircle, Calendar, Divide, Mail, MessageSquare, UserX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Rank, useRanks } from "@/lib/permission";
 import dayjs from "dayjs";
@@ -194,12 +194,35 @@ const EditMemberDialog: React.FC<Props> = ({ member, open, onOpenChange }) => {
 
                             <div className="flex items-center justify-between p-4 rounded-lg bg-zinc-800/80 ring-2 ring-zinc-700">
                                 <div>
-                                    <h4 className="font-medium text-white">Send Warning</h4>
-                                    <p className="text-sm text-gray-400">Send a private warning message to this member</p>
+                                    <h4 className="font-medium text-white">Promote Member</h4>
+                                    <p className="text-sm text-gray-400">Promote member to heigher rank.</p>
                                 </div>
-                                <Button variant={"outline"} size={"sm"} className="gap-2 bg-transparent">
-                                    <Mail className="size-4" />
-                                    Send Warning
+                                <Button variant={"outline"} size={"sm"} className="gap-2 bg-transparent text-green-400 hover:text-green-500 min-w-40 justify-evenly">
+                                    <ArrowUpCircle className="size-6" />
+                                    Promote Member
+                                </Button>
+                            </div>
+
+                            <div className="flex items-center justify-between p-4 rounded-lg bg-zinc-800/80 ring-2 ring-zinc-700">
+                                <div>
+                                    <h4 className="font-medium text-white">Demote Member</h4>
+                                    <p className="text-sm text-gray-400">Demote member to a lower rank.</p>
+                                </div>
+                                <Button variant={"outline"} size={"sm"} className="gap-2 bg-transparent text-amber-400 hover:text-amber-500 min-w-40 justify-evenly">
+                                    <ArrowDownCircle className="size-6" />
+                                    Demote Member
+                                </Button>
+                            </div>
+
+
+                            <div className="flex items-center justify-between p-4 rounded-lg bg-zinc-800/80 ring-2 ring-zinc-700">
+                                <div>
+                                    <h4 className="font-medium text-white">Warn Member</h4>
+                                    <p className="text-sm text-gray-400">Send a private warning to the member!</p>
+                                </div>
+                                <Button variant={"outline"} size={"sm"} className="gap-2 bg-transparent text-orange-400 hover:text-orange-500 min-w-40 justify-evenly">
+                                    <AlertCircle className="size-6 " />
+                                    Warn Member
                                 </Button>
                             </div>
 
@@ -208,28 +231,8 @@ const EditMemberDialog: React.FC<Props> = ({ member, open, onOpenChange }) => {
                                     <h4 className="font-medium text-white">Kick Member</h4>
                                     <p className="text-sm text-gray-400">Kick member from the Faction.</p>
                                 </div>
-                                <Button variant={"outline"} size={"sm"} className="gap-2 bg-transparent text-yellow-400 hover:text-yellow-300">
-                                    <UserX className="size-4" />
-                                    Kick Member
-                                </Button>
-                            </div>
-                            <div className="flex items-center justify-between p-4 rounded-lg bg-zinc-800/80 ring-2 ring-zinc-700">
-                                <div>
-                                    <h4 className="font-medium text-white">Kick Member</h4>
-                                    <p className="text-sm text-gray-400">Kick member from the Faction.</p>
-                                </div>
-                                <Button variant={"outline"} size={"sm"} className="gap-2 bg-transparent text-yellow-400 hover:text-yellow-300">
-                                    <UserX className="size-4" />
-                                    Kick Member
-                                </Button>
-                            </div>
-                            <div className="flex items-center justify-between p-4 rounded-lg bg-zinc-800/80 ring-2 ring-zinc-700">
-                                <div>
-                                    <h4 className="font-medium text-white">Kick Member</h4>
-                                    <p className="text-sm text-gray-400">Kick member from the Faction.</p>
-                                </div>
-                                <Button variant={"outline"} size={"sm"} className="gap-2 bg-transparent text-yellow-400 hover:text-yellow-300">
-                                    <UserX className="size-4" />
+                                <Button variant={"outline"} size={"sm"} className="gap-2 bg-transparent text-red-400 hover:text-red-500 min-w-40 justify-evenly">
+                                    <UserX className="size-6" />
                                     Kick Member
                                 </Button>
                             </div>

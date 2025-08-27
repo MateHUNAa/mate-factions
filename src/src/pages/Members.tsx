@@ -1,13 +1,10 @@
 import InfoCard, { InfoCardBox, InfoSubElement } from "@/components/InfoCard";
-import MemberTable from "@/components/memberTable";
+import MemberTable from "../components/MemberTable";
 import { Button } from "@/components/ui/button";
 import { UserCheck, UserPlus, Users } from "lucide-react";
 import React from "react";
 
-interface Props {
-}
-
-const Members: React.FC<Props> = ({ }) => {
+const Members: React.FC = () => {
     return (
 
         <main className="flex-1 overflow-auto">

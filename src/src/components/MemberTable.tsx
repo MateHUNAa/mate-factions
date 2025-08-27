@@ -2,12 +2,13 @@ import { fetchNui } from "@/utils/fetchNui";
 import React, { useEffect, useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Avatar, AvatarFallback } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Badge } from "./ui/badge";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
 import { Edit, Eye, MoreHorizontal, Shield, UserX } from "lucide-react";
 import EditMemberDialog from "./EditMemberDialog";
+import { isEnvBrowser } from "@/utils/misc";
 
 export interface Member {
     identifier: string;
@@ -52,15 +53,42 @@ const getStatusBadge = (status: string) => {
 
 const MockMembers = (count: number): Member[] => {
     const members: Member[] = []
+    const ranks = [
+        { rank: "Leader", color: "#ff0000" },
+        { rank: "Captain", color: "#ff8800" },
+        { rank: "Sergeant", color: "#ffaa00" },
+        { rank: "Member", color: "#00aa00" },
+    ]
+    const statuses = ["online", "offline", "busy", "away"]
+    const factions = ["Police", "EMS", "Mechanic", "Gang"]
 
     for (let i = 0; i < count; i++) {
+        const rank = ranks[Math.floor(Math.random() * ranks.length)]
+        const status = statuses[Math.floor(Math.random() * statuses.length)]
+        const faction = factions[Math.floor(Math.random() * factions.length)]
 
+        members.push({
+            identifier: `license:${Math.random().toString(36).substring(2, 10)}`,
+            rank: rank.rank,
+            rankColor: rank.color,
+            joinDate: new Date(
+                Date.now() - Math.floor(Math.random() * 1000 * 60 * 60 * 24 * 365)
+            ).toISOString().split("T")[0],
+            lastActive: new Date(
+                Date.now() - Math.floor(Math.random() * 1000 * 60 * 60 * 24 * 30)
+            ).toISOString(),
+            status,
+            avatar: `https://cdn.discordapp.com/avatars/575342593630797825/d35c0ebf35bc2499a2a29771b0233f9a?size=1024`, // Random avatar
+            totalPosts: Math.floor(Math.random() * 500),
+            name: `Member_${i}`,
+            faction,
+        })
     }
 
     return members
 }
 
-const MemberTable: React.FC = ({ }) => {
+const MemberTable: React.FC = () => {
     const [selectedMembers, setSelectedMembers] = useState<string[]>([])
     const [editingMember, setEditingMember] = useState<Member | null>(null)
     const [members, setMembers] = useState<Member[]>()
@@ -68,6 +96,11 @@ const MemberTable: React.FC = ({ }) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
+                if (isEnvBrowser()) {
+                    setMembers(MockMembers(39))
+                    return
+                }
+
                 const { data } = await fetchNui<{ data: Member[] }>("requestFactionMembers")
                 setMembers(data)
             } catch (error) {
@@ -101,97 +134,105 @@ const MemberTable: React.FC = ({ }) => {
 
     return (
         <>
-            <Table>
-                <TableHeader>
-                    <TableRow className="border-zinc-700/80">
-                        <TableHead className="w-12">
-                            <Checkbox
-                                checked={selectedMembers.length === members.length}
-                                onCheckedChange={handleSelectAll}
-                                aria-label="Select all members"
-                            />
-                        </TableHead>
-                        <TableHead className="text-gray-400">Member</TableHead>
-                        <TableHead className="text-gray-400">Rank</TableHead>
-                        <TableHead className="text-gray-400">Status</TableHead>
-                        <TableHead className="text-gray-400">Join Date</TableHead>
-                        <TableHead className="text-gray-400">Last Active</TableHead>
-                        <TableHead className="text-gray-400">Posts</TableHead>
-                        <TableHead className="text-gray-400">Reputation</TableHead>
-                        <TableHead className="w-12"></TableHead>
-                    </TableRow>
-                </TableHeader>
+            <div className="max-h-[calc(4*6rem)] overflow-y-scroll scroll-smooth snap-y snap-mandatory rounded-md">
+                <Table>
+                    <TableHeader className="bg-zinc-800/70">
+                        <TableRow className="border-zinc-700/80">
+                            <TableHead className="w-12">
+                                <Checkbox
+                                    checked={selectedMembers.length === members.length}
+                                    onCheckedChange={handleSelectAll}
+                                    aria-label="Select all members"
+                                />
+                            </TableHead>
+                            <TableHead className="text-gray-400">Member</TableHead>
+                            <TableHead className="text-gray-400">Rank</TableHead>
+                            <TableHead className="text-gray-400">Status</TableHead>
+                            <TableHead className="text-gray-400">Join Date</TableHead>
+                            <TableHead className="text-gray-400">Last Active</TableHead>
+                            <TableHead className="text-gray-400">Posts</TableHead>
+                        </TableRow>
+                    </TableHeader>
 
-                <TableBody>
-                    {members.map((member) => {
-                        const statusBadge = getStatusBadge(member.status)
-                        return (
-                            <TableRow key={member.identifier} className="border-zinc-700/80 border:border-zinc-700/70">
-                                <TableCell>
-                                    <Checkbox
-                                        checked={selectedMembers.includes(member.identifier)}
-                                        onCheckedChange={(checked) => handleSelectMember(member.identifier, checked as boolean)}
-                                        aria-label={`Select ${member.name}`}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <div className="flex items-center gap-3">
-                                        <div className="relative">
-                                            <Avatar className="size-8">
-                                                <AvatarFallback className="text-xs bg-primary text-primary-foreground">
-                                                    {member.avatar}
-                                                </AvatarFallback>
-                                            </Avatar>
-                                            <div
-                                                className={`absolute -bottom-0.5 -right-0.5 size-3 rounded-full border-2 border-background ${getStatusColor(member.status)}`}>
-                                            </div>
-                                            <div>
-                                                <div className="font-medium text-white">{member.name}</div>
-                                                <div className="text-xs text-gray-400">Member.Email</div>
+                    <TableBody>
+                        {members.map((member) => {
+                            const statusBadge = getStatusBadge(member.status)
+
+                            return (
+                                <TableRow key={member.identifier} className="bg-zinc-800/80 border-zinc-700/80 border:border-zinc-700/70 snap-start">
+                                    <TableCell>
+                                        <Checkbox
+                                            checked={selectedMembers.includes(member.identifier)}
+                                            onCheckedChange={(checked) => handleSelectMember(member.identifier, checked as boolean)}
+                                            aria-label={`Select ${member.name}`}
+                                        />
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center gap-3">
+                                            <div className="relative">
+                                                <Avatar className="size-8">
+                                                    <AvatarFallback className="text-xs bg-primary text-white">
+                                                        {member.avatar}
+                                                    </AvatarFallback>
+                                                    <AvatarImage src={member.avatar} />
+
+                                                </Avatar>
+
+                                                <div
+                                                    className={`absolute z-10 bottom-9 left-5 size-3 rounded-full border-2 border-zinc-700/80 ${getStatusColor(member.status)}`}
+                                                />
+
+                                                <div>
+                                                    <div className="font-medium text-white">{member.name}</div>
+                                                    <div className="text-xs text-gray-400">Member.Email</div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </TableCell>
-                                <TableCell>
-                                    <Badge variant={"default"} style={{ borderColor: member.rankColor, color: member.rankColor }}>
-                                        {member.rank}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell className="text-muted-foreground">{member.joinDate}</TableCell>
-                                <TableCell className="text-muted-foreground">{member.lastActive}</TableCell>
-                                <TableCell className="text-card-foreground">{member.totalPosts.toLocaleString()}</TableCell>
-                                {member.reputation && <TableCell className="text-card-foreground">{member.reputation.toLocaleString()}</TableCell>} {/** Unused */}
-                                <TableCell>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant={"ghost"} size={"icon"} className="size-8">
-                                                <MoreHorizontal className="size-4" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuItem onClick={() => setEditingMember(member)} className="gap-2">
-                                                <Edit className="size-4" />
-                                                Edit Member
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem>
-                                                <Shield className="size-4" />
-                                                Change Rank
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem>
-                                                <UserX className="size-4" />
-                                                Kick Member
-                                            </DropdownMenuItem>
-                                            {/* TODO: Add other features here */}
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </TableCell>
-                            </TableRow>
-                        )
-                    })}
-                </TableBody>
-            </Table>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Badge variant={"default"} style={{ borderColor: member.rankColor, color: member.rankColor }}>
+                                            {member.rank}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell className="text-white">{member.joinDate}</TableCell>
+                                    <TableCell className="text-white">{member.lastActive}</TableCell>
+                                    <TableCell className="text-white/80">{member.totalPosts.toLocaleString()}</TableCell>
+                                    <TableCell>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant={"ghost"} size={"icon"} className="size-8">
+                                                    <MoreHorizontal className="size-4 text-white" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end" className="bg-zinc-900/65 text-white">
 
-            {editingMember && <EditMemberDialog member={editingMember} open={!!editingMember} onOpenChange={(open) => !open && setEditingMember(null)} />}
+                                                <DropdownMenuItem onClick={() => setEditingMember(member)} className="gap-2 hover:bg-zinc-700">
+                                                    <Edit className="size-4" />
+                                                    Edit Member
+                                                </DropdownMenuItem>
+
+                                                <DropdownMenuItem className="hover:bg-zinc-700">
+                                                    <Shield className="size-4" />
+                                                    Change Rank
+                                                </DropdownMenuItem>
+
+                                                <DropdownMenuItem className="hover:bg-zinc-700">
+                                                    <UserX className="size-4" />
+                                                    Kick Member
+                                                </DropdownMenuItem>
+
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </TableCell>
+                                </TableRow>
+                            )
+                        })}
+                    </TableBody>
+                </Table >
+            </div>
+
+            {editingMember && <EditMemberDialog member={editingMember} open={!!editingMember} onOpenChange={(open) => !open && setEditingMember(null)} />
+            }
         </>
     );
 };

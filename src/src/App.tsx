@@ -12,7 +12,7 @@ function App() {
   const [visible, setVisibility] = useState<boolean>(isEnvBrowser() ? true : false);
   const [dutyData, setDutyData] = useState<DutyData>()
   const [activePanel, setActivePanel] = useState<PanelType>("Members")
-  useExitListener(setVisibility);
+  // useExitListener(setVisibility); //TODO: UnComment
 
   useNuiEvent("DutyPage", (data: DutyData) => {
     setVisibility(data.visible)

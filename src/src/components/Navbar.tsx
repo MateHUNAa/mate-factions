@@ -8,6 +8,7 @@ import { PanelType } from "@/App";
 import { hasPermission, useRanks } from "@/lib/permission";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 interface Props {
     activePage: PanelType,
@@ -81,6 +82,24 @@ const Navbar: React.FC<Props> = ({ activePage, onPageChange }) => {
                     })}
                 </nav>
             </ScrollArea>
+
+            {/* Footer */}
+            <div className="border-t border-sidebar-border p-4">
+                <div className={cn("flex items-center gap-3", collapsed && "justify-center")}>
+                    <div className="h-8 w-8 rounded-full bg-sidebar-accent flex items-center justify-center">
+                        <Avatar>
+                            <AvatarFallback>{user?.discordName.charAt(0) || "U"}</AvatarFallback>
+                            <AvatarImage src={user?.imageUrl} />
+                        </Avatar>
+                    </div>
+                    {!collapsed && user && (
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-sidebar-foreground truncate">{user?.discordName || "NAME_NOT_FOUND"}</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+
         </div>
     );
 };

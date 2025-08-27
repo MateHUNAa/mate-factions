@@ -9,6 +9,7 @@ export function useLoadUser() {
 
     useEffect(() => {
         const fetchData = async () => {
+            console.log("Requesting LocalPlayer !")
             try {
                 const { data } = await fetchNui<{ data: User }>("requestLocalUser")
                 dispatch(setCurrentUser(data))

@@ -5,6 +5,8 @@ export interface User {
     name: string;
     faction: string;
     factionData: undefined;
+    discordName: string;
+    imageUrl: string;
 }
 
 interface UserState {
@@ -21,6 +23,7 @@ const userSlice = createSlice({
     initialState,
     reducers: {
         setCurrentUser(state, action: PayloadAction<User>) {
+            console.log("LocalUser Loaded !")
             state.currentUser = action.payload
         },
         clearCurrentUser(state) {

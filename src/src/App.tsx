@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import Members from './pages/Members';
 import Ranks from './pages/Ranks';
 import Navbar from './components/Navbar';
+import { useLoadUser } from './hooks/useLoadUser';
 
 export type PanelType = "off" | "DutyPanel" | "Dashboard" | "Members" | "Ranks"
 
@@ -15,6 +16,8 @@ function App() {
   const [dutyData, setDutyData] = useState<DutyData>()
   const [activePanel, setActivePanel] = useState<PanelType>("Ranks")
   // useExitListener(setVisibility); //TODO: UnComment
+
+  useLoadUser()
 
   useNuiEvent("DutyPage", (data: DutyData) => {
     setVisibility(data.visible)

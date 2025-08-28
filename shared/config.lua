@@ -32,13 +32,13 @@ Config.DefaultRanks = {
      },
      ["2"] = {
           name = "Member",
-          permissions = {},
+          permissions = { ["stashAccess"] = true },
           description = "Description is not set.",
           color = "#3B82F6"
      },
      ["99"] = {
           name = "Sub-Leader",
-          permissions = { ["manageRanks"] = true, ["invite"] = true },
+          permissions = { ["manageRanks"] = true, ["invite"] = true, ["manageMembers"] = true, ["stashAccess"] = true },
           description = "Description is not set.",
           color = "#6366F1"
      },

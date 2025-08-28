@@ -16,16 +16,13 @@ export const useMembers = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                if (isEnvBrowser()) {
-                    dispatch(setMembers(MockMembers(39)));
-                    return;
-                }
-
                 if (!selectedFaction) {
+                    console.log("No selected faction!")
                     return dispatch(setMembers(playerFactions[0].members))
                 }
-
+                
                 const { data } = await fetchNui<{ data: Member[] }>('requestFactionMembers', selectedFaction?.id);
+                
                 dispatch(setMembers(data));
             } catch (error) {
                 console.error('Error fetching members:', error);
@@ -33,7 +30,7 @@ export const useMembers = () => {
         };
 
         fetchData();
-    }, [dispatch, selectedFaction?.id])
+    }, [dispatch, selectedFaction?.id, playerFactions])
 
     return members
 }

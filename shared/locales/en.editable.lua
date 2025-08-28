@@ -30,6 +30,7 @@ Loc["en"] = {
      },
      info    = {
           ["faction_set"] = "You were set to faction %s",
+          ["faction_set2"] = "You were remove from faction %s",
           ["faction_leader_set"] = "Your leader status in %s changed to %d",
           ["duty_marker_help"] = "Manage duty",
           ["off_duty"] = "You left duty.",

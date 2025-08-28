@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
 import { RootState } from ".";
 import { Rank } from "@/lib/permission";
+import { Faction } from "./factionSlice";
 
 export interface MemberData {
     rank: number;
@@ -13,7 +14,7 @@ export interface MemberData {
 export interface User {
     id: number;
     name: string;
-    faction: string;
+    factions: Faction[];
     factionData: undefined;
     discordName: string;
     imageUrl: string;

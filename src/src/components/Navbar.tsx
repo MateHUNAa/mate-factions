@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useUser } from "@/store/userSlice";
 import { useFaction } from "@/hooks/useFaction";
 import FactionSelector from "./navbar/FactionSelector";
+import { hasPermission } from "@/lib/permission";
 interface Props {
     activePage: PanelType,
     onPageChange: (page: PanelType) => void;
@@ -63,7 +64,7 @@ const Navbar: React.FC<Props> = ({ activePage, onPageChange }) => {
 
             {/* Faction Selector */}
             <div className="px-3 py-4 border-b border-white">
-                <FactionSelector collapsed={collapsed}/>
+                <FactionSelector collapsed={collapsed} />
             </div>
 
             {/* Navigation */}
@@ -73,11 +74,10 @@ const Navbar: React.FC<Props> = ({ activePage, onPageChange }) => {
                         const isActive = item.href === activePage
 
 
-
-                        // TODO: FIXME: Permission CHeck
-                        // const shouldShow = !item.permission || hasPermission(user?.rank?.id, item.permission, ranks)
-
-                        // if (!shouldShow) return null
+                        const rankId = user.factions.find(f => f.id === selectedFaction?.id)?.rank?.id;
+                        if (!rankId) return null
+                        const shouldShow = !item.permission || hasPermission(rankId, item.permission, ranks);
+                        if (!shouldShow) return null
 
                         return (
                             <Button

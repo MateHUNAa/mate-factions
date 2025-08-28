@@ -1,18 +1,16 @@
-import { fetchNui } from "@/utils/fetchNui";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Badge } from "../ui/badge";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
-import { Edit, Eye, MoreHorizontal, Shield, UserX } from "lucide-react";
+import { Edit, MoreHorizontal, Shield, UserX } from "lucide-react";
 import EditMemberDialog from "./EditMemberDialog";
-import { isEnvBrowser } from "@/utils/misc";
 import dayjs from "dayjs";
-import { Rank } from "@/lib/permission";
-import { Member, MockMembers } from "@/store/memberSlice";
+import { Member } from "@/store/memberSlice";
 import { useMembers } from "@/hooks/useMembers";
+import { useFaction } from "@/hooks/useFaction";
 
 const getStatusColor = (status: string) => {
     switch (status) {
@@ -46,8 +44,16 @@ const MemberTable: React.FC = () => {
 
 
     const members = useMembers()
+    const { selectedFaction} = useFaction()
 
-    if (!members || members.length <= 0) return null // TODO: Return a loading state!
+    if (!members || members.length <= 0) {
+        console.log(members)
+        return (
+            <h1>
+                NO MEMBERS FOUND IN {selectedFaction?.label || "N/A"}
+            </h1>
+        )
+    }
 
     const handleSelectAll = (checked: boolean) => {
         if (checked) {

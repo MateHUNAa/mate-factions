@@ -244,10 +244,10 @@ regServerNuiCallback("requestFactionMembers", function(pid, idf, factionId)
 
     for memberIdf, memberData in pairs(faction.members) do
         local rank = faction.ranks[tostring(memberData.rank)]
-
         if not rank then
             local newPrio, newRank = GetValidRank(memberData.rank, faction.ranks)
             SetPlayerRank(memberIdf, factionId, newPrio)
+
             return { error = true, msg = ("No rank for player: `%s`"):format(memberIdf), msgType = "error" }
         end
 
@@ -302,7 +302,8 @@ function kickFactionMember(identifier, factionId)
     end)
 
     if not ok then
-        Logger:Error('[kickFactionMember]', r)
+        Logger:Error('[kickFactionMember]', r, identifier, factionId)
+
         return false
     end
 

@@ -26,7 +26,7 @@ export const useRanks = () => {
         };
 
         fetchData();
-    }, [dispatch, selectedFaction?.id]);
+    }, [dispatch, selectedFaction?.id, playerFactions]);
 
     return ranks;
 };

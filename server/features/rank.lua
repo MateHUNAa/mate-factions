@@ -244,6 +244,7 @@ function SetFactionLeader(identifier, factionId, isLeader)
 
         Factions[factionId].members[identifier].rank = num
 
+        SyncPlayerFactions(nil, identifier)
         return true, nil, handleErr
     else
         return false, "sql_error", handleErr

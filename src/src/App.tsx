@@ -12,6 +12,7 @@ import { Permission, Rank } from './lib/permission';
 import { useAppDispatch } from './store';
 import { setPermissions, setRanks } from './store/rankSlice';
 import { Faction, setPlayerFactions } from './store/factionSlice';
+import FactionPage from './components/FactionPage';
 
 export type PanelType = "off" | "DutyPanel" | "Dashboard" | "Members" | "Ranks"
 
@@ -79,11 +80,15 @@ function App() {
                   )}
 
                   {activePanel == "Members" && (
-                    <Members />
+                    <FactionPage page="Members">
+                      <Members />
+                    </FactionPage>
                   )}
 
                   {activePanel == "Ranks" && (
-                    <Ranks />
+                    <FactionPage page='Ranks'>
+                      <Ranks />
+                    </FactionPage>
                   )}
 
                 </div>

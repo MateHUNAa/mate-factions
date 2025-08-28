@@ -45,8 +45,7 @@ RegisterCommand("setfaction", function(source, args, raw)
 
     local target     = args[1]
     local factionId  = args[2]
-    local removeFlag = args[3] or 0
-
+    local removeFlag = tonumber(args[3]) or 0
 
     if not target then
         Logger:Debug("[setfaction]: Missing arg: Name")
@@ -64,12 +63,12 @@ RegisterCommand("setfaction", function(source, args, raw)
         return mCore.Notify(source, lang.Title, lang.error["player_missing"], "error", 5000)
     end
 
-
     if removeFlag == 1 then
         local s = kickFactionMember(targetPlayer.identifier, factionId)
         if s then
             mCore.Notify(source, lang.Title, string.format(lang.success["faction_set2"], targetPlayer.Name, factionId),
                 "success", 5000)
+            mCore.Notify(target, lang.Title, string.format(lang.info["faction_set2"], factionId), "info", 5000)
         else
             mCore.Notify(source, lang.Title, string.format(lang.error["faction_set2"], targetPlayer.Name, factionId),
                 "success", 5000)

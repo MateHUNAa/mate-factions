@@ -124,8 +124,9 @@ local function addSuggestions()
   })
 
   TriggerEvent('chat:addSuggestion', '/setfaction', 'Játékos frakcióba rakása', {
-    { name = "ID",        help = 'Játékos ID' },
-    { name = "factionID", help = 'Frakció ID' },
+    { name = "ID",         help = 'Játékos ID' },
+    { name = "factionID",  help = 'Frakció ID' },
+    { name = "removeFlag", help = 'Remove (0 - Nem, 1 - Igen)', optional = true },
   })
 
   TriggerEvent('chat:addSuggestion', '/setfactionleader', 'Játékos leader jog állítás', {

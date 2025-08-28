@@ -67,9 +67,10 @@ const Navbar: React.FC<Props> = ({ activePage, onPageChange }) => {
 
 
 
-                        const shouldShow = !item.permission || hasPermission(user?.rank?.id, item.permission, ranks)
+                        // TODO: FIXME: Permission CHeck
+                        // const shouldShow = !item.permission || hasPermission(user?.rank?.id, item.permission, ranks)
 
-                        if (!shouldShow) return null
+                        // if (!shouldShow) return null
 
                         return (
                             <Button

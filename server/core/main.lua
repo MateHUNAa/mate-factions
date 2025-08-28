@@ -128,7 +128,7 @@ function getLocalPlayer(pid)
 
     local rank = factionData.ranks[tostring(memberData.rank)]
     rank.id = tostring(memberData.rank)
-    
+
     local player = {
         id          = pid,
         name        = Player.RPName,
@@ -150,46 +150,6 @@ end))
 
 lib.callback.register("mate-factions:GetLocalPlayer", function(source)
     return getLocalPlayer(source)
-end)
-
-
-regServerNuiCallback("createRank", function(pid, idf, params)
-    local Player = mCore.getPlayer(pid)
-    if not Player then return end
-
-    local factionId, factionData, memberData = GetPlayerFaction(Player.identifier)
-
-    if not factionId then return { data = nil, msg = "This player is not part of a factionId !", msgType = "error", error = true } end
-    if not factionData then return { data = nil, msg = ("Failed to fetch `%s` factionData !"), msgType = "error", error = true } end
-    if not memberData then return { data = nil, msg = "Failed to fetch your memberData !", msgType = "error", error = true } end
-
-    if not MemberHasPermission(idf, factionId, "manageRanks") then
-        return { msg = (lang.error["permission_missing"]):format("manageRanks"), msgType = "error", error = false }
-    end
-
-    AddRank(factionId, params.level, params.name, params.permissions, params.description, params.color)
-
-    return { msg = (lang.success["rank_created"]):format(params.name), msgType = "success" }
-end)
-
-
-regServerNuiCallback("removeRank", function(pid, idf, params)
-    local Player = mCore.getPlayer(pid)
-    if not Player then return end
-
-    local factionId, factionData, memberData = GetPlayerFaction(Player.identifier)
-
-    if not factionId then return { data = nil, msg = "This player is not part of a factionId !", msgType = "error", error = true } end
-    if not factionData then return { data = nil, msg = ("Failed to fetch `%s` factionData !"), msgType = "error", error = true } end
-    if not memberData then return { data = nil, msg = "Failed to fetch your memberData !", msgType = "error", error = true } end
-
-    if not MemberHasPermission(idf, factionId, "manageRanks") then
-        return { msg = (lang.error["permission_missing"]):format("manageRanks"), msgType = "error", error = false }
-    end
-
-    RemoveRank(factionId, params.id)
-
-    return { msg = (lang.success["rank_deleted"]):format(params.name), msgType = "success" }
 end)
 
 regServerNuiCallback("updateFactionMember", function(pid, idf, params)
@@ -244,64 +204,4 @@ regServerNuiCallback("updateFactionMember", function(pid, idf, params)
     end
 
     return { success = true, msg = (lang.success["member_updated"]):format(params.target.name), msgType = "success" }
-end)
-
-
-regServerNuiCallback("updateFactionRank", function(pid, idf, params)
-    local Player = mCore.getPlayer(pid)
-    if not Player then return end
-
-    local factionId, factionData, memberData = GetPlayerFaction(Player.identifier)
-
-    if not factionId then return { data = nil, msg = "This player is not part of a factionId !", msgType = "error", error = true } end
-    if not factionData then return { data = nil, msg = ("Failed to fetch `%s` factionData !"), msgType = "error", error = true } end
-    if not memberData then return { data = nil, msg = "Failed to fetch your memberData !", msgType = "error", error = true } end
-
-    if not MemberHasPermission(idf, factionId, "manageRanks") then
-        return { msg = (lang.error["permission_missing"]):format("manageRanks"), msgType = "error", error = false }
-    end
-
-    local oldRankKey = tostring(params.old.id)
-    local rank = factionData.ranks[oldRankKey]
-    if not rank then
-        return { msg = lang.error["rank_missing"], msgType = "error" }
-    end
-
-
-    local newPerms = params.new.permissions or {}
-    if type(newPerms) == "table" and (#newPerms > 0) then
-        local normalized = {}
-        for _, perm in ipairs(newPerms) do
-            normalized[perm] = true
-        end
-        newPerms = normalized
-    end
-
-
-    factionData.ranks[oldRankKey] = nil
-    factionData.ranks[params.new.level] = {
-        name        = params.new.name,
-        description = params.new.description,
-        color       = params.new.color,
-        permissions = newPerms
-    }
-
-    MySQL.update.await("UPDATE factions SET ranks = ? WHERE name = ?", {
-        json.encode(factionData.ranks),
-        factionId
-    })
-
-
-    if oldRankKey ~= tostring(params.new.level) then
-        for idf, member in pairs(factionData.members) do
-            if tostring(member.rank) == oldRankKey then
-                member.rank = params.new.level
-                MySQL.update.await("UPDATE faction_members SET rank = ? WHERE identifier = ? AND faction_name = ?", {
-                    params.new.level, idf, factionId
-                })
-            end
-        end
-    end
-
-    return { success = true, msg = (lang.success["rank_updated"]):format(params.new.name), msgType = "success" }
 end)

@@ -13,13 +13,14 @@ shared_scripts {
 }
 
 server_scripts {
-    "server/log.lua",
-    "server/functions.lua",
-    "server/factionFnc.lua",
-    "server/init.lua",
-    "server/admin.lua",
-    "server/main.lua",
-    "server/duty.lua"
+    "server/helpers/*.lua",
+    
+    "server/core/main.lua",
+    "server/core/init.lua",
+    "server/core/faction.lua",
+
+    "server/admin/*.lua",
+    "server/features/*.lua",
 }
 
 client_scripts {

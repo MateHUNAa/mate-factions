@@ -76,12 +76,6 @@ exports("Open", function(...)
 end)
 
 
-
-
-
-
-
-
 nuiServerCallback("requestLocalUser")
 nuiServerCallback("requestFactionMembers")
 nuiServerCallback("createRank", function()

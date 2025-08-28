@@ -13,18 +13,20 @@ Loc["en"] = {
           ["same_faction"] = "This player already in this faction !",
           ["rank_missing"] = "Rank not found!",
           ["permission_missing"] = "You don't have `%s` permission to do this action !",
-          ["not_in_faction"] = "You are not part of any faction !"
+          ["not_in_faction"] = "You are not part of any faction !",
+          ["faction_set2"] = "Failed to remove %s from faction: %s"
      },
      success = {
           ["faction_created"] = "Faction %s created !",
           ["faction_set"] = "Set %s faction to %s",
+          ["faction_set2"] = "%s Removed from faction %s",
           ["faction_leader_set"] = "%s leader status in %s set to %d",
           ["duty_point_set"] = "Duty point updated for faction: %s",
           ["stash_placed"] = "You successfully placed a stash for %s",
           ["rank_created"] = "You successfully created a rank: `%s`",
           ["rank_deleted"] = "You successfully delted a rank: `%s`",
           ["member_updated"] = "Updated member `%s` successfully!",
-          ["rank_updated"] = "Update rank `%s` successfully"
+          ["rank_updated"] = "Update rank `%s` successfully",
      },
      info    = {
           ["faction_set"] = "You were set to faction %s",

@@ -278,3 +278,33 @@ regServerNuiCallback("requestFactionMembers", function(pid, idf, factionId)
         data = members
     }
 end)
+
+
+function kickFactionMember(identifier, factionId)
+    if not identifier or not factionId then return false end
+
+    local faction = Factions[factionId]
+    if not faction then return false end
+
+    local member = faction.members[identifier]
+    if not member then return false end
+
+    faction.members[identifier] = nil
+
+    local playerId = GetPlayerServerIdByIdentifier(identifier)
+    if playerId then
+        SyncPlayerFactions(playerId, identifier)
+    end
+
+    local ok, r = pcall(function(...)
+        MySQL.query.await("DELETE FROM faction_members WHERE identifier = ? AND faction_name = ?",
+            { identifier, factionId })
+    end)
+
+    if not ok then
+        Logger:Error('[kickFactionMember]', r)
+        return false
+    end
+
+    return true
+end

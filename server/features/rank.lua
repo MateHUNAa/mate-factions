@@ -1,3 +1,5 @@
+local Logger = require("shared.Logger")
+
 function AddRank(factionId, rankId, name, permissions, description, color)
     local faction = Factions[factionId]
     if not faction then return false end

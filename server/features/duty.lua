@@ -1,3 +1,5 @@
+local Logger = require("shared.Logger")
+
 lib.callback.register("mate-factions:getDutyData", (function(source)
     local Player = mCore.getPlayer(source)
 

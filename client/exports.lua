@@ -1,13 +1,11 @@
-local cachedFactions         = nil
-local lastUpdate             = 0
-local CACHE_INTERVAL <const> = 10000
+local factionTypes      = {}
+local playerFactions    = {}
+local playerFactionsKey = {}
 
-local factionTypes           = {}
-local playerFactions         = {}
-local playerFactionsKey      = {}
-
+local Logger            = require("shared.Logger")
 
 RegisterNetEvent("mate-factions:updateClientFactionTypes", function(data, factions)
+    Logger:Debug("Received updated faction types from server:", data, factions)
     factionTypes = data
     playerFactions = factions
     playerFactionsKey = {}
@@ -27,6 +25,16 @@ RegisterNetEvent("mate-factions:updateClientFactionTypes", function(data, factio
     end
 end)
 
+
+function GetFactionTypeByName(name)
+    if not name or type(name) ~= "string" then
+        return { label = 'Unknown' }
+    end
+
+    return factionTypes[name] or { label = 'Unknown' }
+end
+
+exports('GetFactionTypeByName', GetFactionTypeByName)
 
 function GetPlayerFactionTypes()
     local currentDuty = LocalPlayer.state.factionDuty
@@ -61,6 +69,7 @@ exports('GetPlayerFactionsAsKey', GetPlayerFactionsAsKey);
 function CanUseFactionGarage(factionID, isGarage)
     local factions = GetPlayerFactions()
     local currentDuty = LocalPlayer.state.factionDuty
+
     for i = 1, #factions do
         if isGarage then
             if factions[i]?.settings?.allowDuty then
@@ -86,9 +95,6 @@ function getFactionRanks()
         print("[^4getFactionRanks^7][^3Warning^7] - No faction data found for player.")
         return {}
     end
-
-
-    print(json.encode(faction, { indent = true }))
 
     local ranks = {}
 

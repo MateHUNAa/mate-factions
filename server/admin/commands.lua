@@ -1,5 +1,6 @@
 local lang = Loc[Config.lan]
-local Logger = require("server.log")
+local Logger = require("shared.Logger")
+
 
 RegisterCommand("makefaction", function(source, args, raw)
     if not Functions.IsAdmin(source) then
@@ -10,9 +11,9 @@ RegisterCommand("makefaction", function(source, args, raw)
     end
 
 
-    local name = args[1]
+    local name  = args[1]
     local label = args[2]
-    local type = args[3] or "job"
+    local type  = args[3] or "job"
 
     if not name then
         Logger:Debug("[makefaction]: Missing arg: Name")

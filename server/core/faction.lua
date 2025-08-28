@@ -1,4 +1,6 @@
 local lang = Loc[Config.lan]
+local Logger = require("shared.Logger")
+
 
 function SaveFactionData(factionId, saveMembers)
     local faction = Factions[factionId]

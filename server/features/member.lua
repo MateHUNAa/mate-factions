@@ -1,3 +1,5 @@
+local Logger = require('shared.Logger')
+
 function SetPlayerFaction(identifier, factionId)
     local function handleErr(errVal, src)
         if errVal == "faction_missing" then
@@ -89,21 +91,39 @@ end
 exports("SetPlayerDuty", SetPlayerDuty)
 
 function SyncPlayerFactions(source, identifier)
+    if not identifier then
+        return Logger:Error(("Failed to `SyncPlayerFactions` no identifier, invoke: (%s)"):format(
+            GetInvokingResource() or GetCurrentResourceName()))
+    end
+
+    identifier = identifier:gsub("license:", "")
+
+    Logger:Debug("Syncing factions for player:", identifier)
     local playerFactions = {}
     local factionTypes = {}
 
+    local now = GetGameTimer()
+    while not isLoaded do
+        if GetGameTimer() - now > 10000 then
+            Logger:Error("Timeout waiting for player to load factions:", identifier)
+            return
+        end
+        Citizen.Wait(100)
+    end
+
     for factionId, faction in pairs(Factions) do
-        local member = faction.members[identifier]
+        local member = faction.members[tostring(identifier)]
+        -- Logger:Debug("Checking faction:", factionId, "Member data:", member)
         if member then
             local entry = {
-                id = factionId,
-                name = factionId,
-                lalbe = faction.label,
+                id       = factionId,
+                name     = factionId,
+                label    = faction.label,
                 settings = faction.settings,
-                rank = member.rank,
-                on_duty = member.on_duty == 1,
-                ranks = faction.ranks,
-                type = faction.type
+                rank     = member.rank,
+                on_duty  = member.on_duty == 1,
+                ranks    = faction.ranks,
+                type     = faction.type
             }
             table.insert(playerFactions, entry)
 
@@ -118,4 +138,18 @@ end
 
 AddEventHandler('esx:playerLoaded', function(playerId, xPlayer, isNew)
     SyncPlayerFactions(playerId, xPlayer.identifier)
+end)
+
+RegisterNetEvent("mate-factions:updatePlayerFaction", function(identifier)
+    local src = source
+    if not identifier then
+        identifier = GetPlayerIdentifierByType(src, "license")
+    end
+
+    if not identifier then
+        return Logger:Error(("Failed to `updatePlayerFaction` no identifier, invoke: (%s)"):format(
+            GetInvokingResource() or GetCurrentResourceName()))
+    end
+
+    SyncPlayerFactions(src, identifier)
 end)

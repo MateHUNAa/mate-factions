@@ -1,6 +1,7 @@
 ESX = exports['es_extended']:getSharedObject()
 mCore = exports["mCore"]:getSharedObj()
 local inv = exports["ox_inventory"]
+local Logger = require("shared.Logger")
 local lang = Loc[Config.lan]
 isLoaded = false
 

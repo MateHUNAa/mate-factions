@@ -1,3 +1,5 @@
+local Logger = require("shared.Logger")
+
 function LoadFactions()
     local res = MySQL.query.await("SELECT * FROM factions")
     for _, row in pairs(res) do

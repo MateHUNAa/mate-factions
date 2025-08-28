@@ -1,4 +1,5 @@
 local lang = Loc[Config.lan]
+local Logger = require("shared.Logger")
 
 local panel = {
     visible = false,
@@ -95,7 +96,10 @@ local function addMarker(factionId, pos)
     dutyMarkers[tostring(factionId)] = true
     exports["mate-markers"]:AddMarker(template)
 
-    print("Created duty marker for faction: " .. factionId .. " At: " .. json.encode(pos))
+    Logger:Debug({
+        factionId = factionId,
+        pos = pos
+    }, "Duty marker created !")
 end
 
 

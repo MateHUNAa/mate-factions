@@ -1,8 +1,8 @@
-ESX        = exports['es_extended']:getSharedObject()
-mCore      = exports["mCore"]:getSharedObj()
-
-local lang = Loc[Config.lan]
-local inv  = exports["ox_inventory"]
+ESX          = exports['es_extended']:getSharedObject()
+mCore        = exports["mCore"]:getSharedObj()
+local Logger = require("shared.Logger")
+local lang   = Loc[Config.lan]
+local inv    = exports["ox_inventory"]
 
 function sendNUI(action, data)
   if type(data) ~= "table" then
@@ -101,7 +101,14 @@ nuiCallback("requestFactionRanks", getFactionRanks)
 
 
 
+Citizen.CreateThread((function()
+  while not ESX.IsPlayerLoaded() do
+    Wait(250)
+  end
+  Logger:Info("Player is loaded successfully !")
 
+  TriggerServerEvent("mate-factions:updatePlayerFaction")
+end))
 
 
 

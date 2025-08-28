@@ -159,7 +159,7 @@ function regServerNuiCallback(eventName, cb)
 
                print(("[%s] ->"):format(eventName), json.encode(params, { indent = true }))
                print("\n\n\n")
-               
+
                local res = cb(source, idf, params, otherParams)
 
                print(("[%s] response: \n"):format(eventName), res,
@@ -184,4 +184,14 @@ function table.count(tbl)
      local c = 0
      for _, _ in pairs(tbl) do c += 1 end
      return c
+end
+
+function GetPlayerServerIdByIdentifier(identifier)
+     for _, playerId in ipairs(GetPlayers()) do
+          local playerIdentifier = GetPlayerIdentifierByType(playerId, "license"):sub(9)
+          if playerIdentifier == identifier then
+               return tonumber(playerId)
+          end
+     end
+     return nil
 end

@@ -43,6 +43,7 @@ function App() {
   }>("open", (data) => {
     if (data.localPlayer) {
       dispatch(setCurrentUser(data.localPlayer.data))
+      console.log(data.localPlayer.data)
     }
 
     if (data.ranks && data.permissions) {

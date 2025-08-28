@@ -12,7 +12,7 @@ lib.callback.register("mate-factions:getDutyData", (function(source)
         return res
     end
 
-    local factionId, factionData, memberData = GetEffectiveFaction(Player.identifier)
+    local factionId, factionData, memberData = GetPlayerFaction(Player.identifier)
     -- Logger:Debug(factionId, json.encode(factionData, { indent = true }), "\n", json.encode(memberData, { indent = true }))
 
     if not factionId or not factionData or not memberData then

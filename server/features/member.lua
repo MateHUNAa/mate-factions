@@ -46,6 +46,7 @@ function SetPlayerFaction(identifier, factionId)
             on_duty   = 0,
             joined_at = os.time()
         }
+        SyncPlayerFactions(nil, identifier)
         return true, nil, handleErr
     else
         return false, "sql_error", handleErr
@@ -67,6 +68,28 @@ end
 
 exports("GetPlayerFaction", GetPlayerFaction)
 
+function GetPlayerFactions(identifier)
+    local playerFactions = {}
+
+    for factionId, faction in pairs(Factions) do
+        local member = faction.mebmers[identifier]
+        if member then
+            table.insert(playerFactions, {
+                id         = factionId,
+                name       = factionId,
+                label      = faction.label,
+                settings   = faction.settings,
+                rank       = member.rank,
+                on_duty    = member.on_duty == 1,
+                ranks      = faction.ranks,
+                type       = faction.type,
+                memberData = member
+            })
+        end
+    end
+
+    return playerFactions
+end
 
 function SetPlayerDuty(identifier, onDuty)
     local factionId, factionData, memberData = GetPlayerFaction(identifier)
@@ -90,7 +113,7 @@ end
 
 exports("SetPlayerDuty", SetPlayerDuty)
 
-function SyncPlayerFactions(source, identifier)
+function SyncPlayerFactions(src, identifier)
     if not identifier then
         return Logger:Error(("Failed to `SyncPlayerFactions` no identifier, invoke: (%s)"):format(
             GetInvokingResource() or GetCurrentResourceName()))
@@ -109,6 +132,12 @@ function SyncPlayerFactions(source, identifier)
             return
         end
         Citizen.Wait(100)
+    end
+
+    if not src then
+        local playerId = GetPlayerServerIdByIdentifier(identifier)
+        if not playerId then return Logger:Error("Failed to `SyncPlayerFactions` no playerId givven !") end
+        src = playerId
     end
 
     for factionId, faction in pairs(Factions) do
@@ -133,7 +162,7 @@ function SyncPlayerFactions(source, identifier)
         end
     end
 
-    TriggerClientEvent("mate-factions:updateClientFactionTypes", source, factionTypes, playerFactions)
+    TriggerClientEvent("mate-factions:updateClientFactionTypes", src, factionTypes, playerFactions)
 end
 
 AddEventHandler('esx:playerLoaded', function(playerId, xPlayer, isNew)
@@ -152,4 +181,42 @@ RegisterNetEvent("mate-factions:updatePlayerFaction", function(identifier)
     end
 
     SyncPlayerFactions(src, identifier)
+end)
+
+
+function getLocalPlayer(pid)
+    local Player = mCore.getPlayer(pid)
+
+    if not Player then return { msg = "Failed to fetch LocalPlayer", msgType = "error", error = true } end
+
+
+    local factions = GetPlayerFactions(Player.identifier)
+    if #factions <= 0 then
+        return { msg = "You are not part of any faction !", msgType = "error" }
+    end
+
+    for i, faction in pairs(factions) do
+        local rank   = faction.ranks[tostring(faction.memberData.rank)]
+        rank.id      = tostring(faction.memberData.rank)
+        faction.rank = rank
+    end
+
+    local player = {
+        id          = pid,
+        name        = Player.RPName,
+        identifier  = Player.identifier,
+        discordName = Player.Name,
+        imageUrl    = Player.discord.img,
+        factions    = factions
+    }
+
+    return { data = player, msg = "Success. " }
+end
+
+regServerNuiCallback("requestLocalUser", (function(pid, idf, params, otherParams)
+    return getLocalPlayer(pid)
+end))
+
+lib.callback.register("mate-factions:GetLocalPlayer", function(source)
+    return getLocalPlayer(source)
 end)

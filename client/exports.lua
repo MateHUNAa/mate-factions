@@ -13,7 +13,7 @@ RegisterNetEvent("mate-factions:updateClientFactionTypes", function(data, factio
     playerFactionsKey = {}
 
     for facId, faction in pairs(factions or {}) do
-        playerFactionsKey[facId] = faction
+        playerFactionsKey[faction.id] = faction
     end
 
 
@@ -22,59 +22,71 @@ RegisterNetEvent("mate-factions:updateClientFactionTypes", function(data, factio
     })
 
     if #factions <= 0 then
-        -- TODO: Hide panel cuz player is no part of any faction
-        print("(TODO)Player no part of any faction! Hiding panels ! (TODO)")
+        sendNUI("close")
+        SetNuiFocus(false, false)
     end
 end)
 
-local function UpdateFactionCache()
-    local now = GetGameTimer()
-    if not cachedFactions or (now - lastUpdate) > CACHE_INTERVAL then
-        cachedFactions = lib.callback.await("mate-faction:RequestFactions", false)
-        lastUpdate = now
-    end
-    return cachedFactions
-end
 
--- FIXME: Markers does not update after a new faction is set for a player,
-local function UpdatePlayerFactionCache()
-    local now = GetGameTimer()
-    if not playerFactions or (now - lastUpdate) > CACHE_INTERVAL then
-        playerFactions = lib.callback.await("mate-factions:requestClientFactions", false)
-        lastUpdate = now
-    end
-    return playerFactions
-end
-
-function CanUseFactionGarage(factionId, isGarage)
-    local factions = UpdatePlayerFactionCache()
+function GetPlayerFactionTypes()
     local currentDuty = LocalPlayer.state.factionDuty
+    local result = {}
 
-    for facId, factionData in pairs(factions) do
-        if isGarage then
-            if factionData?.settings?.duty then
-                if type(currentDuty) == "table" then
-                    return true
-                end
-            else
-                if facId == factionId then
-                    return true
-                end
-            end
+    for typ, state in pairs(factionTypes) do
+        local typeData = GetFactionTypeByName(typ)
+        if typeData?.settings?.allowDuty then
+            result[typ] = type(currentDuty) == 'table' and currentDuty?.factionType?.name == typ
         else
-            if facId == factionId then
-                return true
-            end
+            result[typ] = state
         end
     end
-    return false
+
+    return result
 end
 
-exports("CanUseFactionGarage", CanUseFactionGarage)
+exports('GetPlayerFactionTypes', GetPlayerFactionTypes)
+
+function GetPlayerFactions()
+    return playerFactions or {};
+end
+
+exports('GetPlayerFactions', GetPlayerFactions);
+
+function GetPlayerFactionsAsKey()
+    return playerFactionsKey or {};
+end
+
+exports('GetPlayerFactionsAsKey', GetPlayerFactionsAsKey);
+
+function CanUseFactionGarage(factionID, isGarage)
+    local factions = GetPlayerFactions()
+    local currentDuty = LocalPlayer.state.factionDuty
+    for i = 1, #factions do
+        if isGarage then
+            if factions[i]?.settings?.allowDuty then
+                if type(currentDuty) == 'table' then
+                    return true
+                end
+            elseif factions[i].id == factionID then
+                return true
+            end
+        elseif factions[i].id == factionID then
+            return true
+        end
+    end
+end
+
+exports('CanUseFactionGarage', CanUseFactionGarage);
 
 
 function getFactionRanks()
     local faction = lib.callback.await("mate-faction:GetPlayerFaction", false)
+
+    if not faction or not faction.factionData or not faction.factionData.ranks then
+        print("[^4getFactionRanks^7][^3Warning^7] - No faction data found for player.")
+        return {}
+    end
+
 
     print(json.encode(faction, { indent = true }))
 
@@ -86,7 +98,7 @@ function getFactionRanks()
         for key, _ in pairs(data.permissions) do
             table.insert(perms, key)
         end
-        
+
         table.insert(ranks, {
             id = id,
             name = data.name,

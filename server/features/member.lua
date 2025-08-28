@@ -87,3 +87,35 @@ function SetPlayerDuty(identifier, onDuty)
 end
 
 exports("SetPlayerDuty", SetPlayerDuty)
+
+function SyncPlayerFactions(source, identifier)
+    local playerFactions = {}
+    local factionTypes = {}
+
+    for factionId, faction in pairs(Factions) do
+        local member = faction.members[identifier]
+        if member then
+            local entry = {
+                id = factionId,
+                name = factionId,
+                lalbe = faction.label,
+                settings = faction.settings,
+                rank = member.rank,
+                on_duty = member.on_duty == 1,
+                ranks = faction.ranks,
+                type = faction.type
+            }
+            table.insert(playerFactions, entry)
+
+            factionTypes[factionId] = true
+        else
+            factionTypes[factionId] = false
+        end
+    end
+
+    TriggerClientEvent("mate-factions:updateClientFactionTypes", source, factionTypes, playerFactions)
+end
+
+AddEventHandler('esx:playerLoaded', function(playerId, xPlayer, isNew)
+    SyncPlayerFactions(playerId, xPlayer.identifier)
+end)

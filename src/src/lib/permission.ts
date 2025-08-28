@@ -34,7 +34,6 @@ export function getRankPermissions(rankId: number, ranks: Rank[]): Permission[] 
     return rank ? rank.permissions : [];
 }
 
-export const selectRanks = (state: RootState) => state.ranks.ranks
 export const selectPermission = (state: RootState) => state.ranks.permissions
 
 export const PAGE_PERMISSIONS: Record<string, Permission | null> = {
@@ -42,8 +41,3 @@ export const PAGE_PERMISSIONS: Record<string, Permission | null> = {
     members: "manageMembers",
     news: "manageNews",
 };
-
-
-export function useRanks() {
-    return useSelector(selectRanks);
-}

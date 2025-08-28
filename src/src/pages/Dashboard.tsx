@@ -2,8 +2,7 @@ import Actions from "@/components/dashboard/Actions";
 import News from "@/components/dashboard/News";
 import InfoCard, { InfoCardBox, InfoSubElement } from "@/components/InfoCard";
 import { useMembers } from "@/hooks/useMembers";
-import { useRanks } from "@/lib/permission";
-import { differenceInDays, parseISO } from "date-fns";
+import { useRanks } from "@/hooks/useRanks";
 import { Users } from "lucide-react";
 import React from "react";
 
@@ -31,13 +30,13 @@ const Dashboard: React.FC<Props> = ({ }) => {
         if (isNaN(lastActiveDate.getTime())) return false;
         return new Date().getTime() - lastActiveDate.getTime() <= 24 * 60 * 60 * 1000; // last 24h
     }).length;
-    
+
     return (
         <div className="p-4 rounded-2xl shadow-md bg-background">
             <main>
                 <InfoCardBox>
                     <InfoCard title="Total Members" content={members.length.toString()} Icon={Users} subContent={<InfoSubElement subContent={`+${joinedLast7Days}`} content="new member joined" />} />
-                    <InfoCard title="Total Ranks" content={ranks.length.toString()} Icon={Users} subContent={<InfoSubElement subContent="+1" content="new rank created" color="text-green-400" />} />
+                    <InfoCard title="Total Ranks" content={ranks?.length?.toString() || "0"} Icon={Users} subContent={<InfoSubElement subContent="+1" content="new rank created" color="text-green-400" />} />
                     <InfoCard title="Active Members" content={`${activeMembers.length}`} Icon={Users}
                         subContent={<InfoSubElement subContent={`+${activeLast24h}`} content="was active in the last 24hours" color="text-blue-400" />}
                     />

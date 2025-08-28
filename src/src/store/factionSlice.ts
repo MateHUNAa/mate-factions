@@ -1,7 +1,8 @@
 import { Rank } from "@/lib/permission";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { MemberData } from "./userSlice";
-import { Member } from "./memberSlice";
+import { Member, setMembers } from "./memberSlice";
+import { useAppDispatch } from ".";
 
 
 export interface Faction {
@@ -10,7 +11,7 @@ export interface Faction {
     label: string;
     type: string;
     settings?: Record<string, any>;
-    ranks: Record<string, Rank>;
+    ranks: Rank[];
     memberData: MemberData;
     members: Member[];
     memberCount: number;

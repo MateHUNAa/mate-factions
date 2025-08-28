@@ -227,5 +227,54 @@ regServerNuiCallback("requestPlayerFactions", function(pid, idf, params)
 end)
 
 lib.callback.register("mate-factions:GetLocalPlayer", function(source)
-    return { data = getLocalPlayer(source) }
+    return getLocalPlayer(source)
+end)
+
+regServerNuiCallback("requestFactionMembers", function(pid, idf, factionId)
+    if not factionId then return { msg = "No factionId provided !", msgType = "error", error = true } end
+    local faction = Factions[factionId]
+
+    if not faction then return { msg = ("No faction found with id: `%s`"):format(factionId), msgType = "error" } end
+
+    local members = {}
+
+    local function GetPlayerAvatar(idf)
+        return MySQL.single.await("SELECT discord_url, discord_name FROM users WHERE identifier = ?", { idf })
+    end
+
+    for memberIdf, memberData in pairs(faction.members) do
+        local rank = faction.ranks[tostring(memberData.rank)]
+
+        if not rank then
+            local newPrio, newRank = GetValidRank(memberData.rank, faction.ranks)
+            SetPlayerRank(memberIdf, factionId, newPrio)
+            return { error = true, msg = ("No rank for player: `%s`"):format(memberIdf), msgType = "error" }
+        end
+
+        rank.id = memberData.rank
+
+        local Player = mCore.getPlayer(memberIdf)
+
+        local status = "offline"
+        if Player then
+            status = (memberData.on_duty and memberData.on_duty >= 1) and "online" or "away"
+        end
+
+        local stuff = GetPlayerAvatar(memberIdf) or {}
+        table.insert(members, {
+            identifier = memberIdf,
+            rank       = rank,
+            rankColor  = rank.color or "#ff0000",
+            joinDate   = memberData.joined_at,
+            lastActive = memberData.lastActive or 0,
+            status     = status,
+            avatar     = stuff.discord_url or "",
+            name       = stuff.discord_name or memberIdf,
+            faction    = factionId
+        })
+    end
+
+    return {
+        data = members
+    }
 end)

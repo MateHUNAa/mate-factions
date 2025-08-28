@@ -1,16 +1,13 @@
-import { MockFactionRanks } from "@/components/members/EditMemberDialog";
-import InfoCard, { InfoCardBox, InfoSubElement } from "@/components/InfoCard";
+import InfoCard, { InfoCardBox } from "@/components/InfoCard";
 import CreateRankDialog from "@/components/ranks/CreateRankDialog";
 import RankCard from "@/components/ranks/RankCard";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { fetchNui } from "@/utils/fetchNui";
-import { isEnvBrowser } from "@/utils/misc";
 import { Search, Settings, Shield, Users } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import { Rank, useRanks } from "@/lib/permission";
+import React from "react";
 import { useMembers } from "@/hooks/useMembers";
+import { useRanks } from "@/hooks/useRanks";
 
 interface Props {
 }
@@ -18,8 +15,6 @@ interface Props {
 
 
 const Ranks: React.FC<Props> = ({ }) => {
-    const [totalMembers, setTotalMembers] = useState()
-
     const ranksData = useRanks()
     const members = useMembers()
 

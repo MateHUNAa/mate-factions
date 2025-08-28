@@ -8,9 +8,8 @@ import { Slider } from "../ui/slider";
 import { Textarea } from "../ui/textarea";
 import { Checkbox } from "../ui/checkbox";
 import { fetchNui } from "@/utils/fetchNui";
-import { useUser } from "@/store/userSlice";
-import { useRanks } from "@/lib/permission";
-import { P } from "framer-motion/dist/types.d-Cjd591yU";
+import { useFaction } from "@/hooks/useFaction";
+import { useRanks } from "@/hooks/useRanks";
 
 
 export const permissions = [
@@ -36,8 +35,8 @@ export const colorPresets = [
 
 const CreateRankDialog: React.FC = ({ }) => {
     const [open, setOpen] = useState<boolean>(false)
-    const user = useUser()
     const ranks = useRanks()
+    const { selectedFaction } = useFaction()
 
     const [formData, setFormData] = useState({
         name: "",
@@ -57,7 +56,7 @@ const CreateRankDialog: React.FC = ({ }) => {
 
 
         fetchNui("createRank", {
-            factionId: user?.faction,
+            factionId: selectedFaction?.id,
             ...formData
         })
 

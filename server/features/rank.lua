@@ -329,3 +329,32 @@ function IsLeader(identifier, factionId)
 end
 
 exports("IsLeader", IsLeader)
+
+
+regServerNuiCallback("requestFactionRanks", function(pid, idf, factionId)
+    if not factionId then return { msg = "No factionId provided !", msgType = "error", error = true } end
+
+    local faction = Factions[factionId]
+    if not faction then return { msg = ("No faction found with faction id: `%s`"):format(factionId), msgType = "error" } end
+
+    local ranks = {}
+
+    for id, rank in pairs(faction.ranks) do
+        local perms = {}
+        for key, _ in pairs(rank.permissions) do
+            table.insert(perms, key)
+        end
+
+        table.insert(ranks, {
+            id = id,
+            name = rank.name,
+            permissions = perms,
+            color = rank.color,
+            description = rank.description
+        })
+    end
+
+    return {
+        data = ranks
+    }
+end)

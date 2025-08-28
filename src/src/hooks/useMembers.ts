@@ -4,11 +4,14 @@ import { fetchNui } from "@/utils/fetchNui"
 import { isEnvBrowser } from "@/utils/misc"
 import { useEffect } from "react"
 import { useSelector } from "react-redux"
+import { useFaction } from "./useFaction"
 
 
 export const useMembers = () => {
     const dispatch = useAppDispatch()
     const members = useSelector(selectMembers)
+
+    const { selectedFaction, playerFactions } = useFaction()
 
     useEffect(() => {
         const fetchData = async () => {
@@ -18,7 +21,11 @@ export const useMembers = () => {
                     return;
                 }
 
-                const { data } = await fetchNui<{ data: Member[] }>('requestFactionMembers');
+                if (!selectedFaction) {
+                    return dispatch(setMembers(playerFactions[0].members))
+                }
+
+                const { data } = await fetchNui<{ data: Member[] }>('requestFactionMembers', selectedFaction?.id);
                 dispatch(setMembers(data));
             } catch (error) {
                 console.error('Error fetching members:', error);
@@ -26,7 +33,7 @@ export const useMembers = () => {
         };
 
         fetchData();
-    }, [dispatch])
+    }, [dispatch, selectedFaction?.id])
 
     return members
 }

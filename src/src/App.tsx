@@ -40,13 +40,13 @@ function App() {
   useNuiEvent("updateClientFactionTypes", (data: Faction[]) => dispatch(setPlayerFactions(data)))
 
   useNuiEvent<{
-    localPlayer?: { data: User },
+    localPlayer?: User,
     ranks?: Rank[],
     permissions?: Permission[],
     playerFactions?: Faction[]
   }>("open", (data) => {
     if (data.localPlayer) {
-      dispatch(setCurrentUser(data.localPlayer.data))
+      dispatch(setCurrentUser(data.localPlayer))
     }
 
     if (data.playerFactions) {

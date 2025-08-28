@@ -5,7 +5,7 @@ import { Button } from "./ui/button";
 import { ChevronLeft, ChevronRight, Home, Shield, Users } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
 import { PanelType } from "@/App";
-import { useRanks } from "@/lib/permission";
+import { useRanks } from "@/hooks/useRanks";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useUser } from "@/store/userSlice";
 import { useFaction } from "@/hooks/useFaction";

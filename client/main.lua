@@ -17,15 +17,13 @@ end
 
 function nuiCallback(name, callback)
   RegisterNUICallback(name, function(data, cb)
-    print("nuiCallback:", name)
-
     callback(data, cb)
   end)
 end
 
 function nuiServerCallback(name, otherParams)
   nuiCallback(name, (function(params, cb)
-    print("serverCallback[Params]:", json.encode(params, { indent = true }))
+    -- print("serverCallback[Params]:", json.encode(params, { indent = true }))
     lib.callback(("mate-factions:%s"):format(name), false, (function(result)
       -- print(("Result(%s): "):format(name), json.encode(result, { indent = true }))
 
@@ -61,12 +59,11 @@ end)
 RegisterCommand("mate-factions", (function(src, args, raw)
   local localPlayer = lib.callback.await("mate-factions:GetLocalPlayer", false)
 
-  Logger:Debug("LocalPlayer->", localPlayer)
-
   sendNUI("open", {
-    localPlayer = localPlayer,
-    ranks       = getFactionRanks(),
-    permissions = Config.PermissionList
+    localPlayer    = localPlayer,
+    ranks          = getFactionRanks(),
+    permissions    = Config.PermissionList,
+    playerFactions = localPlayer.factions
   })
 
   visible = true
@@ -98,16 +95,8 @@ nuiServerCallback("removeRank")
 nuiServerCallback("updateFactionMember")
 nuiServerCallback("requestPlayerFactions")
 nuiServerCallback("requestNews")
-
---[[
-, function()
-  local localPlayer = lib.callback.await("mate-factions:GetLocalPlayer", false)
-
-  sendNUI("updateLocalPlayer", localPlayer)
-end
-]]
 nuiServerCallback("updateFactionRank")
-nuiCallback("requestFactionRanks", getFactionRanks)
+nuiServerCallback("requestFactionRanks")
 
 
 

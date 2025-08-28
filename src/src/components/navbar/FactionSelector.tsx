@@ -10,7 +10,6 @@ interface FactionSelectorProps {
 }
 
 const FactionSelector: React.FC<FactionSelectorProps> = ({ collapsed = false }) => {
-    console.log("TEST")
     const { playerFactions, selectedFaction, selectFaction } = useFaction()
 
     const [isOpen, setIsOpen] = useState(false)

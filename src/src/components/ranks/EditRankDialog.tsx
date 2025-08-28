@@ -8,10 +8,11 @@ import { Textarea } from "../ui/textarea";
 import { Palette } from "lucide-react";
 import { Checkbox } from "../ui/checkbox";
 import { Button } from "../ui/button";
-import { Rank, useRanks } from "@/lib/permission";
+import { Rank } from "@/lib/permission";
 import { fetchNui } from "@/utils/fetchNui";
 import { useAppDispatch } from "@/store";
 import { updateRank } from "@/store/rankSlice";
+import { useRanks } from "@/hooks/useRanks";
 
 interface Props {
     rank: {

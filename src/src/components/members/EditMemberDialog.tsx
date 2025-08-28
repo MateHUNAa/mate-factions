@@ -11,11 +11,12 @@ import { isEnvBrowser } from "@/utils/misc";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertCircle, ArrowDownCircle, ArrowUpCircle, Calendar, Divide, Mail, MessageSquare, UserX } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Rank, useRanks } from "@/lib/permission";
+import { Rank } from "@/lib/permission";
 import dayjs from "dayjs";
 import { Member, updateMember } from "@/store/memberSlice";
 import { useAppDispatch } from "@/store";
 import { useUser } from "@/store/userSlice";
+import { useRanks } from "@/hooks/useRanks";
 
 interface Props {
     member: Member;

@@ -2,15 +2,14 @@
 import { cn } from "@/lib/utils";
 import React, { useState } from "react";
 import { Button } from "./ui/button";
-import { ChevronLeft, ChevronRight, Home, Newspaper, Settings, Shield, Users } from "lucide-react";
+import { ChevronLeft, ChevronRight, Home, Shield, Users } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
 import { PanelType } from "@/App";
-import { hasPermission, useRanks } from "@/lib/permission";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store";
+import { useRanks } from "@/lib/permission";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useUser } from "@/store/userSlice";
-
+import { useFaction } from "@/hooks/useFaction";
+import FactionSelector from "./navbar/FactionSelector";
 interface Props {
     activePage: PanelType,
     onPageChange: (page: PanelType) => void;
@@ -35,9 +34,12 @@ const Navbar: React.FC<Props> = ({ activePage, onPageChange }) => {
     const ranks = useRanks()
     const user = useUser()
 
-    console.log(user)
+    const { playerFactions, selectedFaction, selectFaction } = useFaction()
 
-    if (!user) return null
+    if (!user) {
+        console.error("localUser is not found!")
+        return null
+    }
 
     return (
         <div
@@ -48,7 +50,7 @@ const Navbar: React.FC<Props> = ({ activePage, onPageChange }) => {
         >
             {/* Header */}
             <div className="flex h-16 items-center justify-between px-4 border-b border-sidebar-border">
-                {!collapsed && <h1 className="font-heading text-xl font-bold text-white">mFaction</h1>}
+                {!collapsed && <h1 className="font-heading text-xl font-bold text-white">{selectedFaction?.label || "mFaction"}</h1>}
                 <Button
                     variant="ghost"
                     size="icon"
@@ -57,6 +59,11 @@ const Navbar: React.FC<Props> = ({ activePage, onPageChange }) => {
                 >
                     {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
                 </Button>
+            </div>
+
+            {/* Faction Selector */}
+            <div className="px-3 py-4 border-b border-white">
+                <FactionSelector collapsed={collapsed}/>
             </div>
 
             {/* Navigation */}

@@ -150,21 +150,25 @@ Functions = {
 }
 
 
-function regServerNuiCallback(eventName, cb)
+function regServerNuiCallback(eventName, cb, showLog)
      local _eventName = ("%s:%s"):format(GetCurrentResourceName(), eventName)
 
      lib.callback.register(_eventName,
           (function(source, params, otherParams)
                local idf = GetPlayerIdentifierByType(source, "license"):sub(9)
 
-               print(("[%s] ->"):format(eventName), json.encode(params, { indent = true }))
-               print("\n\n\n")
+               if showLog then
+                    print(("[%s] ->"):format(eventName), json.encode(params, { indent = true }))
+                    print("\n\n\n")
+               end
 
                local res = cb(source, idf, params, otherParams)
 
-               print(("[%s] response: \n"):format(eventName), res,
-                    json.encode(res, { indent = true }),
-                    "\n--------------------------------")
+               if showLog then
+                    print(("[%s] response: \n"):format(eventName), res,
+                         json.encode(res, { indent = true }),
+                         "\n--------------------------------")
+               end
 
                return res
           end))

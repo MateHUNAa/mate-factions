@@ -72,7 +72,7 @@ function GetPlayerFactions(identifier)
     local playerFactions = {}
 
     for factionId, faction in pairs(Factions) do
-        local member = faction.mebmers[identifier]
+        local member = faction.members[identifier]
         if member then
             table.insert(playerFactions, {
                 id         = factionId,
@@ -83,7 +83,8 @@ function GetPlayerFactions(identifier)
                 on_duty    = member.on_duty == 1,
                 ranks      = faction.ranks,
                 type       = faction.type,
-                memberData = member
+                memberData = member,
+                members    = faction.members
             })
         end
     end
@@ -187,18 +188,22 @@ end)
 function getLocalPlayer(pid)
     local Player = mCore.getPlayer(pid)
 
-    if not Player then return { msg = "Failed to fetch LocalPlayer", msgType = "error", error = true } end
+    if not Player then
+        Logger:Error(("Failed to get Player > %s(%s)"):format(GetPlayerName(pid), pid))
+        return nil
+    end
 
 
     local factions = GetPlayerFactions(Player.identifier)
     if #factions <= 0 then
-        return { msg = "You are not part of any faction !", msgType = "error" }
+        return mCore.Notify(pid, lang.Title, lang.error["not_in_faction"], "error", 5000)
     end
 
     for i, faction in pairs(factions) do
-        local rank   = faction.ranks[tostring(faction.memberData.rank)]
-        rank.id      = tostring(faction.memberData.rank)
-        faction.rank = rank
+        local rank          = faction.ranks[tostring(faction.memberData.rank)]
+        rank.id             = tostring(faction.memberData.rank)
+        faction.rank        = rank
+        faction.memberCount = #faction?.members or 0
     end
 
     local player = {
@@ -210,13 +215,17 @@ function getLocalPlayer(pid)
         factions    = factions
     }
 
-    return { data = player, msg = "Success. " }
+    return player
 end
 
 regServerNuiCallback("requestLocalUser", (function(pid, idf, params, otherParams)
-    return getLocalPlayer(pid)
+    return { data = getLocalPlayer(pid) }
 end))
 
+regServerNuiCallback("requestPlayerFactions", function(pid, idf, params)
+    return { data = getLocalPlayer(pid).factions }
+end)
+
 lib.callback.register("mate-factions:GetLocalPlayer", function(source)
-    return getLocalPlayer(source)
+    return { data = getLocalPlayer(source) }
 end)

@@ -27,11 +27,18 @@ function nuiServerCallback(name, otherParams)
   nuiCallback(name, (function(params, cb)
     print("serverCallback[Params]:", json.encode(params, { indent = true }))
     lib.callback(("mate-factions:%s"):format(name), false, (function(result)
-      print(("Result(%s): "):format(name), json.encode(result, { indent = true }))
-      if result.msg and result.msgTyp ~= nil then
-        mCore.Notify(lang.Title, result.msg, result.msgTyp, 5000)
-      elseif result.msg then
-        mCore.Notify(lang.Title, result.msg, result.err and "error" or "info", 5000)
+      -- print(("Result(%s): "):format(name), json.encode(result, { indent = true }))
+
+      local ok, err = pcall(function(...)
+        if result.msg and result.msgTyp ~= nil then
+          mCore.Notify(lang.Title, result.msg, result.msgTyp, 5000)
+        elseif result.msg then
+          mCore.Notify(lang.Title, result.msg, result.err and "error" or "info", 5000)
+        end
+      end)
+
+      if not ok then
+        Logger:Error(("[%s]"):format(name), err)
       end
 
       cb(result)
@@ -53,6 +60,8 @@ end)
 
 RegisterCommand("mate-factions", (function(src, args, raw)
   local localPlayer = lib.callback.await("mate-factions:GetLocalPlayer", false)
+
+  Logger:Debug("LocalPlayer->", localPlayer)
 
   sendNUI("open", {
     localPlayer = localPlayer,
@@ -87,6 +96,8 @@ nuiServerCallback("createRank", function()
 end)
 nuiServerCallback("removeRank")
 nuiServerCallback("updateFactionMember")
+nuiServerCallback("requestPlayerFactions")
+nuiServerCallback("requestNews")
 
 --[[
 , function()

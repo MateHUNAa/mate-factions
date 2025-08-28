@@ -65,8 +65,6 @@ function SaveFactionMembers(factionId)
     end
 end
 
-
-
 function GetFactionConfig(factionName)
     return Factions[factionName] or nil
 end
@@ -125,6 +123,7 @@ function InsertFaction(name, label, type)
         end
     end
 end
+
 exports('InsertFaction', InsertFaction)
 
 function GetFactionSetting(factionId, setting)
@@ -139,3 +138,7 @@ exports("GetFactionSetting", GetFactionSetting)
 function SetFactionSetting(factionId, setting, value)
     -- TODO: Allow admins to change faction.settings
 end
+
+regServerNuiCallback("requestNews", function(pid, identifier, params)
+    return { data = {}, msg = "[requestNews] WORK IN PROGRESS", msgType = "warning" }
+end)

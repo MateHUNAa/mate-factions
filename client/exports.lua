@@ -5,7 +5,8 @@ local playerFactionsKey = {}
 local Logger            = require("shared.Logger")
 
 RegisterNetEvent("mate-factions:updateClientFactionTypes", function(data, factions)
-    Logger:Debug("Received updated faction types from server:", data, factions)
+    -- Logger:Debug("Received updated faction types from server:", data, factions)
+
     factionTypes = data
     playerFactions = factions
     playerFactionsKey = {}
@@ -15,9 +16,7 @@ RegisterNetEvent("mate-factions:updateClientFactionTypes", function(data, factio
     end
 
 
-    sendNUI("updateClientFactionTypes", {
-        factions = factions
-    })
+    sendNUI("updateClientFactionTypes", factions)
 
     if #factions <= 0 then
         sendNUI("close")

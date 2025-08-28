@@ -96,10 +96,10 @@ local function addMarker(factionId, pos)
     dutyMarkers[tostring(factionId)] = true
     exports["mate-markers"]:AddMarker(template)
 
-    Logger:Debug({
-        factionId = factionId,
-        pos = pos
-    }, "Duty marker created !")
+    -- Logger:Debug({
+    --     factionId = factionId,
+    --     pos = pos
+    -- }, "Duty marker created !")
 end
 
 

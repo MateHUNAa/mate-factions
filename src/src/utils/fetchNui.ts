@@ -1,7 +1,7 @@
 import { isEnvBrowser } from "./misc";
 const resourceName = (window as any).GetParentResourceName
   ? (window as any).GetParentResourceName()
-  : "mate-admin";
+  : "mate-factions";
 
 export async function fetchNui<T>(
   eventName: string,
@@ -22,6 +22,6 @@ export async function fetchNui<T>(
 
     return respFormatted;
   } catch (error) {
-    throw Error(`Failed to fetch NUI callback ${eventName}! (${error})`);
+    throw Error(`Failed to fetch NUI callback \`${eventName}\`! (${error})`);
   }
 }

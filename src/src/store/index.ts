@@ -3,12 +3,14 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import ranksReducer from "./rankSlice"
 import userReducer from "./userSlice"
 import membersReducer from "./memberSlice"
+import factionReducer from "./factionSlice"
 
 export const store = configureStore({
   reducer: {
     ranks: ranksReducer,
     user: userReducer,
-    members: membersReducer
+    members: membersReducer,
+    faction: factionReducer
   },
 });
 

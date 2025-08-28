@@ -11,6 +11,7 @@ import { setCurrentUser, User } from './store/userSlice';
 import { Permission, Rank } from './lib/permission';
 import { useAppDispatch } from './store';
 import { setPermissions, setRanks } from './store/rankSlice';
+import { Faction, setPlayerFactions } from './store/factionSlice';
 
 export type PanelType = "off" | "DutyPanel" | "Dashboard" | "Members" | "Ranks"
 
@@ -36,14 +37,20 @@ function App() {
     dispatch(setCurrentUser(data))
   })
 
+  useNuiEvent("updateClientFactionTypes", (data: Faction[]) => dispatch(setPlayerFactions(data)))
+
   useNuiEvent<{
     localPlayer?: { data: User },
     ranks?: Rank[],
-    permissions?: Permission[]
+    permissions?: Permission[],
+    playerFactions?: Faction[]
   }>("open", (data) => {
     if (data.localPlayer) {
       dispatch(setCurrentUser(data.localPlayer.data))
-      console.log(data.localPlayer.data)
+    }
+
+    if (data.playerFactions) {
+      dispatch(setPlayerFactions(data.playerFactions))
     }
 
     if (data.ranks && data.permissions) {

@@ -13,6 +13,7 @@ Loc["en"] = {
           ["same_faction"] = "This player already in this faction !",
           ["rank_missing"] = "Rank not found!",
           ["permission_missing"] = "You don't have `%s` permission to do this action !",
+          ["not_in_faction"] = "You are not part of any faction !"
      },
      success = {
           ["faction_created"] = "Faction %s created !",

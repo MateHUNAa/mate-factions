@@ -36,7 +36,6 @@ const userSlice = createSlice({
     initialState,
     reducers: {
         setCurrentUser(state, action: PayloadAction<User>) {
-            console.log("LocalUser Loaded !")
             state.currentUser = action.payload
         },
         clearCurrentUser(state) {

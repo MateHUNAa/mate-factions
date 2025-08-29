@@ -63,7 +63,7 @@ const FactionSelector: React.FC<FactionSelectorProps> = ({ collapsed = false }) 
                         <div className="text-left min-w-0 flex-1">
                             <div className="font-medium text-gray-300 truncate">{selectedFaction.name}</div>
                             <div className="text-xs text-white truncate">
-                                {selectedFaction?.members?.length?.toString() || 0} members
+                                {selectedFaction?.memberCount || 0} members
                             </div>
                         </div>
                     </div>

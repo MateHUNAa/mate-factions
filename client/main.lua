@@ -115,6 +115,8 @@ nuiServerCallback("promoteFactionMember")
 nuiServerCallback("demoteFactionMember")
 nuiServerCallback("kickFactionMember")
 
+nuiServerCallback("changeMemberRank")
+
 
 
 Citizen.CreateThread((function()

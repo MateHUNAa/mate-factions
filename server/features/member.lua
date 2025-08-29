@@ -167,6 +167,43 @@ function SyncPlayerFactions(src, identifier)
     TriggerClientEvent("mate-factions:updateClientFactionTypes", src, factionTypes, playerFactions)
 end
 
+function SyncAllOnlineMembers()
+    Logger:Debug("Syncing all online faction members...")
+
+    for _, pid in pairs(GetPlayers()) do
+        local idf = GetPlayerIdentifierByType(pid, "license"):sub(9)
+        if idf then
+            local playerFactions = {}
+            local factionTypes = {}
+
+
+            for factionId, faction in pairs(Factions) do
+                ---@type FactionMember
+                local member = faction.members[idf]
+
+                if member then
+                    local entry = {
+                        id       = factionId,
+                        name     = factionId,
+                        label    = faction.label,
+                        settings = faction.settings,
+                        rank     = member.rank,
+                        on_duty  = member.on_duty == 1,
+                        ranks    = faction.ranks,
+                        type     = faction.type
+                    }
+                    table.insert(playerFactions, entry)
+                    factionTypes[factionId] = true
+                else
+                    factionTypes[factionId] = false
+                end
+            end
+
+            TriggerClientEvent("mate-factions:updateClientFactionTypes", pid, factionTypes, playerFactions)
+        end
+    end
+end
+
 AddEventHandler('esx:playerLoaded', function(playerId, xPlayer, isNew)
     SyncPlayerFactions(playerId, xPlayer.identifier)
 end)
@@ -522,14 +559,24 @@ regServerNuiCallback("kickFactionMember", function(pid, idf, params)
 end)
 
 
+---@param params {factionId: string, newRank: FactionRank, oldRank: FactionRank, target: string}
+regServerNuiCallback("changeMemberRank", function(pid, idf, params)
+    local faction, member, handleNotify = GetEffectiveFaction(params.factionId, idf)
+    if not handleNotify(pid, member) then return { error = true } end
 
+    if not MemberHasPermission(idf, params.factionId, "manageMembers") then
+        handleNotify(pid, "permission_missing", "manageMembers")
+        return { error = true }
+    end
 
---[[
-export interface NearbyPlayer {
-    id: number;
-    identifier: string;
-    distance: number;
-    avatar: string;
-    name: string;
-}
-]]
+    local validRank, rank = GetValidRank(params.newRank.id, faction.ranks)
+    if validRank then
+        local success, errVal, handleErr = SetPlayerRank(params.target, faction.id, validRank)
+        if not success then
+            handleErr(errVal)
+            return { error = true, msg = errVal }
+        else
+            return { success = success }
+        end
+    end
+end)

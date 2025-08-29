@@ -384,6 +384,8 @@ function SetPlayerRank(identifier, factionId, newRank)
             factionConfig.members[identifier].rank = validPrio
         end
 
+        SyncAllOnlineMembers()
+
         return true, nil, handleErr
     else
         return false, "sql_error", handleErr

@@ -92,12 +92,10 @@ end)
 RegisterCommand("setfactionleader", function(source, args, raw)
     if not Functions.IsAdmin(source) then
         Logger:Debug(("%s(%s) is not an admin Tried to use command: `setfaction`"):format(GetPlayerName(source),
-            source))
+        source))
         mCore.Notify(source, lang.Title, "error", lang.error["not_an_admin"], 5000)
         return
     end
-
-
 
     local targetId  = args[1]
     local factionId = args[2]

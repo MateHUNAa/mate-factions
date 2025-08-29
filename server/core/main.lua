@@ -11,6 +11,7 @@ isLoaded = false
 ---@field permissions table<string, boolean>
 ---@field color string
 ---@field description string
+---@field id? string
 
 ---@class Faction
 ---@field name string (FactionId)

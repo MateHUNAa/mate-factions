@@ -10,6 +10,7 @@ import { useRanks } from "@/hooks/useRanks";
 import { useUser } from "@/store/userSlice";
 import { useFaction } from "@/hooks/useFaction";
 import { Button } from "../ui/button";
+import { fetchNui } from "@/utils/fetchNui";
 
 interface Props {
     member: Member;
@@ -31,7 +32,12 @@ const ChangeRankDialog: React.FC<Props> = ({ member, onOpenChange, open }) => {
     const currentRank = ranks.find((rank) => rank.id == userRankId)
 
     const handleSubmit = () => {
-
+        fetchNui("changeMemberRank", {
+            factionId: selectedFaction?.id,
+            newRank: newRank,
+            oldRank: currentRank,
+            target: member.identifier
+        })
     }
 
     return (

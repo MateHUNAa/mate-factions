@@ -1,4 +1,8 @@
+import { getUserRankId } from "@/components/Navbar";
+import { useFaction } from "@/hooks/useFaction";
+import { useRanks } from "@/hooks/useRanks";
 import { RootState } from "@/store"
+import { useUser } from "@/store/userSlice";
 import { TheaterIcon } from "lucide-react";
 import { useSelector } from "react-redux";
 
@@ -14,13 +18,24 @@ export interface Rank {
 
 export function hasPermission(rankId: number, permission: Permission, ranks: Rank[]): boolean {
     if (!ranks || ranks.length <= 0) return false
-    
+
     const rank = ranks.find(r => Number(r.id) == rankId);
     // console.log("[hasPermission]", rank?.permissions, permission)
 
     if (rank?.permissions.includes("all")) return true;
 
     return rank ? rank.permissions.includes(permission) : false;
+}
+
+export const useHasPermission = (permission: Permission) => {
+    const user = useUser()
+    const { selectedFaction } = useFaction()
+    const ranks = useRanks()
+    if (!user) return false
+    if (!selectedFaction) return false
+    const rankId = getUserRankId(user, selectedFaction)
+
+    return hasPermission(rankId, permission, ranks)
 }
 
 export function hasAnyPermission(rankId: number, permissions: Permission[], ranks: Rank[]): boolean {

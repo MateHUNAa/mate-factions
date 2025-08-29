@@ -1,0 +1,2 @@
+nuiServerCallback("postFactionPost")
+nuiServerCallback("requestNews")

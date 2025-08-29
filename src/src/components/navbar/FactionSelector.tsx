@@ -19,6 +19,8 @@ const FactionSelector: React.FC<FactionSelectorProps> = ({ collapsed = false }) 
         return null
     }
 
+    console.log(selectedFaction)
+
     if (collapsed) {
         return (
             <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
@@ -42,7 +44,7 @@ const FactionSelector: React.FC<FactionSelectorProps> = ({ collapsed = false }) 
                             <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: "#FFA500"/*faction.color*/ }} />
                             <div className="flex-1 min-w-0">
                                 <div className="font-medium">{faction.name}</div>
-                                <div className="text-xs text-gray-400 group-focus:text-gray-500">{faction?.memberCount?.toString() || 0} members</div>
+                                <div className="text-xs text-gray-400 group-focus:text-gray-500">{faction?.members?.length?.toString() || 0} members</div>
                             </div>
                             {selectedFaction.id === faction.id && <Check className={`size-8 text-white`} />}
                         </DropdownMenuItem>
@@ -61,7 +63,7 @@ const FactionSelector: React.FC<FactionSelectorProps> = ({ collapsed = false }) 
                         <div className="text-left min-w-0 flex-1">
                             <div className="font-medium text-gray-300 truncate">{selectedFaction.name}</div>
                             <div className="text-xs text-white truncate">
-                                {selectedFaction?.memberCount?.toString() || 0} members
+                                {selectedFaction?.members?.length?.toString() || 0} members
                             </div>
                         </div>
                     </div>

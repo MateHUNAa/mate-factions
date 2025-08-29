@@ -108,7 +108,6 @@ nuiServerCallback("updateFactionMember", (function()
   TriggerServerEvent("mate-factions:updatePlayerFaction")
 end))
 nuiServerCallback("requestPlayerFactions")
-nuiServerCallback("requestNews")
 nuiServerCallback("updateFactionRank")
 nuiServerCallback("requestFactionRanks")
 

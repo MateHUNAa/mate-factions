@@ -21,7 +21,7 @@ Config.PermissionList = {
      inviteMembers = { label = "Invite Members", icon = "send" },
      kickMembers   = { label = "Kick Members", icon = "userx" },
      stashAccess   = { label = "Stash Access", icon = "package" },
-
+     createPost    = { label = "Create Post", icon = "createPost" },
 }
 
 Config.AutoSyncDefaultRanks = true

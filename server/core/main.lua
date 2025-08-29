@@ -1,33 +1,39 @@
 ESX = exports['es_extended']:getSharedObject()
 mCore = exports["mCore"]:getSharedObj()
 local inv = exports["ox_inventory"]
-local Logger = require("shared.Logger")
+Logger = require("shared.Logger")
 lang = Loc[Config.lan]
 isLoaded = false
 
 
-
----@class FactionRanks
----@param name string
----@param permissions table
+---@class FactionRank
+---@field name string
+---@field permissions table<string, boolean>
+---@field color string
+---@field description string
 
 ---@class Faction
----@param name string (FactionId)
----@param label string
----@param type FactionType
----@param ranks FactionRanks[]
----@param permissions table
----@param allow_offduty boolean
----@param duty_point vector4
----@param mebmers FactionMember[]
+---@field name string (FactionId)
+---@field id string (FactionId)
+---@field label string
+---@field type FactionType
+---@field ranks FactionRank[]
+---@field permissions table<string, boolean>
+---@field settings table<string, any>
+---@field allow_offduty boolean
+---@field duty_point vector4
+---@field stash vector3
+---@field members FactionMember[]
+---@field posts FactionPost[]
 
 ---@class FactionMember
----@param rank { name: string, permissions: table}
----@param title string
----@param on_duty boolean
----@param joined_at Date
+---@field rank { name: string, permissions: table}
+---@field title string
+---@field on_duty boolean
+---@field joined_at Date
 
 
+---@type Faction[]
 Factions = {}
 
 Citizen.CreateThread(function()

@@ -213,7 +213,7 @@ function getLocalPlayer(pid)
         local rank          = faction.ranks[tostring(faction.memberData.rank)]
         rank.id             = tostring(faction.memberData.rank)
         faction.rank        = rank
-        faction.memberCount = #faction?.members or 0
+        faction.memberCount = table.count(faction?.members or {}) or 0
     end
 
     local player = {

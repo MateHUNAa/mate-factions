@@ -3,7 +3,10 @@ local Logger = require("shared.Logger")
 function LoadFactions()
     local res = MySQL.query.await("SELECT * FROM factions")
     for _, row in pairs(res) do
+        ---@type Faction
         Factions[row.name] = {
+            name          = row.name,
+            id            = row.name,
             label         = row.label,
             type          = row.type,
             ranks         = json.decode(row.ranks or "{}"),
@@ -14,6 +17,7 @@ function LoadFactions()
             members       = {},
             duty_point    = row.duty_point and json.decode(row.duty_point) or nil,
             stash         = row.stash and json.decode(row.stash) or nil,
+            posts         = row.posts and json.decode(row.posts or "{}") or {}
         }
     end
 

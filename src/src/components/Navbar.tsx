@@ -49,8 +49,6 @@ const Navbar: React.FC<Props> = ({ activePage, onPageChange }) => {
         return null
     }
 
-
-
     return (
         <div
             className={cn(

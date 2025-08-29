@@ -4,6 +4,7 @@ import { fetchNui } from "@/utils/fetchNui";
 import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
 import { isEnvBrowser } from "@/utils/misc";
+import { useFaction } from "@/hooks/useFaction";
 
 
 type NewsItem = {
@@ -50,7 +51,7 @@ function MockNews(count: number): NewsItem[] {
 
 const News: React.FC = ({ }) => {
     const [news, setNews] = useState<NewsItem[]>()
-
+    const { selectedFaction } = useFaction()
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -58,7 +59,7 @@ const News: React.FC = ({ }) => {
                     setNews(MockNews(10))
                     return
                 }
-                const { data } = await fetchNui<{ data: NewsItem[] }>("requestNews")
+                const { data } = await fetchNui<{ data: NewsItem[] }>("requestNews", { factionId: selectedFaction?.id })
                 setNews(data)
             } catch (error) {
                 console.error("Error:", error);

@@ -139,29 +139,32 @@ function SetFactionSetting(factionId, setting, value)
     -- TODO: Allow admins to change faction.settings
 end
 
-regServerNuiCallback("requestNews", function(pid, identifier, params)
-    return { data = {}, msg = "[requestNews] WORK IN PROGRESS", msgType = "warning" }
-end)
-
-
 function GetEffectiveFaction(factionId, memberId)
+    local function handleErr(ID, err, ...)
+        if type(err) == "table" then
+            return true
+        end
+
+        if err == "faction_missing" then
+            mCore.Notify(ID, lang.Title, (lang.error["faction_missing"]):format(factionId), "error", 5000)
+        elseif err == "not_member" then
+            mCore.Notify(ID, lang.Title, lang.error["not_member"], "error", 5000)
+        elseif err == "permission_missing" then
+            mCore.Notify(ID, lang.Title, (lang.error["permission_missing"]):format(...), "error", 5000)
+        end
+
+        return false
+    end
+
     local faction = Factions[factionId]
     if not faction then
-        return nil, {
-            msg = (lang.error["faction_missing"]):format(factionId),
-            msgType = "error",
-            error = true
-        }
+        return nil, "faction_missing", handleErr
     end
 
     local member = faction.members[memberId]
     if not member then
-        return nil, {
-            msg = lang.error["not_member"],
-            msgType = "error",
-            error = true
-        }
+        return nil, "not_member", handleErr
     end
 
-    return faction, member
+    return faction, member, handleErr
 end

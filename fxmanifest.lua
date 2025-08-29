@@ -14,7 +14,7 @@ shared_scripts {
 
 server_scripts {
     "server/helpers/*.lua",
-    
+
     "server/core/main.lua",
     "server/core/init.lua",
     "server/core/faction.lua",
@@ -25,11 +25,10 @@ server_scripts {
 
 client_scripts {
     "client/functions.lua",
-    "client/nui.lua",
     "client/exports.lua",
     "client/main.lua",
-    "client/duty.lua",
-    "client/invite.lua"
+
+    "client/features/*.lua"
 }
 
 server_script "@oxmysql/lib/MySQL.lua"

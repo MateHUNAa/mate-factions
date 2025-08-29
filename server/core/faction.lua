@@ -142,3 +142,26 @@ end
 regServerNuiCallback("requestNews", function(pid, identifier, params)
     return { data = {}, msg = "[requestNews] WORK IN PROGRESS", msgType = "warning" }
 end)
+
+
+function GetEffectiveFaction(factionId, memberId)
+    local faction = Factions[factionId]
+    if not faction then
+        return nil, {
+            msg = (lang.error["faction_missing"]):format(factionId),
+            msgType = "error",
+            error = true
+        }
+    end
+
+    local member = faction.members[memberId]
+    if not member then
+        return nil, {
+            msg = lang.error["not_member"],
+            msgType = "error",
+            error = true
+        }
+    end
+
+    return faction, member
+end

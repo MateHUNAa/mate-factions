@@ -29,6 +29,7 @@ client_scripts {
     "client/exports.lua",
     "client/main.lua",
     "client/duty.lua",
+    "client/invite.lua"
 }
 
 server_script "@oxmysql/lib/MySQL.lua"

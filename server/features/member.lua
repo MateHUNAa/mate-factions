@@ -92,6 +92,7 @@ function GetPlayerFactions(identifier)
     return playerFactions
 end
 
+exports("GetPlayerFactions", GetPlayerFactions)
 function SetPlayerDuty(identifier, onDuty)
     local factionId, factionData, memberData = GetPlayerFaction(identifier)
     if not factionId then return false end
@@ -519,3 +520,16 @@ regServerNuiCallback("kickFactionMember", function(pid, idf, params)
 
     return { msg = (lang.success["kicked"]):format(params.target), msgType = "success", error = false }
 end)
+
+
+
+
+--[[
+export interface NearbyPlayer {
+    id: number;
+    identifier: string;
+    distance: number;
+    avatar: string;
+    name: string;
+}
+]]

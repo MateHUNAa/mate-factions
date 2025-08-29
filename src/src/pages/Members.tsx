@@ -4,9 +4,23 @@ import { Button } from "@/components/ui/button";
 import { UserCheck, UserPlus, Users } from "lucide-react";
 import React, { useState } from "react";
 import InviteMembersDialog from "@/components/members/InviteMembersDialog";
+import { hasPermission } from "@/lib/permission";
+import { getUserRankId } from "@/components/Navbar";
+import { useUser } from "@/store/userSlice";
+import { useFaction } from "@/hooks/useFaction";
+import { useRanks } from "@/hooks/useRanks";
 
 const Members: React.FC = () => {
     const [inviteDialogOpen, setInviteDialogOpen] = useState(false)
+
+    const user = useUser()
+    const { selectedFaction, playerFactions } = useFaction()
+    const ranks = useRanks()
+
+    if (!user) return null
+
+
+    const userRankId = getUserRankId(user, selectedFaction || playerFactions[0])
 
     return (
         <>
@@ -21,6 +35,7 @@ const Members: React.FC = () => {
                         </div>
                         <Button
                             onClick={() => setInviteDialogOpen(true)}
+                            disabled={!hasPermission(userRankId, "inviteMembers", ranks)}
                             className="gap-2 bg-white/90 hover:bg-white">
                             <UserPlus className="size-4" />
                             Invite Members

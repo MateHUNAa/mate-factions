@@ -18,8 +18,10 @@ Config.PermissionList = {
      manageRanks   = { label = "Manage Ranks", icon = "shield" },
      manageMembers = { label = "Manage Members", icon = "users" },
      manageNews    = { label = "Manage News", icon = "edit" },
+     inviteMembers = { label = "Invite Members", icon = "send" },
      kickMembers   = { label = "Kick Members", icon = "userx" },
      stashAccess   = { label = "Stash Access", icon = "package" },
+
 }
 
 Config.AutoSyncDefaultRanks = true

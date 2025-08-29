@@ -7,10 +7,11 @@ import { ScrollArea } from "./ui/scroll-area";
 import { PanelType } from "@/App";
 import { useRanks } from "@/hooks/useRanks";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { useUser } from "@/store/userSlice";
+import { User, useUser } from "@/store/userSlice";
 import { useFaction } from "@/hooks/useFaction";
 import FactionSelector from "./navbar/FactionSelector";
 import { hasPermission } from "@/lib/permission";
+import { Faction } from "@/store/factionSlice";
 interface Props {
     activePage: PanelType,
     onPageChange: (page: PanelType) => void;
@@ -29,6 +30,12 @@ export const navigation: NavigationItem[] = [
     { name: "Members", href: "Members", icon: Users, permission: "manageMembers" },
 ];
 
+export const getUserRankId = (user: User, selectedFaction?: Faction) => {
+    const rankId = user.factions.find(f => f.id === selectedFaction?.id)?.rank?.id;
+
+    return rankId || 1
+}
+
 
 const Navbar: React.FC<Props> = ({ activePage, onPageChange }) => {
     const [collapsed, setCollapsed] = useState<boolean>(true)
@@ -41,6 +48,8 @@ const Navbar: React.FC<Props> = ({ activePage, onPageChange }) => {
         console.error("localUser is not found!")
         return null
     }
+
+
 
     return (
         <div
@@ -73,8 +82,7 @@ const Navbar: React.FC<Props> = ({ activePage, onPageChange }) => {
                     {navigation.map((item) => {
                         const isActive = item.href === activePage
 
-
-                        const rankId = user.factions.find(f => f.id === selectedFaction?.id)?.rank?.id;
+                        const rankId = getUserRankId(user, selectedFaction || playerFactions[0])
                         if (!rankId) return null
                         const shouldShow = !item.permission || hasPermission(rankId, item.permission, ranks);
                         if (!shouldShow) return null

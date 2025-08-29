@@ -19,6 +19,7 @@ export const useRanks = () => {
                 if (!selectedFaction) return dispatch(setRanks(playerFactions[0]?.ranks))
 
                 const { data } = await fetchNui<{ data: Rank[] }>("requestFactionRanks", selectedFaction.id);
+                
                 dispatch(setRanks(data));
             } catch (error) {
                 console.error("Error fetching ranks:", error);

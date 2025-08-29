@@ -15,8 +15,21 @@ function sendNUI(action, data)
   })
 end
 
+local timeouts = {}
+local cooldown = 500
+
 function nuiCallback(name, callback)
   RegisterNUICallback(name, function(data, cb)
+    local now = GetGameTimer()
+    local last = timeouts[name] or 0
+
+    if now - last < cooldown then
+      cb({ error = "cooldown" })
+      Logger:Error(("[%s] is on cooldown !"):format(name))
+      return
+    end
+
+    timeouts[name] = now
     callback(data, cb)
   end)
 end

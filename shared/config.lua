@@ -15,11 +15,11 @@ Config.ApprovedLicenses = {
 }
 
 Config.PermissionList = {
-     "manageRanks",
-     "manageMembers",
-     "manageNews",
-     "kickMembers",
-     "stashAccess",
+     manageRanks   = { label = "Manage Ranks", icon = "shield" },
+     manageMembers = { label = "Manage Members", icon = "users" },
+     manageNews    = { label = "Manage News", icon = "edit" },
+     kickMembers   = { label = "Kick Members", icon = "userx" },
+     stashAccess   = { label = "Stash Access", icon = "package" },
 }
 
 Config.AutoSyncDefaultRanks = true

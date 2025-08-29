@@ -482,3 +482,42 @@ regServerNuiCallback("demoteFactionMember", function(pid, idf, params)
 
     return { msg = ("Demoted %s to %s."):format(params.target, nextRank.name), msgType = "success", error = false }
 end)
+
+
+---@param pid any
+---@param idf any
+---@param params { target: string, factionId: string }
+regServerNuiCallback("kickFactionMember", function(pid, idf, params)
+    local faction = Factions[params.factionId]
+    if not faction then
+        return { msg = "Faction not found.", msgType = "error", error = true }
+    end
+
+    local member = faction.members[idf]
+    if not member then
+        return { msg = "Your membership not found in this faction.", msgType = "error", error = true }
+    end
+
+    if not MemberHasPermission(idf, params.factionId, "kickMembers") then
+        return { msg = "You don't have permission to manage members.", msgType = "error", error = true }
+    end
+
+    local targetMember = faction.members[params.target]
+    if not targetMember then
+        return { msg = "Target member not found.", msgType = "error", error = true }
+    end
+
+    if targetMember.rank >= member.rank then
+        return { msg = "Cannot kick a member who has equal or higher rank than yourself.", msgType = "error", error = true }
+    end
+
+    kickFactionMember(params.target, params.factionId)
+
+    Logger:Info(("%s kicked from faction %s by %s"):format(
+        params.target,
+        params.factionId,
+        idf
+    ))
+
+    return { msg = ("Kicked %s from faction."):format(params.target), msgType = "success", error = false }
+end)

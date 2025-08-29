@@ -8,6 +8,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Button } from "../ui/button";
 import EditRankDialog from "./EditRankDialog";
 import { fetchNui } from "@/utils/fetchNui";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
+import SvgIcon from "../SvgIcon";
 
 export interface RankCardProps {
     rank: {
@@ -21,33 +24,23 @@ export interface RankCardProps {
     memberCount: number;
 }
 
-const permissionIcons: Record<string, any> = {
-    manageRanks: Shield,
-    manageMembers: Users,
-    manageNews: Edit,
-    kickMembers: UserX,
-    stashAccess: Package
-}
-
-const permissionLabels: Record<string, string> = {
-    manageRanks: "Manage Ranks",
-    manageMembers: "Manage Members",
-    manageNews: "Manage News",
-    kickMembers: "Kick Members",
-    stashAccess: "Stash Access"
-}
-
-const possiblePermissions: Record<string, boolean> = {
-    manageRanks: true,
-    manageMembers: true,
-    manageNews: true,
-    kickMembers: true,
-    stashAccess: true,
-}
 
 const RankCard: React.FC<RankCardProps> = React.memo(({ rank, className, memberCount }) => {
     const [editOpen, setEditOpen] = useState<boolean>(false)
     const activePermissions = useMemo(() => rank.permissions ?? [], [rank.permissions]);
+
+    const permissions = useSelector((state: RootState) => state.ranks.permissions)
+
+    const possiblePermissions: Record<string, boolean> = {}
+    const permissionLabels: Record<string, string> = {}
+    const permissionIcons: Record<string, any> = {}
+
+    Object.entries(permissions).map(([key, { label, icon }]) => {
+        permissionIcons[key] = `/icons/${icon}.svg`
+        permissionLabels[key] = label
+        possiblePermissions[key] = true
+    })
+
 
     // TODO: Not sure tbh
     const levelBadge = useMemo(() => {
@@ -125,20 +118,20 @@ const RankCard: React.FC<RankCardProps> = React.memo(({ rank, className, memberC
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                             {
                                 Object.keys(possiblePermissions).map((perm) => {
-                                    const Icon = permissionIcons[perm] || Shield
+                                    const iconSrc = permissionIcons[perm] || "/icons/default.svg"
                                     const label = permissionLabels[perm] || perm
                                     const hasPerm = rank.permissions.includes(perm)
 
                                     return (
                                         <div
                                             key={perm}
-                                            className={`flex items-center gap-2 p-2 rounded-md text-xs font-semibold ${hasPerm ? "bg-green-500/10 text-green-400" : "bg-zinc-700 text-white font-normal "}`}>
-                                            <Icon className="size-3 flex-shrink-0" />
-                                            <span className="truncate">
-                                                {label}
-                                            </span>
+                                            className={`flex items-center gap-2 p-2 rounded-md text-xs font-semibold ${hasPerm ? "bg-green-500/10 text-green-400" : "bg-zinc-700 text-white font-normal"
+                                                }`}
+                                        >
+                                            <img src={iconSrc}  className="size-4"/>
+                                            <span className="truncate">{label}</span>
                                         </div>
-                                    )
+                                    );
                                 })
                             }
                         </div>

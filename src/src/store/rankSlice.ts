@@ -2,19 +2,16 @@ import { Permission, Rank } from "@/lib/permission";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 
+export type Permissions = Record<string, { label: string, icon: string }>
 
 interface RankState {
     ranks: Rank[];
-    permissions: Permission[];
-    ranksLoaded: boolean;
-    permissionsLoaded: boolean;
+    permissions: Permissions;
 }
 
 const initialState: RankState = {
     ranks: [],
-    permissions: [],
-    ranksLoaded: false,
-    permissionsLoaded: false,
+    permissions: {},
 };
 
 const rankSlice = createSlice({
@@ -24,7 +21,6 @@ const rankSlice = createSlice({
         // --- Ranks ---
         setRanks(state, action: PayloadAction<Rank[]>) {
             state.ranks = action.payload;
-            state.ranksLoaded = true;
         },
         addRank(state, action: PayloadAction<Rank>) {
             state.ranks.push(action.payload);
@@ -40,9 +36,8 @@ const rankSlice = createSlice({
         },
 
         // --- Permissions ---
-        setPermissions(state, action: PayloadAction<Permission[]>) {
+        setPermissions(state, action: PayloadAction<Permissions>) {
             state.permissions = action.payload;
-            state.permissionsLoaded = true;
         },
     },
 });

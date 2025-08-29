@@ -91,46 +91,44 @@ function App() {
         <>
           {activePanel !== "DutyPanel" && (
             <div className="min-h-screen flex items-center justify-center px-4">
-              <div className="bg-zinc-900 p-6 rounded-2xl shadow-xl max-w-6xl w-full">
+              <div className="bg-zinc-900 rounded-2xl shadow-xl max-w-6xl w-full flex">
 
-                <div className='flex'>
-                  <Navbar activePage={activePanel} onPageChange={setActivePanel} />
+                {/* Sidebar Navbar (left) */}
+                <Navbar activePage={activePanel} onPageChange={setActivePanel} />
 
-                  {activePanel == "Dashboard" && (
-                    <Dashboard />
-                  )}
+                {/* Main content (right) */}
+                <div className="flex-1 min-h-[65vh] max-h-[65vh] overflow-y-auto p-6">
+                  {activePanel === "Dashboard" && <Dashboard />}
 
-                  {activePanel == "Members" && (
+                  {activePanel === "Members" && (
                     <FactionPage page="Members" setPage={(page) => setActivePanel(page)}>
                       <Members />
                     </FactionPage>
                   )}
 
-                  {activePanel == "Ranks" && (
-                    <FactionPage page='Ranks' setPage={(page) => setActivePanel(page)}>
+                  {activePanel === "Ranks" && (
+                    <FactionPage page="Ranks" setPage={(page) => setActivePanel(page)}>
                       <Ranks />
                     </FactionPage>
                   )}
-
                 </div>
 
               </div>
             </div>
           )}
 
-          {
-            activePanel == "DutyPanel" && (
-              <DutyPanel
-                visible={visible}
-                factionName={dutyData?.factionName}
-                onDuty={dutyData?.onDuty || false}
-                rankLabel={dutyData?.rankLabel}
-              />
-            )
-          }
+          {activePanel === "DutyPanel" && (
+            <DutyPanel
+              visible={visible}
+              factionName={dutyData?.factionName}
+              onDuty={dutyData?.onDuty || false}
+              rankLabel={dutyData?.rankLabel}
+            />
+          )}
         </>
       )}
     </div>
+
   )
 }
 

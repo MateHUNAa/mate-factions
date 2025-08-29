@@ -32,9 +32,9 @@ const Dashboard: React.FC<Props> = ({ }) => {
     }).length;
 
     return (
-        <div className="p-4 rounded-2xl shadow-md bg-background">
-            <main className="items-center justify-center mx-auto">
-                <InfoCardBox>
+        <div className="p-4 rounded-2xl shadow-md bg-background h-full">
+            <main className="flex flex-col justify-between">
+                <InfoCardBox className="flex-shrink-0">
                     <InfoCard title="Total Members" content={members.length.toString()} Icon={Users} subContent={<InfoSubElement subContent={`+${joinedLast7Days}`} content="new member joined" />} />
                     <InfoCard title="Total Ranks" content={ranks?.length?.toString() || "0"} Icon={Users} subContent={<InfoSubElement subContent="+1" content="new rank created" color="text-green-400" />} />
                     <InfoCard title="Active Members" content={`${activeMembers.length}`} Icon={Users}
@@ -45,12 +45,11 @@ const Dashboard: React.FC<Props> = ({ }) => {
                     /></InfoCardBox>
 
                 {/* News */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-2">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4 flex-grow">
                     <News />
                     <Actions />
                 </div>
             </main>
-
         </div>
     );
 };

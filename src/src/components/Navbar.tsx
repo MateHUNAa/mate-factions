@@ -12,6 +12,7 @@ import { useFaction } from "@/hooks/useFaction";
 import FactionSelector from "./navbar/FactionSelector";
 import { hasPermission } from "@/lib/permission";
 import { Faction } from "@/store/factionSlice";
+import { Separator } from "./ui/separator";
 interface Props {
     activePage: PanelType,
     onPageChange: (page: PanelType) => void;
@@ -52,12 +53,12 @@ const Navbar: React.FC<Props> = ({ activePage, onPageChange }) => {
     return (
         <div
             className={cn(
-                "relative flex flex-col border-r border-sidebar-border bg-sidebar transition-all duration-300 mr-2",
+                "relative flex flex-col border-r transition-all duration-300 space-y-2 items-center justify-center",
                 collapsed ? "w-16" : "w-64",
             )}
         >
             {/* Header */}
-            <div className="flex h-16 items-center justify-between px-4 border-b border-sidebar-border">
+            <div className="flex h-16 items-center justify-between px-4 w-full ">
                 {!collapsed && <h1 className="font-heading text-xl font-bold text-white">{selectedFaction?.label || "mFaction"}</h1>}
                 <Button
                     variant="ghost"
@@ -70,12 +71,12 @@ const Navbar: React.FC<Props> = ({ activePage, onPageChange }) => {
             </div>
 
             {/* Faction Selector */}
-            <div className="px-3 py-4 border-b border-white">
+            <div className="p-1 w-full">
                 <FactionSelector collapsed={collapsed} />
             </div>
 
             {/* Navigation */}
-            <ScrollArea className="flex-1 px-3 py-4 text-white">
+            <ScrollArea className="flex-1 m-auto text-white w-full">
                 <nav className="space-y-2">
                     {navigation.map((item) => {
                         const isActive = item.href === activePage
@@ -105,7 +106,7 @@ const Navbar: React.FC<Props> = ({ activePage, onPageChange }) => {
             </ScrollArea>
 
             {/* Footer */}
-            <div className="border-t border-sidebar-border p-4">
+            <div className="border-t border-sidebar-border p-4 w-full">
                 <div className={cn("flex items-center gap-3", collapsed && "justify-center")}>
                     <div className="h-8 w-8 rounded-full bg-sidebar-accent flex items-center justify-center">
                         <Avatar>

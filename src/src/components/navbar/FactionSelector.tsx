@@ -24,11 +24,11 @@ const FactionSelector: React.FC<FactionSelectorProps> = ({ collapsed = false }) 
     if (collapsed) {
         return (
             <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
-                <DropdownMenuTrigger asChild>
+                <DropdownMenuTrigger asChild className="w-full flex items-center justify-center mx-auto">
                     <Button
                         variant="ghost"
                         size="icon"
-                        className={`size-10 rounded-lg border-2 border-[#FFA500] hover:border-amber-400 group`}
+                        className={`size-10 rounded-lg border-2 border-[#FFA500] hover:border-amber-400 group `}
                     >
                         <Sword className=" text-[#FFA500] group-hover:text-amber-600" />
                     </Button>
@@ -57,7 +57,7 @@ const FactionSelector: React.FC<FactionSelectorProps> = ({ collapsed = false }) 
     return (
         <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="w-full justify-between h-auto p-3 bg-zinc-800 border border-zinc-700 hover:bg-zinc-700">
+                <Button variant="ghost" className="w-full justify-between h-auto p-3 bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 mx-auto">
                     <div className="flex items-center gap-3">
                         <div className="w-4 h-4 rounded-full flex-shrink-0" style={{ backgroundColor: "#FFA500"/*faction.color*/ }} />
                         <div className="text-left min-w-0 flex-1">

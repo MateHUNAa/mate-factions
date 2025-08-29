@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Search, Settings, Shield, Users } from "lucide-react";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { useMembers } from "@/hooks/useMembers";
 import { useRanks } from "@/hooks/useRanks";
 
@@ -48,6 +48,20 @@ const Ranks: React.FC<Props> = ({ }) => {
         return [...ranksData].filter((rank) => rank.name.toLowerCase().includes(searchQuery.toLowerCase())).sort((a, b) => b.id - a.id)
     }, [ranksData, searchQuery])
 
+    const containerRef = useRef<HTMLDivElement>(null)
+
+    const handleWheel = (e: React.WheelEvent) => {
+        const container = containerRef.current;
+        if (!container) return
+
+        const dir = e.deltaY > 0 ? 1 : -1;
+        const cardHeight = container.firstElementChild?.clientHeight || 0
+
+        container.scrollBy({
+            top: dir * cardHeight,
+            behavior: "instant"
+        })
+    }
 
     if (!ranksData || ranksData.at.length <= 0) return null
 
@@ -109,7 +123,7 @@ const Ranks: React.FC<Props> = ({ }) => {
                     </Badge>
                 </div>
 
-                <div className="space-y-3 overflow-y-auto max-h-[calc(5*6.4rem)] snap-y snap-mandatory">
+                <div className="space-y-3 overflow-y-hidden max-h-[calc(5*3.25rem)] snap-y snap-mandatoryF" ref={containerRef} onWheel={handleWheel}>
                     {filteredAndSortedRanks.map((rank) => (
                         <RankCard key={rank.id} rank={rank} className="snap-start mr-2" memberCount={rankCounts[rank.id]} />
                     ))}

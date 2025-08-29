@@ -12,6 +12,7 @@ import { Member } from "@/store/memberSlice";
 import { useMembers } from "@/hooks/useMembers";
 import { useFaction } from "@/hooks/useFaction";
 import { fetchNui } from "@/utils/fetchNui";
+import ChangeRankDialog from "./ChangeRankDialog";
 
 const getStatusColor = (status: string) => {
     switch (status) {
@@ -42,6 +43,7 @@ const getStatusBadge = (status: string) => {
 const MemberTable: React.FC = () => {
     const [selectedMembers, setSelectedMembers] = useState<string[]>([])
     const [editingMember, setEditingMember] = useState<Member | null>(null)
+    const [changingRankMember, setChangingRankMember] = useState<Member | null>(null)
 
 
     const members = useMembers()
@@ -75,7 +77,7 @@ const MemberTable: React.FC = () => {
 
     return (
         <>
-            <div className="max-h-[calc(4*6rem)] overflow-y-scroll scroll-smooth snap-y snap-mandatory rounded-md">
+            <div className="max-h-[calc(4*6rem)] overflow-y-scroll scroll-smooth snap-y snap-mandatory rounded-md bg-zinc-900">
                 <Table>
                     <TableHeader className="bg-zinc-800/70">
                         <TableRow className="border-zinc-700/80">
@@ -163,7 +165,9 @@ const MemberTable: React.FC = () => {
                                                     Edit Member
                                                 </DropdownMenuItem>
 
-                                                <DropdownMenuItem className="focus:text-gray-400">
+                                                <DropdownMenuItem
+                                                    onClick={() => setChangingRankMember(member)}
+                                                    className="focus:text-gray-400">
                                                     <Shield className="size-4" />
                                                     Change Rank
                                                 </DropdownMenuItem>
@@ -188,8 +192,8 @@ const MemberTable: React.FC = () => {
                 </Table >
             </div>
 
-            {editingMember && <EditMemberDialog member={editingMember} open={!!editingMember} onOpenChange={(open) => !open && setEditingMember(null)} />
-            }
+            {editingMember && <EditMemberDialog member={editingMember} open={!!editingMember} onOpenChange={(open) => !open && setEditingMember(null)} />}
+            {changingRankMember && <ChangeRankDialog member={changingRankMember} open={!!changingRankMember} onOpenChange={(open) => !open && setChangingRankMember(null)} />}
         </>
     );
 };

@@ -33,7 +33,7 @@ const Dashboard: React.FC<Props> = ({ }) => {
 
     return (
         <div className="p-4 rounded-2xl shadow-md bg-background">
-            <main>
+            <main className="items-center justify-center mx-auto">
                 <InfoCardBox>
                     <InfoCard title="Total Members" content={members.length.toString()} Icon={Users} subContent={<InfoSubElement subContent={`+${joinedLast7Days}`} content="new member joined" />} />
                     <InfoCard title="Total Ranks" content={ranks?.length?.toString() || "0"} Icon={Users} subContent={<InfoSubElement subContent="+1" content="new rank created" color="text-green-400" />} />

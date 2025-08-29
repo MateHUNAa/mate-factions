@@ -49,8 +49,6 @@ const RankCard: React.FC<RankCardProps> = React.memo(({ rank, className, memberC
     const [editOpen, setEditOpen] = useState<boolean>(false)
     const activePermissions = useMemo(() => rank.permissions ?? [], [rank.permissions]);
 
-    console.log(rank.name, "RENDER")
-
     // TODO: Not sure tbh
     const levelBadge = useMemo(() => {
         if (rank.id >= 9) return { variant: "destructive" as const, label: "ADMIN", color: "bg-red-400" };

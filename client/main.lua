@@ -112,6 +112,9 @@ nuiServerCallback("requestNews")
 nuiServerCallback("updateFactionRank")
 nuiServerCallback("requestFactionRanks")
 
+nuiServerCallback("promoteFactionMember")
+nuiServerCallback("demoteFactionMember")
+nuiServerCallback("kickFactionMember")
 
 
 

@@ -14,6 +14,8 @@ import dayjs from "dayjs";
 import { Member, updateMember } from "@/store/memberSlice";
 import { useAppDispatch } from "@/store";
 import { useRanks } from "@/hooks/useRanks";
+import { useUser } from "@/store/userSlice";
+import { useFaction } from "@/hooks/useFaction";
 
 interface Props {
     member: Member;
@@ -48,6 +50,9 @@ const EditMemberDialog: React.FC<Props> = ({ member, open, onOpenChange }) => {
     })
 
     const ranks = useRanks()
+    const user = useUser()
+    const { selectedFaction } = useFaction()
+    const userRankId = user?.factions.find((f) => f.id == selectedFaction?.id)?.rank?.id || 1
 
     useEffect(() => {
         setFormData({
@@ -68,6 +73,7 @@ const EditMemberDialog: React.FC<Props> = ({ member, open, onOpenChange }) => {
         try {
             const { success } = await fetchNui<{ success: boolean }>("updateFactionMember", {
                 factionId: member.faction,
+                targetOldRankId: member.rank.id,
                 rankId: selectedRank?.id || -1,
                 target: member,
                 ...formData
@@ -146,12 +152,12 @@ const EditMemberDialog: React.FC<Props> = ({ member, open, onOpenChange }) => {
                             <div className="space-y-2">
                                 <Label className="text-gray-400">Rank</Label>
                                 <Select value={formData.rank} onValueChange={(value) => setFormData({ ...formData, rank: value })}>
-                                    <SelectTrigger className="bg-input border-zinc-700/80 text-white">
+                                    <SelectTrigger className="bg-input border-zinc-700/80 text-white" disabled={member.identifier == user?.identifier}>
                                         <SelectValue placeholder="Select rank" />
                                     </SelectTrigger>
 
                                     <SelectContent className="bg-zinc-900" position="item-aligned">
-                                        {ranks?.map((rank) => (
+                                        {ranks.filter((r) => Number(r.id) <= userRankId).sort((a, b) => b.id - a.id)?.map((rank) => (
                                             <SelectItem value={rank.name} key={rank.id} className="bg-zinc-800">
                                                 <div className="flex items-center gap-2">
                                                     <div className="size-3 rounded-full" style={{ backgroundColor: rank.color }} />
@@ -218,7 +224,12 @@ const EditMemberDialog: React.FC<Props> = ({ member, open, onOpenChange }) => {
                                     <h4 className="font-medium text-white">Promote Member</h4>
                                     <p className="text-sm text-gray-400">Promote member to heigher rank.</p>
                                 </div>
-                                <Button variant={"outline"} size={"sm"} className="gap-2 bg-transparent text-green-400 hover:text-green-500 min-w-40 justify-evenly">
+                                <Button
+                                    onClick={() => fetchNui("promoteFactionMember", {
+                                        target: member.identifier,
+                                        factionId: member.faction
+                                    })}
+                                    variant={"outline"} size={"sm"} className="gap-2 bg-transparent text-green-400 hover:text-green-500 min-w-40 justify-evenly">
                                     <ArrowUpCircle className="size-6" />
                                     Promote Member
                                 </Button>
@@ -229,7 +240,12 @@ const EditMemberDialog: React.FC<Props> = ({ member, open, onOpenChange }) => {
                                     <h4 className="font-medium text-white">Demote Member</h4>
                                     <p className="text-sm text-gray-400">Demote member to a lower rank.</p>
                                 </div>
-                                <Button variant={"outline"} size={"sm"} className="gap-2 bg-transparent text-amber-400 hover:text-amber-500 min-w-40 justify-evenly">
+                                <Button
+                                    onClick={() => fetchNui("demoteFactionMember", {
+                                        target: member.identifier,
+                                        factionId: member.faction
+                                    })}
+                                    variant={"outline"} size={"sm"} className="gap-2 bg-transparent text-amber-400 hover:text-amber-500 min-w-40 justify-evenly">
                                     <ArrowDownCircle className="size-6" />
                                     Demote Member
                                 </Button>
@@ -241,7 +257,8 @@ const EditMemberDialog: React.FC<Props> = ({ member, open, onOpenChange }) => {
                                     <h4 className="font-medium text-white">Warn Member</h4>
                                     <p className="text-sm text-gray-400">Send a private warning to the member!</p>
                                 </div>
-                                <Button variant={"outline"} size={"sm"} className="gap-2 bg-transparent text-orange-400 hover:text-orange-500 min-w-40 justify-evenly">
+                                <Button
+                                    variant={"outline"} size={"sm"} className="gap-2 bg-transparent text-orange-400 hover:text-orange-500 min-w-40 justify-evenly">
                                     <AlertCircle className="size-6 " />
                                     Warn Member
                                 </Button>
@@ -252,7 +269,12 @@ const EditMemberDialog: React.FC<Props> = ({ member, open, onOpenChange }) => {
                                     <h4 className="font-medium text-white">Kick Member</h4>
                                     <p className="text-sm text-gray-400">Kick member from the Faction.</p>
                                 </div>
-                                <Button variant={"outline"} size={"sm"} className="gap-2 bg-transparent text-red-400 hover:text-red-500 min-w-40 justify-evenly">
+                                <Button
+                                    onClick={() => fetchNui("kickFactionMember", {
+                                        target: member.identifier,
+                                        factionId: member.faction
+                                    })}
+                                    variant={"outline"} size={"sm"} className="gap-2 bg-transparent text-red-400 hover:text-red-500 min-w-40 justify-evenly">
                                     <UserX className="size-6" />
                                     Kick Member
                                 </Button>

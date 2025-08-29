@@ -346,6 +346,12 @@ regServerNuiCallback("updateFactionMember", function(pid, idf, params)
 
     if params.rankId and params.rankId ~= -1 then
         local validRank, rankData = GetValidRank(params.rankId, faction.ranks)
+
+        if validRank > member.rank then
+            Logger:Info(("`%s` Tried to give a higher rank than him self !"):format(idf))
+            validRank = params.targetOldRankId
+        end
+
         if validRank then
             targetMember.rank = validRank
         end
@@ -378,4 +384,101 @@ regServerNuiCallback("updateFactionMember", function(pid, idf, params)
 
     SyncPlayerFactions(nil, params.target.identifier)
     return { success = true, msg = (lang.success["member_updated"]):format(params.target.name), msgType = "success" }
+end)
+
+
+---@param pid any
+---@param idf any
+---@param params { target: string, factionId: string }
+regServerNuiCallback("promoteFactionMember", function(pid, idf, params)
+    local faction = Factions[params.factionId]
+    if not faction then
+        return { msg = "Faction not found.", msgType = "error", error = true }
+    end
+
+    local member = faction.members[idf]
+    if not member then
+        return { msg = "Your membership not found in this faction.", msgType = "error", error = true }
+    end
+
+    -- Check if the acting member has permission to manage members
+    if not MemberHasPermission(idf, params.factionId, "manageMembers") then
+        return { msg = "You don't have permission to manage members.", msgType = "error", error = true }
+    end
+
+    local targetMember = faction.members[params.target]
+    if not targetMember then
+        return { msg = "Target member not found.", msgType = "error", error = true }
+    end
+
+    -- Cannot promote someone above your own rank
+    if targetMember.rank >= member.rank then
+        return { msg = "Cannot promote a member to equal or higher rank than yourself.", msgType = "error", error = true }
+    end
+
+    -- Get the next higher rank
+    local nextPrio, nextRank = GetAdjacentRank(targetMember.rank, faction.ranks, "up")
+    if not nextPrio or not nextRank then
+        return { msg = "No higher rank available for promotion.", msgType = "error", error = true }
+    end
+
+    -- Promote
+    Logger:Info(("%s Promoted from %s(%s) to %s(%s)"):format(
+        params.target,
+        faction.ranks[tostring(targetMember.rank)].name,
+        targetMember.rank,
+        nextRank.name,
+        nextPrio
+    ))
+
+    SetPlayerRank(params.target, params.factionId, nextPrio)
+
+    return { msg = ("Promoted %s to %s."):format(params.target, nextRank.name), msgType = "success", error = false }
+end)
+
+
+---@param pid any
+---@param idf any
+---@param params { target: string, factionId: string }
+regServerNuiCallback("demoteFactionMember", function(pid, idf, params)
+    local faction = Factions[params.factionId]
+    if not faction then
+        return { msg = "Faction not found.", msgType = "error", error = true }
+    end
+
+    local member = faction.members[idf]
+    if not member then
+        return { msg = "Your membership not found in this faction.", msgType = "error", error = true }
+    end
+
+    if not MemberHasPermission(idf, params.factionId, "manageMembers") then
+        return { msg = "You don't have permission to manage members.", msgType = "error", error = true }
+    end
+
+    local targetMember = faction.members[params.target]
+    if not targetMember then
+        return { msg = "Target member not found.", msgType = "error", error = true }
+    end
+
+    if targetMember.rank >= member.rank then
+        return { msg = "Cannot demote a member who has equal or higher rank than yourself.", msgType = "error", error = true }
+    end
+
+    local nextPrio, nextRank = GetAdjacentRank(targetMember.rank, faction.ranks, "down")
+    if not nextPrio or not nextRank then
+        return { msg = "No lower rank available for demotion.", msgType = "error", error = true }
+    end
+
+    -- Demote
+    Logger:Info(("%s Demoted from %s(%s) to %s(%s)"):format(
+        params.target,
+        faction.ranks[tostring(targetMember.rank)].name,
+        targetMember.rank,
+        nextRank.name,
+        nextPrio
+    ))
+
+    SetPlayerRank(params.target, params.factionId, nextPrio)
+
+    return { msg = ("Demoted %s to %s."):format(params.target, nextRank.name), msgType = "success", error = false }
 end)

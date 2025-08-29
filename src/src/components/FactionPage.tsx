@@ -25,7 +25,6 @@ const FactionPage: React.FC<Props> = ({ page, children, setPage }) => {
 
     if (requiredPermission && rankId && !hasPermission(rankId, requiredPermission, ranks)) {
         setPage("Dashboard")
-        return null
     }
 
     return (

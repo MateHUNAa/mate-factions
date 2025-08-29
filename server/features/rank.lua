@@ -108,6 +108,44 @@ end
 
 exports("GetValidRank", GetValidRank)
 
+---@param currentPrio string
+---@param ranks any
+---@param direction "up"  | "down"
+function GetAdjacentRank(currentPrio, ranks, direction)
+    local prio = tonumber(currentPrio)
+    if not prio then return nil, nil end
+
+    -- Collect all priorities
+    local priorities = {}
+    for prioStr, _ in pairs(ranks) do
+        local n = tonumber(prioStr)
+        if n then table.insert(priorities, n) end
+    end
+
+    if #priorities == 0 then return nil, nil end
+
+    -- Sort priorities
+    if direction == "up" then
+        table.sort(priorities) -- ascending
+        for _, p in ipairs(priorities) do
+            if p > prio then
+                return p, ranks[tostring(p)]
+            end
+        end
+    elseif direction == "down" then
+        table.sort(priorities, function(a, b) return a > b end)
+        for _, p in ipairs(priorities) do
+            if p < prio then
+                return p, ranks[tostring(p)]
+            end
+        end
+    else
+        return nil, nil
+    end
+
+    return nil, nil
+end
+
 regServerNuiCallback("createRank", function(pid, idf, params)
     local Player = mCore.getPlayer(pid)
     if not Player then return end
@@ -258,8 +296,6 @@ function SetFactionLeader(identifier, factionId, isLeader)
 end
 
 exports("SetFactionLeader", SetFactionLeader)
-
-
 
 function SetPlayerRank(identifier, factionId, newRank)
     local function handleErr(errVal, src)

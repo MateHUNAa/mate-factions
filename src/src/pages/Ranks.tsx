@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Search, Settings, Shield, Users } from "lucide-react";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useMembers } from "@/hooks/useMembers";
 import { useRanks } from "@/hooks/useRanks";
 
@@ -17,6 +17,7 @@ interface Props {
 const Ranks: React.FC<Props> = ({ }) => {
     const ranksData = useRanks()
     const members = useMembers()
+    const [searchQuery, setSearchQuery] = useState("")
 
     const { rankCounts, topRankId, topRankCount, topRankName } = useMemo(() => {
         const rankCounts: Record<number, number> = {};
@@ -43,9 +44,9 @@ const Ranks: React.FC<Props> = ({ }) => {
         return { rankCounts, topRankId, topRankCount, topRankName };
     }, [members, ranksData]);
 
-    const sortedRanks = useMemo(() => {
-        return [...ranksData].sort((a, b) => b.id - a.id)
-    }, [ranksData])
+    const filteredAndSortedRanks = useMemo(() => {
+        return [...ranksData].filter((rank) => rank.name.toLowerCase().includes(searchQuery.toLowerCase())).sort((a, b) => b.id - a.id)
+    }, [ranksData, searchQuery])
 
 
     if (!ranksData || ranksData.at.length <= 0) return null
@@ -83,7 +84,12 @@ const Ranks: React.FC<Props> = ({ }) => {
                     <div className="flex flex-col sm:flex-row gap-4">
                         <div className="relative flex-1">
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white" />
-                            <Input placeholder="Search ranks..." className="pl-10 bg-input border-zinc-600 text-white" />
+                            <Input
+                                placeholder="Search ranks..."
+                                className="pl-10 bg-input border-zinc-600 text-white"
+                                value={searchQuery}
+                                onChange={({ target }) => setSearchQuery(target.value)}
+                            />
                         </div>
                         <div className="flex gap-2 text-white">
                             <Badge variant="secondary">All Ranks</Badge>
@@ -104,7 +110,7 @@ const Ranks: React.FC<Props> = ({ }) => {
                 </div>
 
                 <div className="space-y-3 overflow-y-auto max-h-[calc(5*6.4rem)] snap-y snap-mandatory">
-                    {sortedRanks.map((rank) => (
+                    {filteredAndSortedRanks.map((rank) => (
                         <RankCard key={rank.id} rank={rank} className="snap-start mr-2" memberCount={rankCounts[rank.id]} />
                     ))}
                 </div>

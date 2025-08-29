@@ -40,7 +40,7 @@ const getStatusBadge = (status: string) => {
     }
 }
 
-const MemberTable: React.FC = () => {
+const MemberTable: React.FC<{ filters: any }> = ({ filters }) => {
     const [selectedMembers, setSelectedMembers] = useState<string[]>([])
     const [editingMember, setEditingMember] = useState<Member | null>(null)
     const [changingRankMember, setChangingRankMember] = useState<Member | null>(null)
@@ -57,6 +57,19 @@ const MemberTable: React.FC = () => {
             </h1>
         )
     }
+
+    const filteredMembers = members.filter((member) => {
+        const matchesSearch =
+            filters.search === "" ||
+            member.name.toLowerCase().includes(filters.search.toLowerCase())
+
+        const matchesRank = filters.rank === "all" || member.rank.name.toLowerCase() == filters.rank.toLowerCase()
+
+        const matchesStatus =
+            filters.status === "all" || member.status.toLowerCase() === filters.status
+
+        return matchesSearch && matchesRank && matchesStatus
+    })
 
     const handleSelectAll = (checked: boolean) => {
         if (checked) {
@@ -99,7 +112,7 @@ const MemberTable: React.FC = () => {
                     </TableHeader>
 
                     <TableBody>
-                        {members.map((member) => {
+                        {filteredMembers.map((member) => {
                             const statusBadge = getStatusBadge(member.status)
 
                             return (

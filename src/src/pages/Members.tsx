@@ -1,7 +1,7 @@
 import InfoCard, { InfoCardBox, InfoSubElement } from "@/components/InfoCard";
 import MemberTable from "../components/members/MemberTable";
 import { Button } from "@/components/ui/button";
-import { UserCheck, UserPlus, Users } from "lucide-react";
+import { Filter, Search, UserCheck, UserPlus, Users } from "lucide-react";
 import React, { useState } from "react";
 import InviteMembersDialog from "@/components/members/InviteMembersDialog";
 import { hasPermission } from "@/lib/permission";
@@ -9,6 +9,9 @@ import { getUserRankId } from "@/components/Navbar";
 import { useUser } from "@/store/userSlice";
 import { useFaction } from "@/hooks/useFaction";
 import { useRanks } from "@/hooks/useRanks";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 
 const Members: React.FC = () => {
     const [inviteDialogOpen, setInviteDialogOpen] = useState(false)
@@ -21,6 +24,12 @@ const Members: React.FC = () => {
 
 
     const userRankId = getUserRankId(user, selectedFaction || playerFactions[0])
+
+    const [filters, setFilters] = useState({
+        search: "",
+        rank: "all",
+        status: "all"
+    })
 
     return (
         <>
@@ -52,11 +61,58 @@ const Members: React.FC = () => {
                     </InfoCardBox>
 
                     {/* Search Bar */}
+                    <Card className="bg-zinc-800 border border-zinc-700 text-white">
+                        <CardContent className="p-4">
+                            <div className="flex flex-col lg:flex-row gap-4">
+                                {/* Search Input */}
+                                <div className="relative flex-1">
+                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                    <Input
+                                        value={filters.search}
+                                        onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                                        placeholder="Search members by name"
+                                        className="pl-10 bg-input border-border text-foreground"
+                                    />
+                                </div>
 
+                                {/* Filters */}
+                                <div className="flex gap-2">
+                                    <Select value={filters.rank} onValueChange={(v) => setFilters({ ...filters, rank: v })}>
+                                        <SelectTrigger className="w-[140px] bg-input border-border text-foreground">
+                                            <SelectValue placeholder="All Ranks" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="all">ALL</SelectItem>
+                                            {ranks.map((r) => (
+                                                <SelectItem value={r.name}>{r.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
 
-                    {/* Member Tabler */}
+                                    <Select value={filters.status} onValueChange={(v) => setFilters({ ...filters, status: v })}>
+                                        <SelectTrigger className="w-[140px] bg-input border-border text-foreground">
+                                            <SelectValue placeholder="All Status" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="all">All Status</SelectItem>
+                                            <SelectItem value="online">Online</SelectItem>
+                                            <SelectItem value="away">Away</SelectItem>
+                                            <SelectItem value="offline">Offline</SelectItem>
+                                        </SelectContent>
+                                    </Select>
 
-                    <MemberTable />
+                                    <Button variant="outline" size="sm" className="gap-2 bg-transparent h-full">
+                                        <Filter className="h-4 w-4" />
+                                        More Filters
+                                    </Button>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Member Table */}
+
+                    <MemberTable filters={filters} />
                 </div>
             </main>
 

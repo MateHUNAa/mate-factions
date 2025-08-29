@@ -393,33 +393,31 @@ end)
 regServerNuiCallback("promoteFactionMember", function(pid, idf, params)
     local faction = Factions[params.factionId]
     if not faction then
-        return { msg = "Faction not found.", msgType = "error", error = true }
+        return { msg = (lang.error["faction_missing"]):format(params.factionId), msgType = "error", error = true }
     end
 
     local member = faction.members[idf]
     if not member then
-        return { msg = "Your membership not found in this faction.", msgType = "error", error = true }
+        return { msg = lang.error["not_member"], msgType = "error", error = true }
     end
 
-    -- Check if the acting member has permission to manage members
     if not MemberHasPermission(idf, params.factionId, "manageMembers") then
-        return { msg = "You don't have permission to manage members.", msgType = "error", error = true }
+        return { msg = (lang.error["permission_missing"]):format("manageMembers"), msgType = "error", error = true }
     end
 
     local targetMember = faction.members[params.target]
     if not targetMember then
-        return { msg = "Target member not found.", msgType = "error", error = true }
+        return { msg = lang.error["player_missing"], msgType = "error", error = true }
     end
 
-    -- Cannot promote someone above your own rank
     if targetMember.rank >= member.rank then
-        return { msg = "Cannot promote a member to equal or higher rank than yourself.", msgType = "error", error = true }
+        return { msg = (lang.error["category_action_reason"]):format("promote"), msgType = "error", error = true }
     end
 
     -- Get the next higher rank
     local nextPrio, nextRank = GetAdjacentRank(targetMember.rank, faction.ranks, "up")
     if not nextPrio or not nextRank then
-        return { msg = "No higher rank available for promotion.", msgType = "error", error = true }
+        return { msg = lang.error["no_higher_rank"], msgType = "error", error = true }
     end
 
     -- Promote
@@ -433,7 +431,7 @@ regServerNuiCallback("promoteFactionMember", function(pid, idf, params)
 
     SetPlayerRank(params.target, params.factionId, nextPrio)
 
-    return { msg = ("Promoted %s to %s."):format(params.target, nextRank.name), msgType = "success", error = false }
+    return { msg = (lang.success["promoted"]):format(params.target, nextRank.name), msgType = "success", error = false }
 end)
 
 
@@ -443,30 +441,30 @@ end)
 regServerNuiCallback("demoteFactionMember", function(pid, idf, params)
     local faction = Factions[params.factionId]
     if not faction then
-        return { msg = "Faction not found.", msgType = "error", error = true }
+        return { msg = (lang.error["faction_missing"]):format(params.factionId), msgType = "error", error = true }
     end
 
     local member = faction.members[idf]
     if not member then
-        return { msg = "Your membership not found in this faction.", msgType = "error", error = true }
+        return { msg = lang.error["not_member"], msgType = "error", error = true }
     end
 
     if not MemberHasPermission(idf, params.factionId, "manageMembers") then
-        return { msg = "You don't have permission to manage members.", msgType = "error", error = true }
+        return { msg = (lang.error["permission_missing"]):format("manageMembers"), msgType = "error", error = true }
     end
 
     local targetMember = faction.members[params.target]
     if not targetMember then
-        return { msg = "Target member not found.", msgType = "error", error = true }
+        return { msg = lang.error["player_missing"], msgType = "error", error = true }
     end
 
     if targetMember.rank >= member.rank then
-        return { msg = "Cannot demote a member who has equal or higher rank than yourself.", msgType = "error", error = true }
+        return { msg = (lang.error["category_action_reason"]):format("demote"), msgType = "error", error = true }
     end
 
     local nextPrio, nextRank = GetAdjacentRank(targetMember.rank, faction.ranks, "down")
     if not nextPrio or not nextRank then
-        return { msg = "No lower rank available for demotion.", msgType = "error", error = true }
+        return { msg = lang.error["no_lower_rank"], msgType = "error", error = true }
     end
 
     -- Demote
@@ -480,7 +478,7 @@ regServerNuiCallback("demoteFactionMember", function(pid, idf, params)
 
     SetPlayerRank(params.target, params.factionId, nextPrio)
 
-    return { msg = ("Demoted %s to %s."):format(params.target, nextRank.name), msgType = "success", error = false }
+    return { msg = (lang.succes["demoted"]):format(params.target, nextRank.name), msgType = "success", error = false }
 end)
 
 
@@ -490,25 +488,25 @@ end)
 regServerNuiCallback("kickFactionMember", function(pid, idf, params)
     local faction = Factions[params.factionId]
     if not faction then
-        return { msg = "Faction not found.", msgType = "error", error = true }
+        return { msg = (lang.error["faction_missing"]):format(params.factionId), msgType = "error", error = true }
     end
 
     local member = faction.members[idf]
     if not member then
-        return { msg = "Your membership not found in this faction.", msgType = "error", error = true }
+        return { msg = lang.error["not_member"], msgType = "error", error = true }
     end
 
     if not MemberHasPermission(idf, params.factionId, "kickMembers") then
-        return { msg = "You don't have permission to manage members.", msgType = "error", error = true }
+        return { msg = (lang.error["permission_missing"]):format("kickMembers"), msgType = "error", error = true }
     end
 
     local targetMember = faction.members[params.target]
     if not targetMember then
-        return { msg = "Target member not found.", msgType = "error", error = true }
+        return { msg = lang.error["player_missing"], msgType = "error", error = true }
     end
 
     if targetMember.rank >= member.rank then
-        return { msg = "Cannot kick a member who has equal or higher rank than yourself.", msgType = "error", error = true }
+        return { msg = (lang.error["category_action_reason"]):format("kick"), msgType = "error", error = true }
     end
 
     kickFactionMember(params.target, params.factionId)
@@ -519,5 +517,5 @@ regServerNuiCallback("kickFactionMember", function(pid, idf, params)
         idf
     ))
 
-    return { msg = ("Kicked %s from faction."):format(params.target), msgType = "success", error = false }
+    return { msg = (lang.success["kicked"]):format(params.target), msgType = "success", error = false }
 end)

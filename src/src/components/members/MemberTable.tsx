@@ -11,6 +11,7 @@ import dayjs from "dayjs";
 import { Member } from "@/store/memberSlice";
 import { useMembers } from "@/hooks/useMembers";
 import { useFaction } from "@/hooks/useFaction";
+import { fetchNui } from "@/utils/fetchNui";
 
 const getStatusColor = (status: string) => {
     switch (status) {
@@ -44,7 +45,7 @@ const MemberTable: React.FC = () => {
 
 
     const members = useMembers()
-    const { selectedFaction} = useFaction()
+    const { selectedFaction } = useFaction()
 
     if (!members || members.length <= 0) {
         console.log(members)
@@ -153,19 +154,26 @@ const MemberTable: React.FC = () => {
                                                     <MoreHorizontal className="size-4 text-white" />
                                                 </Button>
                                             </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end" className="bg-zinc-900/65 text-white">
+                                            <DropdownMenuContent align="end" className="bg-zinc-900/65 text-white font-semibold">
 
-                                                <DropdownMenuItem onClick={() => setEditingMember(member)} className="gap-2 hover:bg-zinc-700">
+                                                <DropdownMenuItem
+                                                    onClick={() => setEditingMember(member)}
+                                                    className="gap-2 focus:text-gray-400">
                                                     <Edit className="size-4" />
                                                     Edit Member
                                                 </DropdownMenuItem>
 
-                                                <DropdownMenuItem className="hover:bg-zinc-700">
+                                                <DropdownMenuItem className="focus:text-gray-400">
                                                     <Shield className="size-4" />
                                                     Change Rank
                                                 </DropdownMenuItem>
 
-                                                <DropdownMenuItem className="hover:bg-zinc-700">
+                                                <DropdownMenuItem
+                                                    onClick={() => fetchNui("kickFactionMember", {
+                                                        target: member.identifier,
+                                                        factionId: member.faction
+                                                    })}
+                                                    className="text-red-400 focus:text-rose-500">
                                                     <UserX className="size-4" />
                                                     Kick Member
                                                 </DropdownMenuItem>

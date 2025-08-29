@@ -146,42 +146,81 @@ function GetAdjacentRank(currentPrio, ranks, direction)
     return nil, nil
 end
 
+---@param params { level: number, name: string, permissions: table, description: string, color: string, factionId: string }
 regServerNuiCallback("createRank", function(pid, idf, params)
-    local Player = mCore.getPlayer(pid)
-    if not Player then return end
-
-    local factionId, factionData, memberData = GetPlayerFaction(Player.identifier)
-
-    if not factionId then return { data = nil, msg = "This player is not part of a factionId !", msgType = "error", error = true } end
-    if not factionData then return { data = nil, msg = ("Failed to fetch `%s` factionData !"), msgType = "error", error = true } end
-    if not memberData then return { data = nil, msg = "Failed to fetch your memberData !", msgType = "error", error = true } end
-
-    if not MemberHasPermission(idf, factionId, "manageRanks") then
-        return { msg = (lang.error["permission_missing"]):format("manageRanks"), msgType = "error", error = false }
+    local faction = Factions[params.factionId]
+    if not faction then
+        return { msg = "Faction not found.", msgType = "error", error = true }
     end
 
-    AddRank(factionId, params.level, params.name, params.permissions, params.description, params.color)
+    local member = faction.members[idf]
+    if not member then
+        return { msg = "Your membership not found in this faction.", msgType = "error", error = true }
+    end
 
-    return { msg = (lang.success["rank_created"]):format(params.name), msgType = "success" }
+    if not MemberHasPermission(idf, params.factionId, "manageRanks") then
+        return { msg = "You don't have permission to manage ranks.", msgType = "error", error = true }
+    end
+
+    if not params.name or params.name == "" then
+        return { msg = "Rank name is required.", msgType = "error", error = true }
+    end
+
+    if not params.level then
+        return { msg = "Rank level is required.", msgType = "error", error = true }
+    end
+
+    AddRank(params.factionId, params.level, params.name, params.permissions, params.description, params.color)
+
+    Logger:Info(("Rank `%s(%s)` created in faction `%s` by `%s`"):format(
+        params.name,
+        params.level,
+        params.factionId,
+        idf
+    ))
+
+    return { msg = ("Created new rank `%s`."):format(params.name), msgType = "success", error = false }
 end)
+
+---@param params { rank: table, factionId: string }
 regServerNuiCallback("removeRank", function(pid, idf, params)
-    local Player = mCore.getPlayer(pid)
-    if not Player then return end
-
-    local factionId, factionData, memberData = GetPlayerFaction(Player.identifier)
-
-    if not factionId then return { data = nil, msg = "This player is not part of a factionId !", msgType = "error", error = true } end
-    if not factionData then return { data = nil, msg = ("Failed to fetch `%s` factionData !"), msgType = "error", error = true } end
-    if not memberData then return { data = nil, msg = "Failed to fetch your memberData !", msgType = "error", error = true } end
-
-    if not MemberHasPermission(idf, factionId, "manageRanks") then
-        return { msg = (lang.error["permission_missing"]):format("manageRanks"), msgType = "error", error = false }
+    local faction = Factions[params.factionId]
+    if not faction then
+        return { msg = "Faction not found.", msgType = "error", error = true }
     end
 
-    RemoveRank(factionId, params.id)
+    local member = faction.members[idf]
+    if not member then
+        return { msg = "Your membership not found in this faction.", msgType = "error", error = true }
+    end
 
-    return { msg = (lang.success["rank_deleted"]):format(params.name), msgType = "success" }
+    if not MemberHasPermission(idf, params.factionId, "manageRanks") then
+        return { msg = "You don't have permission to manage ranks.", msgType = "error", error = true }
+    end
+
+    if not params.rank or not params.rank.id then
+        return { msg = "Invalid rank data.", msgType = "error", error = true }
+    end
+
+    local rankId, rankName = params.rank.id, params.rank.name or "Unknown"
+
+    if not faction.ranks[tostring(rankId)] then
+        return { msg = "Rank not found in faction.", msgType = "error", error = true }
+    end
+
+    RemoveRank(params.factionId, rankId)
+
+    Logger:Info(("Rank `%s(%s)` removed from faction `%s` by `%s`"):format(
+        rankName,
+        rankId,
+        params.factionId,
+        idf
+    ))
+
+    return { msg = ("Removed rank %s from faction."):format(rankName), msgType = "success", error = false }
 end)
+
+
 regServerNuiCallback("updateFactionRank", function(pid, idf, params)
     local Player = mCore.getPlayer(pid)
     if not Player then return end

@@ -11,6 +11,7 @@ import { fetchNui } from "@/utils/fetchNui";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import SvgIcon from "../SvgIcon";
+import { useFaction } from "@/hooks/useFaction";
 
 export interface RankCardProps {
     rank: {
@@ -27,8 +28,10 @@ export interface RankCardProps {
 
 const RankCard: React.FC<RankCardProps> = React.memo(({ rank, className, memberCount }) => {
     const [editOpen, setEditOpen] = useState<boolean>(false)
-    const activePermissions = useMemo(() => rank.permissions ?? [], [rank.permissions]);
 
+    const { selectedFaction } = useFaction()
+
+    const activePermissions = useMemo(() => rank.permissions ?? [], [rank.permissions]);
     const permissions = useSelector((state: RootState) => state.ranks.permissions)
 
     const possiblePermissions: Record<string, boolean> = {}
@@ -103,7 +106,10 @@ const RankCard: React.FC<RankCardProps> = React.memo(({ rank, className, memberC
                                     View Members
                                 </DropdownMenuItem>
 
-                                <DropdownMenuItem className="gap-2 text-red-400 focus:text-rose-500" onClick={() => fetchNui("removeRank", rank)}>
+                                <DropdownMenuItem className="gap-2 text-red-400 focus:text-rose-500" onClick={() => fetchNui("removeRank", {
+                                    rank: rank,
+                                    factionId: selectedFaction?.id
+                                })}>
                                     <Trash className="size-4" />
                                     Delete Rank
                                 </DropdownMenuItem>
@@ -128,7 +134,7 @@ const RankCard: React.FC<RankCardProps> = React.memo(({ rank, className, memberC
                                             className={`flex items-center gap-2 p-2 rounded-md text-xs font-semibold ${hasPerm ? "bg-green-500/10 text-green-400" : "bg-zinc-700 text-white font-normal"
                                                 }`}
                                         >
-                                            <img src={iconSrc}  className="size-4"/>
+                                            <img src={iconSrc} className="size-4" />
                                             <span className="truncate">{label}</span>
                                         </div>
                                     );

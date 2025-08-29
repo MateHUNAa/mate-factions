@@ -12,6 +12,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import SvgIcon from "../SvgIcon";
 import { useFaction } from "@/hooks/useFaction";
+import ViewMembersDialog from "./ViewMembersDialog";
 
 export interface RankCardProps {
     rank: {
@@ -28,6 +29,7 @@ export interface RankCardProps {
 
 const RankCard: React.FC<RankCardProps> = React.memo(({ rank, className, memberCount }) => {
     const [editOpen, setEditOpen] = useState<boolean>(false)
+    const [viewMembersOpen, setViewMembersOpen] = useState(false)
 
     const { selectedFaction } = useFaction()
 
@@ -101,7 +103,9 @@ const RankCard: React.FC<RankCardProps> = React.memo(({ rank, className, memberC
                                     Edit Rank
                                 </DropdownMenuItem>
 
-                                <DropdownMenuItem className="gap-2 text-gray-400 focus:text-gray-200">
+                                <DropdownMenuItem
+                                    onClick={(() => setViewMembersOpen(true))}
+                                    className="gap-2 text-gray-400 focus:text-gray-200">
                                     <Users className="size-4" />
                                     View Members
                                 </DropdownMenuItem>
@@ -147,6 +151,7 @@ const RankCard: React.FC<RankCardProps> = React.memo(({ rank, className, memberC
             </Card>
 
             <EditRankDialog rank={rank} onOpenChange={setEditOpen} open={editOpen} />
+            <ViewMembersDialog rank={rank} onOpenChange={setViewMembersOpen} open={viewMembersOpen} />
         </>
     );
 });

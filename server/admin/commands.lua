@@ -6,7 +6,7 @@ RegisterCommand("makefaction", function(source, args, raw)
     if not Functions.IsAdmin(source) then
         Logger:Debug(("%s(%s) is not an admin Tried to use command: `makefaction`"):format(GetPlayerName(source),
             source))
-        mCore.Notify(source, lang.Title, "error", lang.error["not_an_admin"], 5000)
+        mCore.Notify(source, lang.Title, lang.error["not_an_admin"], "error", 5000)
         return
     end
 

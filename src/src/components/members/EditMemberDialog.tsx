@@ -17,6 +17,7 @@ import { Member, updateMember } from "@/store/memberSlice";
 import { useAppDispatch } from "@/store";
 import { useUser } from "@/store/userSlice";
 import { useRanks } from "@/hooks/useRanks";
+import { getUserRankId } from "@/hooks/useFaction";
 
 interface Props {
     member: Member;
@@ -51,7 +52,6 @@ const EditMemberDialog: React.FC<Props> = ({ member, open, onOpenChange }) => {
     })
 
     const ranks = useRanks()
-    const user = useUser()
 
     useEffect(() => {
         setFormData({
@@ -71,7 +71,7 @@ const EditMemberDialog: React.FC<Props> = ({ member, open, onOpenChange }) => {
 
         try {
             const { success } = await fetchNui<{ success: boolean }>("updateFactionMember", {
-                faction: member.faction,
+                factionId: member.faction,
                 rankId: selectedRank?.id || -1,
                 target: member,
                 ...formData

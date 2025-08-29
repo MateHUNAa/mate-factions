@@ -9,9 +9,10 @@ import { navigation } from "./Navbar";
 interface Props {
     page: PanelType;
     children: React.ReactNode;
+    setPage: (page: PanelType) => void;
 }
 
-const FactionPage: React.FC<Props> = ({ page, children }) => {
+const FactionPage: React.FC<Props> = ({ page, children, setPage }) => {
 
     const user = useUser()
     const ranks = useRanks()
@@ -23,6 +24,7 @@ const FactionPage: React.FC<Props> = ({ page, children }) => {
     const rankId = user?.factions.find((f) => f.id == selectedFaction?.id)?.rank?.id
 
     if (requiredPermission && rankId && !hasPermission(rankId, requiredPermission, ranks)) {
+        setPage("Dashboard")
         return null
     }
 

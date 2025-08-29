@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Search, Settings, Shield, Users } from "lucide-react";
-import React from "react";
+import React, { useMemo } from "react";
 import { useMembers } from "@/hooks/useMembers";
 import { useRanks } from "@/hooks/useRanks";
 
@@ -18,26 +18,35 @@ const Ranks: React.FC<Props> = ({ }) => {
     const ranksData = useRanks()
     const members = useMembers()
 
-    const rankCounts: Record<number, number> = {}
+    const { rankCounts, topRankId, topRankCount, topRankName } = useMemo(() => {
+        const rankCounts: Record<number, number> = {};
 
-    members.forEach((m) => {
-        if (!rankCounts[m.rank.id])
-            rankCounts[m.rank.id] = 0
+        members.forEach((m) => {
+            if (!rankCounts[m.rank.id]) rankCounts[m.rank.id] = 0;
+            rankCounts[m.rank.id]++;
+        });
 
-        rankCounts[m.rank.id]++
-    })
-    let topRankId: number | null = null
-    let topRankCount = 0
+        let topRankId: number | null = null;
+        let topRankCount = 0;
 
-    for (const [rankIdStr, count] of Object.entries(rankCounts)) {
-        const rankId = Number(rankIdStr)
-        if (count > topRankCount) {
-            topRankCount = count
-            topRankId = rankId
+        for (const [rankIdStr, count] of Object.entries(rankCounts)) {
+            const rankId = Number(rankIdStr);
+            if (count > topRankCount) {
+                topRankCount = count;
+                topRankId = rankId;
+            }
         }
-    }
 
-    const topRankName = ranksData.find((r) => r.id == topRankId)?.name ?? "N/A"
+        const topRankName =
+            ranksData.find((r) => r.id === topRankId)?.name ?? "N/A";
+
+        return { rankCounts, topRankId, topRankCount, topRankName };
+    }, [members, ranksData]);
+
+    const sortedRanks = useMemo(() => {
+        return [...ranksData].sort((a, b) => b.id - a.id)
+    }, [ranksData])
+
 
     if (!ranksData || ranksData.at.length <= 0) return null
 
@@ -95,7 +104,7 @@ const Ranks: React.FC<Props> = ({ }) => {
                 </div>
 
                 <div className="space-y-3 overflow-y-auto max-h-[calc(5*6.4rem)] snap-y snap-mandatory">
-                    {[...ranksData].sort((a, b) => b.id - a.id).map((rank) => (
+                    {sortedRanks.map((rank) => (
                         <RankCard key={rank.id} rank={rank} className="snap-start mr-2" />
                     ))}
                 </div>

@@ -20,16 +20,16 @@ local cooldown = 500
 
 function nuiCallback(name, callback)
   RegisterNUICallback(name, function(data, cb)
-    local now = GetGameTimer()
-    local last = timeouts[name] or 0
+    -- local now = GetGameTimer()
+    -- local last = timeouts[name] or 0
 
-    if now - last < cooldown then
-      cb({ error = "cooldown" })
-      Logger:Error(("[%s] is on cooldown !"):format(name))
-      return
-    end
+    -- if now - last < cooldown then
+    --   cb({ error = "cooldown" })
+    --   Logger:Error(("[%s] is on cooldown !"):format(name))
+    --   return
+    -- end
 
-    timeouts[name] = now
+    -- timeouts[name] = now
     callback(data, cb)
   end)
 end
@@ -72,6 +72,11 @@ end)
 RegisterCommand("mate-factions", (function(src, args, raw)
   local localPlayer = lib.callback.await("mate-factions:GetLocalPlayer", false)
 
+  if not localPlayer then
+    Logger:Error("Failed to fetch localPlayer !")
+    return
+  end
+
   sendNUI("open", {
     localPlayer    = localPlayer,
     ranks          = getFactionRanks(),
@@ -99,7 +104,9 @@ nuiServerCallback("createRank", function()
   })
 end)
 nuiServerCallback("removeRank")
-nuiServerCallback("updateFactionMember")
+nuiServerCallback("updateFactionMember", (function()
+  TriggerServerEvent("mate-factions:updatePlayerFaction")
+end))
 nuiServerCallback("requestPlayerFactions")
 nuiServerCallback("requestNews")
 nuiServerCallback("updateFactionRank")

@@ -30,7 +30,7 @@ export const useMembers = () => {
         };
 
         fetchData();
-    }, [dispatch, selectedFaction?.id, playerFactions])
+    }, [dispatch, selectedFaction?.id])
 
     return members
 }

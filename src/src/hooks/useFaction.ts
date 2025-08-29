@@ -5,6 +5,7 @@ import { fetchNui } from "@/utils/fetchNui";
 import { RootState } from "@/store";
 import { setPlayerFactions, selectFaction, Faction } from "@/store/factionSlice";
 import { isEnvBrowser } from "@/utils/misc";
+import { useUser } from "@/store/userSlice";
 
 
 export const useFaction = () => {
@@ -33,3 +34,13 @@ export const useFaction = () => {
 
     return { playerFactions, selectedFaction, selectFaction: (id: string) => dispatch(selectFaction(id)) };
 };
+
+
+export const getUserRankId = () => {
+    const user = useUser()
+    const { selectedFaction } = useFaction()
+
+    const rankId = user?.factions.find((f) => f.id == selectedFaction?.id)?.rank?.id
+
+    return rankId || 1
+}

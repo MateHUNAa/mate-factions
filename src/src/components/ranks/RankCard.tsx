@@ -45,10 +45,11 @@ const possiblePermissions: Record<string, boolean> = {
     stashAccess: true,
 }
 
-const RankCard: React.FC<RankCardProps> = ({ rank, className }) => {
+const RankCard: React.FC<RankCardProps> = React.memo(({ rank, className }) => {
     const [editOpen, setEditOpen] = useState<boolean>(false)
     const activePermissions = Object.entries(rank.permissions).filter(([_, value]) => value).map(([key, _]) => key as keyof typeof rank.permissions)
-    const members = useMembers()
+
+    console.log("rankCard Render", rank.name)
 
     // TODO: Not sure tbh
     const getRankLevelBadge = (level: number) => {
@@ -61,7 +62,7 @@ const RankCard: React.FC<RankCardProps> = ({ rank, className }) => {
     const levelBadge = getRankLevelBadge(rank.id)
 
     const memberCount = countMembersInRank(rank.id)
-    
+
     return (
         <>
             <Card className={cn("bg-zinc-800 border-zinc-600 hover:border-zinc-800 transition-colors", className)}>
@@ -115,7 +116,7 @@ const RankCard: React.FC<RankCardProps> = ({ rank, className }) => {
                                     View Members
                                 </DropdownMenuItem>
 
-                                <DropdownMenuItem className="gap-2 text-red-400 focus:text-red-500" onClick={() => fetchNui("removeRank", rank)}>
+                                <DropdownMenuItem className="gap-2 text-red-400 focus:text-rose-500" onClick={() => fetchNui("removeRank", rank)}>
                                     <Trash className="size-4" />
                                     Delete Rank
                                 </DropdownMenuItem>
@@ -137,7 +138,7 @@ const RankCard: React.FC<RankCardProps> = ({ rank, className }) => {
                                     return (
                                         <div
                                             key={perm}
-                                            className={`flex items-center gap-2 p-2 rounded-md text-xs font-semibold ${hasPerm ? "bg-green-500/10 text-green-400" : "bg-zinc-500 text-black "}`}>
+                                            className={`flex items-center gap-2 p-2 rounded-md text-xs font-semibold ${hasPerm ? "bg-green-500/10 text-green-400" : "bg-zinc-700 text-white font-normal "}`}>
                                             <Icon className="size-3 flex-shrink-0" />
                                             <span className="truncate">
                                                 {label}
@@ -155,6 +156,6 @@ const RankCard: React.FC<RankCardProps> = ({ rank, className }) => {
             <EditRankDialog rank={rank} onOpenChange={setEditOpen} open={editOpen} />
         </>
     );
-};
+});
 
 export default RankCard;

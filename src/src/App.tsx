@@ -13,6 +13,7 @@ import { useAppDispatch } from './store';
 import { setPermissions, setRanks } from './store/rankSlice';
 import { Faction, setPlayerFactions } from './store/factionSlice';
 import FactionPage from './components/FactionPage';
+import { fetchNui } from './utils/fetchNui';
 
 export type PanelType = "off" | "DutyPanel" | "Dashboard" | "Members" | "Ranks"
 
@@ -38,7 +39,20 @@ function App() {
     dispatch(setCurrentUser(data))
   })
 
-  useNuiEvent("updateClientFactionTypes", (data: Faction[]) => dispatch(setPlayerFactions(data)))
+  useNuiEvent("updateClientFactionTypes", (data: Faction[]) => {
+    dispatch(setPlayerFactions(data))
+
+    const fetchData = async () => {
+      try {
+        const { data } = await fetchNui<{ data: User }>("requestLocalUser")
+        dispatch(setCurrentUser(data))
+      } catch (err) {
+        console.error("ERROR DURING requestLocalUser",err)
+      }
+    }
+
+    fetchData()
+  })
 
   useNuiEvent<{
     localPlayer?: User,
@@ -80,13 +94,13 @@ function App() {
                   )}
 
                   {activePanel == "Members" && (
-                    <FactionPage page="Members">
+                    <FactionPage page="Members" setPage={(page) => setActivePanel(page)}>
                       <Members />
                     </FactionPage>
                   )}
 
                   {activePanel == "Ranks" && (
-                    <FactionPage page='Ranks'>
+                    <FactionPage page='Ranks' setPage={(page) => setActivePanel(page)}>
                       <Ranks />
                     </FactionPage>
                   )}

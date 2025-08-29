@@ -13,6 +13,8 @@ export interface Rank {
 }
 
 export function hasPermission(rankId: number, permission: Permission, ranks: Rank[]): boolean {
+    if (!ranks || ranks.length <= 0) return false
+    
     const rank = ranks.find(r => Number(r.id) == rankId);
     // console.log("[hasPermission]", rank?.permissions, permission)
 

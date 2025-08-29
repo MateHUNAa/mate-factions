@@ -8,11 +8,11 @@ import { Textarea } from "../ui/textarea";
 import { Palette } from "lucide-react";
 import { Checkbox } from "../ui/checkbox";
 import { Button } from "../ui/button";
-import { Rank } from "@/lib/permission";
 import { fetchNui } from "@/utils/fetchNui";
 import { useAppDispatch } from "@/store";
 import { updateRank } from "@/store/rankSlice";
 import { useRanks } from "@/hooks/useRanks";
+import { getUserRankId, useFaction } from "@/hooks/useFaction";
 
 interface Props {
     rank: {
@@ -29,6 +29,8 @@ interface Props {
 const EditRankDialog: React.FC<Props> = ({ rank, open, onOpenChange }) => {
     const dispatch = useAppDispatch()
     const ranks = useRanks()
+    const { selectedFaction } = useFaction()
+
     const [formData, setFormData] = useState({
         name: "",
         description: "",
@@ -61,6 +63,7 @@ const EditRankDialog: React.FC<Props> = ({ rank, open, onOpenChange }) => {
         try {
             const { success } = await fetchNui<{ success: boolean }>("updateFactionRank", {
                 old: { id: rank.id },
+                factionId: selectedFaction?.id,
                 new: formData
             })
 

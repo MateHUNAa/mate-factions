@@ -3,7 +3,7 @@
 
 ---@class FactionPost
 ---@field creator string identifier
----@field createdAt Date Createion DateTime
+---@field createdAt number timestamp
 ---@field content string
 ---@field title string
 ---@field category FactionPostCategory
@@ -23,6 +23,7 @@ regServerNuiCallback("postFactionPost", (function(pid, idf, params)
     ---@type FactionPost
     local entry = params
     entry.creator = idf
+    entry.createdAt = os.time() * 1000
 
     table.insert(faction.posts, entry)
 
@@ -31,12 +32,13 @@ regServerNuiCallback("postFactionPost", (function(pid, idf, params)
         faction.id
     })
 
-    return { error = false }
+    return { success = true }
 end))
 
 
 regServerNuiCallback("requestNews", function(pid, idf, params)
-    local faction, member, handleNotify = GetEffectiveFaction(params.factionId, idf)
+    Logger:Debug("requestNEws", idf, params)
+    local faction, member, handleNotify = GetEffectiveFaction(params, idf)
     if not handleNotify(pid, member) then return end
 
     return { data = faction.posts, error = false }

@@ -9,6 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Textarea } from "../ui/textarea";
 import { useFaction } from "@/hooks/useFaction";
 import { fetchNui } from "@/utils/fetchNui";
+import { useAppDispatch } from "@/store";
+import { addNews, NewsItem } from "@/store/newsSlice";
+import { useUser } from "@/store/userSlice";
 interface Props {
     children: React.ReactNode
 }
@@ -16,30 +19,41 @@ interface Props {
 const CreateNewsDialog: React.FC<Props> = ({ children }) => {
     const [open, setOpen] = useState(false)
     const { selectedFaction } = useFaction()
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<Omit<NewsItem, "creator" | "createdAt">>({
         title: "",
         content: "",
-        category: "",
-        priority: ""
+        category: "notice" as const,
+        priority: "medium" as const,
     })
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const dispatch = useAppDispatch()
+    const user = useUser()
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         console.log("Createing pos:", formData)
 
         if (selectedFaction) {
-            fetchNui("postFactionPost", {
+            const { success } = await fetchNui<{ success: boolean }>("postFactionPost", {
                 factionId: selectedFaction.id,
                 ...formData
             })
+
+            if (success && user) {
+                dispatch(addNews({
+                    ...formData,
+                    creator: user?.identifier,
+                    createdAt: Date.now()
+                }))
+            }
         }
 
         setOpen(false)
         setFormData({
             title: "",
             content: "",
-            category: "",
-            priority: ""
+            category: "notice" as const,
+            priority: "medium" as const,
         })
     }
 
@@ -82,7 +96,7 @@ const CreateNewsDialog: React.FC<Props> = ({ children }) => {
                             </Label>
                             <Select
                                 value={formData.category}
-                                onValueChange={(v) => setFormData({ ...formData, category: v })}
+                                onValueChange={(v) => setFormData({ ...formData, category: v as NewsItem["category"] })}
                             >
                                 <SelectTrigger className="border border-zinc-700">
                                     <SelectValue placeholder="Select category" />
@@ -127,7 +141,7 @@ const CreateNewsDialog: React.FC<Props> = ({ children }) => {
                             <Label htmlFor="priority" className="flex  items-center gap-2">
                                 <ArrowRightFromLine /> Priority
                             </Label>
-                            <Select value={formData.priority} onValueChange={(v) => setFormData({ ...formData, priority: v })}>
+                            <Select value={formData.priority} onValueChange={(v) => setFormData({ ...formData, priority: v as NewsItem["priority"] })}>
                                 <SelectTrigger className="border border-zinc-700">
                                     <SelectValue placeholder="Select priority" />
                                 </SelectTrigger>

@@ -4,13 +4,15 @@ import ranksReducer from "./rankSlice"
 import userReducer from "./userSlice"
 import membersReducer from "./memberSlice"
 import factionReducer from "./factionSlice"
+import newsReducer from "./newsSlice"
 
 export const store = configureStore({
   reducer: {
     ranks: ranksReducer,
     user: userReducer,
     members: membersReducer,
-    faction: factionReducer
+    faction: factionReducer,
+    news: newsReducer
   },
 });
 

@@ -1,5 +1,5 @@
 import { Edit, MoreHorizontal, Package, Shield, Trash, Users, UserX } from "lucide-react";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -8,7 +8,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Button } from "../ui/button";
 import EditRankDialog from "./EditRankDialog";
 import { fetchNui } from "@/utils/fetchNui";
-import { countMembersInRank, useMembers } from "@/hooks/useMembers";
 
 export interface RankCardProps {
     rank: {
@@ -19,6 +18,7 @@ export interface RankCardProps {
         description: string;
     },
     className?: string;
+    memberCount: number;
 }
 
 const permissionIcons: Record<string, any> = {
@@ -45,23 +45,19 @@ const possiblePermissions: Record<string, boolean> = {
     stashAccess: true,
 }
 
-const RankCard: React.FC<RankCardProps> = React.memo(({ rank, className }) => {
+const RankCard: React.FC<RankCardProps> = React.memo(({ rank, className, memberCount }) => {
     const [editOpen, setEditOpen] = useState<boolean>(false)
-    const activePermissions = Object.entries(rank.permissions).filter(([_, value]) => value).map(([key, _]) => key as keyof typeof rank.permissions)
+    const activePermissions = useMemo(() => rank.permissions ?? [], [rank.permissions]);
 
-    console.log("rankCard Render", rank.name)
+    console.log(rank.name, "RENDER")
 
     // TODO: Not sure tbh
-    const getRankLevelBadge = (level: number) => {
-        if (level >= 9) return { variant: "destructive" as const, label: "ADMIN", color: "bg-red-400" }
-        if (level >= 7) return { variant: "default" as const, label: "MOD", color: "bg-blue-400" }
-        if (level >= 5) return { variant: "secondary" as const, label: "VIP", color: "bg-yellow-400" }
-        return { variant: "outline" as const, label: "MEMBER", color: "bg-black" }
-    }
-
-    const levelBadge = getRankLevelBadge(rank.id)
-
-    const memberCount = countMembersInRank(rank.id)
+    const levelBadge = useMemo(() => {
+        if (rank.id >= 9) return { variant: "destructive" as const, label: "ADMIN", color: "bg-red-400" };
+        if (rank.id >= 7) return { variant: "default" as const, label: "MOD", color: "bg-blue-400" };
+        if (rank.id >= 5) return { variant: "secondary" as const, label: "VIP", color: "bg-yellow-400" };
+        return { variant: "outline" as const, label: "MEMBER", color: "bg-black" };
+    }, [rank.id]);
 
     return (
         <>

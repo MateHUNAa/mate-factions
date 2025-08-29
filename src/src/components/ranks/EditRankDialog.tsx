@@ -12,7 +12,7 @@ import { fetchNui } from "@/utils/fetchNui";
 import { useAppDispatch } from "@/store";
 import { updateRank } from "@/store/rankSlice";
 import { useRanks } from "@/hooks/useRanks";
-import { getUserRankId, useFaction } from "@/hooks/useFaction";
+import { useFaction } from "@/hooks/useFaction";
 
 interface Props {
     rank: {

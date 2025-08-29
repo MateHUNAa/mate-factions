@@ -10,24 +10,37 @@ import { isEnvBrowser } from "@/utils/misc";
 export const useRanks = () => {
     const dispatch = useAppDispatch();
     const ranks = useSelector((state: RootState) => state.ranks.ranks);
-    const { selectedFaction, playerFactions } = useFaction()
+    const { selectedFaction, playerFactions } = useFaction();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                if (isEnvBrowser()) return console.log("TODO: Browser client! NoMockRanks")
-                if (!selectedFaction) return dispatch(setRanks(playerFactions[0]?.ranks))
+                if (isEnvBrowser()) return console.log("TODO: Browser client! NoMockRanks");
+                if (!selectedFaction) return dispatch(setRanks(playerFactions[0]?.ranks || []));
 
                 const { data } = await fetchNui<{ data: Rank[] }>("requestFactionRanks", selectedFaction.id);
 
-                dispatch(setRanks(data));
+                // Only update Redux if the array contents actually differ
+                const isEqual =
+                    data.length === ranks.length &&
+                    data.every((r, i) =>
+                        r.id === ranks[i].id &&
+                        r.name === ranks[i].name &&
+                        r.color === ranks[i].color &&
+                        r.description === ranks[i].description &&
+                        r.permissions.join(",") === ranks[i].permissions.join(",")
+                    );
+
+                if (!isEqual) {
+                    dispatch(setRanks(data));
+                }
             } catch (error) {
                 console.error("Error fetching ranks:", error);
             }
         };
 
         fetchData();
-    }, [dispatch, selectedFaction?.id]);
+    }, [dispatch, selectedFaction?.id, ranks]);
 
     return ranks;
 };

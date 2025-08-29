@@ -105,7 +105,7 @@ const Ranks: React.FC<Props> = ({ }) => {
 
                 <div className="space-y-3 overflow-y-auto max-h-[calc(5*6.4rem)] snap-y snap-mandatory">
                     {sortedRanks.map((rank) => (
-                        <RankCard key={rank.id} rank={rank} className="snap-start mr-2" />
+                        <RankCard key={rank.id} rank={rank} className="snap-start mr-2" memberCount={rankCounts[rank.id]} />
                     ))}
                 </div>
             </div>

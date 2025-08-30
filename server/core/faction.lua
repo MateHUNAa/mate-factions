@@ -168,3 +168,36 @@ function GetEffectiveFaction(factionId, memberId)
 
     return faction, member, handleErr
 end
+
+local function GenerateText(num)
+    local str
+    repeat
+        str = {}
+        for i = 1, num do str[i] = string.char(math.random(65, 90)) end
+        str = table.concat(str)
+    until str ~= 'POL' and str ~= 'EMS'
+    return str
+end
+
+local function GenerateSerial(text)
+    if text and text:len() > 3 then
+        return text
+    end
+    return ('%s%s%s'):format(math.random(100000, 999999), text == nil and GenerateText(3) or text,
+        math.random(100000, 999999))
+end
+
+
+---@param faction Faction
+---@param pos vector3
+function RegisterStash(faction, pos)
+    if faction.stash then return Logger:Error("Tried to registerStash for faction: ", faction.id) end
+
+    local stashId = GenerateSerial()
+    ox_inventory:RegisterStash('fac_' .. stashId, ("%s Storage"):format(faction.label), 8000, 800000, false)
+
+
+    faction.stash = pos
+
+    Logger:Info(("Registered stash for faction %s"):format(faction.id))
+end

@@ -92,7 +92,7 @@ end)
 RegisterCommand("setfactionleader", function(source, args, raw)
     if not Functions.IsAdmin(source) then
         Logger:Debug(("%s(%s) is not an admin Tried to use command: `setfaction`"):format(GetPlayerName(source),
-        source))
+            source))
         mCore.Notify(source, lang.Title, "error", lang.error["not_an_admin"], 5000)
         return
     end
@@ -188,7 +188,6 @@ RegisterCommand("createstash", function(source, args, raw)
         return
     end
 
-
     local factionId = args[1]
 
     if not factionId then
@@ -207,7 +206,9 @@ RegisterCommand("createstash", function(source, args, raw)
 
     if affectedRows > 0 then
         mCore.Notify(source, lang.Title, string.format(lang.success["stash_placed"], factionId), "success", 5000)
+        RegisterStash(Factions[factionId], adminPos)
         Factions[factionId].stash = adminPos
+
         TriggerClientEvent("mate-fations:UpdateStash", -1, factionId, adminPos)
     else
         mCore.Notify(source, lang.Title, lang.error["stash_place_failed"], "error", 5000)

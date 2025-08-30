@@ -571,7 +571,7 @@ regServerNuiCallback("changeMemberRank", function(pid, idf, params)
 
     local validRank, rank = GetValidRank(params.newRank.id, faction.ranks)
     if validRank then
-        local success, errVal, handleErr = SetPlayerRank(params.target, faction.id, validRank)
+        local success, errVal, handleErr = SetPlayerRank(params.target, params.factionId, validRank)
         if not success then
             handleErr(errVal)
             return { error = true, msg = errVal }

@@ -84,7 +84,7 @@ const Members: React.FC = () => {
                                         <SelectContent>
                                             <SelectItem value="all">ALL</SelectItem>
                                             {ranks.map((r) => (
-                                                <SelectItem value={r.name}>{r.name}</SelectItem>
+                                                <SelectItem key={r.name} value={r.name}>{r.name}</SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>

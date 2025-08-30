@@ -19,8 +19,8 @@ server_scripts {
     "server/core/init.lua",
     "server/core/faction.lua",
 
-    "server/admin/*.lua",
     "server/features/*.lua",
+    "server/admin/*.lua",
 }
 
 client_scripts {

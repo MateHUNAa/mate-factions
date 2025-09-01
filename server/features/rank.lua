@@ -1,5 +1,6 @@
 local Logger = require("shared.Logger")
 local MemberUpdate = require("server.helpers.FactionMemberUpdater")
+local RankUpdate = require("server.helpers.FactionRankUpdater")
 
 function AddRank(factionId, rankId, name, permissions, description, color)
     local faction = Factions[factionId]
@@ -258,22 +259,26 @@ regServerNuiCallback("updateFactionRank", function(pid, idf, params)
         newPerms = normalized
     end
 
+    local updater = RankUpdate.new(params.factionId, oldRankKey)
 
-    faction.ranks[oldRankKey] = nil
-    faction.ranks[params.new.level] = {
-        name        = params.new.name,
-        description = params.new.description,
-        color       = params.new.color,
-        permissions = newPerms
-    }
 
-    MySQL.update.await("UPDATE factions SET ranks = ? WHERE name = ?", {
-        json.encode(faction.ranks),
-        params.factionId
-    })
+    updater
+        :WithName(params.new.name)
+        :WithDescription(params.new.description)
+        :WithColor(params.new.color)
+        :WithPermissions(newPerms)
 
+
+    local errVal, updatedRank = updater:Apply(true)
+    if errVal ~= "success" then
+        -- TODO: HandleError
+        return { msg = lang.error[errVal] or "Unknown error", msgType = "error", error = true }
+    end
 
     if oldRankKey ~= tostring(params.new.level) then
+        faction.ranks[tostring(params.new.level)] = updatedRank
+        faction.ranks[tostring(oldRankKey)]       = nil
+
         for idf, member in pairs(faction.members) do
             if tostring(member.rank) == oldRankKey then
                 member.rank = params.new.level
@@ -282,6 +287,11 @@ regServerNuiCallback("updateFactionRank", function(pid, idf, params)
                 })
             end
         end
+
+        MySQL.update.await("UPDATE factions SET ranks = ? WHERE name = ?", {
+            json.encode(faction.ranks),
+            params.factionId
+        })
     end
 
     return { success = true, msg = (lang.success["rank_updated"]):format(params.new.name), msgType = "success" }

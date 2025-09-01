@@ -61,7 +61,7 @@ function FactionRankUpdater:Apply(saveToDb)
     end
 
     self.changes = {}
-    return true, self.rank
+    return "success", self.rank
 end
 
 return FactionRankUpdater

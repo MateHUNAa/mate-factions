@@ -254,3 +254,52 @@ function SyncFactionMembers(factionId)
         ::continue::
     end
 end
+
+function SetFactionLeader(identifier, factionId, isLeader)
+    local function handleErr(errVal, src)
+        if errVal == "faction_missing" then
+            mCore.Notify(src, lang.Title, string.format(lang.error["faction_missing"], factionId), "error", 5000)
+        elseif errVal == "player_missing" then
+            mCore.Notify(src, lang.Title, lang.error["player_missing"])
+        elseif errVal == "sql_error" then
+            mCore.Notify(src, lang.Title, lang.error["db_err"] "error", 5000)
+        else
+            mCore.Notify(src, lang.Title, lang.error["unknown_error"] "error", 5000)
+        end
+    end
+
+    if not Factions[factionId] then
+        return false, "faction_missing", handleErr
+    end
+
+    local num = 1
+
+    if isLeader == 2 then num = 99 elseif isLeader == 1 then num = 100 else num = 1 end
+
+    local ok, res = pcall(function()
+        return MySQL.update.await([[
+            UPDATE faction_members
+            SET rank = ?
+            WHERE identifier = ? AND faction_name = ?
+        ]], {
+            num,
+            identifier,
+            factionId
+        })
+    end)
+
+    if ok then
+        if res == 0 then
+            return false, "player_missing", handleErr
+        end
+
+        Factions[factionId].members[identifier].rank = num
+
+        SyncPlayerFactions(nil, identifier)
+        return true, nil, handleErr
+    else
+        return false, "sql_error", handleErr
+    end
+end
+
+exports("SetFactionLeader", SetFactionLeader)

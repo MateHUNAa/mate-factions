@@ -19,6 +19,7 @@ Loc["en"] = {
           ["category_action_reason"] = "Cannot %s a member who has equal or higher rank than yourself",
           ["no_lower_rank"]          = "No lower rank available for demotion.",
           ["no_higher_rank"]         = "No higher rank available for promotion",
+          ["sync_err"]               = "Sync error during: SyncFactionMember" -- TODO: Remove.
      },
      success = {
           ["faction_created"]    = "Faction %s created !",

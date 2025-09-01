@@ -102,13 +102,19 @@ function InsertFaction(name, label, type)
 
     if ok then
         Factions[name] = {
-            label = label,
-            type = type,
-            ranks = Config.DefaultRanks,
-            permissions = {},
+            id            = name,
+            name          = name,
+            label         = label,
+            type          = type,
+            ranks         = Config.DefaultRanks,
+            permissions   = {},
             allow_offduty = false,
-            offduty_name = nil,
-            members = {}
+            offduty_name  = nil,
+            members       = {},
+            duty_point    = nil,
+            posts         = {},
+            settings      = {},
+            stash         = nil
         }
 
         TriggerClientEvent("mate-factions:FactionCreated", -1, name, Factions[name])
@@ -200,4 +206,51 @@ function RegisterStash(faction, pos)
     faction.stash = pos
 
     Logger:Info(("Registered stash for faction %s"):format(faction.id))
+end
+
+function SyncFactionMembers(factionId)
+    Logger:Debug(("Syncing %s members !"):format(factionId))
+
+
+    local faction = Factions[factionId]
+    if not faction then return false end
+
+    for idf, member in pairs(faction.members) do
+        local pid = nil
+
+        for _, p in pairs(GetPlayers()) do
+            local license = GetPlayerIdentifierByType(p, "license"):sub(9)
+            if license == idf then
+                pid = p
+            end
+        end
+
+        if not pid then goto continue end
+
+        local playerFactions = {}
+        local factionTypes = {}
+
+        for fid, f in pairs(Factions) do
+            local m = f.members[idf]
+            if m then
+                table.insert(playerFactions, {
+                    id       = fid,
+                    name     = fid,
+                    label    = f.label,
+                    settings = f.settings,
+                    rank     = m.rank,
+                    on_duty  = m.on_duty == 1,
+                    ranks    = f.ranks,
+                    type     = f.type
+                })
+                factionTypes[fid] = true
+            else
+                factionTypes[fid] = false
+            end
+        end
+
+        Logger:Debug(("Synced %s members"):format(factionId))
+        TriggerClientEvent("mate-factions:updateClientFactionTypes", pid, factionTypes, playerFactions)
+        ::continue::
+    end
 end

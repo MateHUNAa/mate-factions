@@ -37,7 +37,6 @@ end))
 
 
 regServerNuiCallback("requestNews", function(pid, idf, params)
-    Logger:Debug("requestNEws", idf, params)
     local faction, member, handleNotify = GetEffectiveFaction(params, idf)
     if not handleNotify(pid, member) then return end
 

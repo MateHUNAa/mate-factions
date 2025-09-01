@@ -1,4 +1,5 @@
 local Logger = require("shared.Logger")
+local MemberUpdate = require("server.helpers.FactionMemberUpdater")
 
 function AddRank(factionId, rankId, name, permissions, description, color)
     local faction = Factions[factionId]
@@ -346,50 +347,28 @@ function SetPlayerRank(identifier, factionId, newRank)
             mCore.Notify(src, lang.Title, lang.error["rank_missing"], "error", 5000)
         elseif errVal == "sql_error" then
             mCore.Notify(src, lang.Title, lang.error["db_err"], "error", 5000)
+        elseif errVal == "sync_err" then
+            mCore.Notify(src, lang.Title, lang.error["sync_err"], "error", 5000)
         else
             mCore.Notify(src, lang.Title, lang.error["unknown_error"], "error", 5000)
         end
     end
 
-    local factionConfig = Factions[factionId]
-    if not factionConfig then
+    local faction = Factions[factionId]
+    if not faction then
         return false, "faction_missing", handleErr
     end
 
-    local validPrio, rankData = GetValidRank(newRank, factionConfig.ranks)
-    if not validPrio then
-        return false, "rank_missing", handleErr
+    local success, errVal, member =
+        MemberUpdate.new(identifier, factionId)
+        :WithRank(newRank)
+        :Apply(true)
+
+    if not success then
+        handleErr(errVal)
     end
 
-    -- update database
-    local ok, res = pcall(function()
-        return MySQL.update.await([[
-            UPDATE faction_members
-            SET rank = ?
-            WHERE identifier = ? AND faction_name = ?
-        ]], {
-            validPrio,
-            identifier,
-            factionId
-        })
-    end)
-
-    if ok then
-        if res == 0 then
-            return false, "player_missing", handleErr
-        end
-
-        -- update in-memory cache
-        if factionConfig.members[identifier] then
-            factionConfig.members[identifier].rank = validPrio
-        end
-
-        SyncAllOnlineMembers()
-
-        return true, nil, handleErr
-    else
-        return false, "sql_error", handleErr
-    end
+    return success and success or false, member
 end
 
 exports("SetPlayerRank", SetPlayerRank)

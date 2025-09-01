@@ -22,13 +22,13 @@ isLoaded = false
 ---@field permissions table<string, boolean>
 ---@field settings table<string, any>
 ---@field allow_offduty boolean
----@field duty_point vector4
----@field stash vector3
+---@field duty_point vector3|nil
+---@field stash vector3|nil
 ---@field members FactionMember[]
 ---@field posts FactionPost[]
 
 ---@class FactionMember
----@field rank { name: string, permissions: table}
+---@field rank number
 ---@field title string
 ---@field on_duty boolean
 ---@field joined_at Date

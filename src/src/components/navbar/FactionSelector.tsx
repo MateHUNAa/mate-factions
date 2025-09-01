@@ -11,7 +11,6 @@ interface FactionSelectorProps {
 
 const FactionSelector: React.FC<FactionSelectorProps> = ({ collapsed = false }) => {
     const { playerFactions, selectedFaction, selectFaction } = useFaction()
-
     const [isOpen, setIsOpen] = useState(false)
     const user = useUser()
 
@@ -81,7 +80,7 @@ const FactionSelector: React.FC<FactionSelectorProps> = ({ collapsed = false }) 
                         <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: "#FFA500"/*faction.color*/ }} />
                         <div className="flex-1 min-w-0">
                             <div className="font-medium">{faction.name}</div>
-                            <div className="text-xs text-gray-400 group-focus:text-gray-500">{faction?.memberCount?.toString() || 0} members</div>
+                            <div className="text-xs text-gray-400 group-focus:text-gray-500">{faction?.memberCount|| 0} members</div>
                         </div>
                         {selectedFaction.id === faction.id && <Check className={`size-8 text-white`} />}
                     </DropdownMenuItem>

@@ -1,4 +1,5 @@
 local Logger = require('shared.Logger')
+local MemberUpdater = require("server.helpers.FactionMemberUpdater")
 
 function SetPlayerFaction(identifier, factionId)
     local function handleErr(errVal, src)
@@ -43,10 +44,20 @@ function SetPlayerFaction(identifier, factionId)
     if ok then
         Factions[factionId].members[identifier] = {
             rank      = 1,
-            on_duty   = 0,
-            joined_at = os.time()
+            on_duty   = false,
+            joined_at = os.time(),
+            title     = ""
         }
-        SyncPlayerFactions(nil, identifier)
+
+        TriggerEvent("mate-factions:PlayerFactionSet", identifier, factionId, Factions[factionId])
+        local playerServerId = GetPlayerServerIdByIdentifier(identifier)
+        if playerServerId and playerServerId ~= -1 then
+            TriggerClientEvent("mate-factions:PlayerFactionSet", playerServerId, identifier, factionId,
+                Factions[factionId])
+        end
+
+        SyncFactionMembers(factionId)
+
         return true, nil, handleErr
     else
         return false, "sql_error", handleErr
@@ -208,6 +219,7 @@ AddEventHandler('esx:playerLoaded', function(playerId, xPlayer, isNew)
     SyncPlayerFactions(playerId, xPlayer.identifier)
 end)
 
+-- RequestPlayerFactionUpdate
 RegisterNetEvent("mate-factions:updatePlayerFaction", function(identifier)
     local src = source
     if not identifier then
@@ -354,6 +366,12 @@ function kickFactionMember(identifier, factionId)
         return false
     end
 
+    TriggerEvent("mate-factions:MemberKickedFromFaction", identifier, factionId)
+    local playerServerId = GetPlayerServerIdByIdentifier(identifier)
+    if playerServerId then
+        TriggerClientEvent("mate-factions:MemberKickedFromFaction", playerServerId, identifier, factionId)
+    end
+
     return true
 end
 
@@ -382,46 +400,30 @@ regServerNuiCallback("updateFactionMember", function(pid, idf, params)
         return { msg = lang.error["player_missing"], msgType = "error" }
     end
 
+
+    local updater = MemberUpdater.new(idf, faction.id)
+
     if params.rankId and params.rankId ~= -1 then
         local validRank, rankData = GetValidRank(params.rankId, faction.ranks)
-
         if validRank > member.rank then
-            Logger:Info(("`%s` Tried to give a higher rank than him self !"):format(idf))
+            Logger:Info(("`%s` Tried to give a higher rank than himself!"):format(idf))
             validRank = params.targetOldRankId
         end
-
-        if validRank then
-            targetMember.rank = validRank
-        end
+        updater:WithRank(validRank)
     end
 
     if params.notes then
-        targetMember.notes = params.notes
+        updater:WithNotes(params.notes)
     end
 
-    local ok, err = pcall(function()
-        MySQL.update.await([[
-            INSERT INTO faction_members (identifier, faction_name, rank, on_duty)
-            VALUES (?,?,?,?)
-            ON DUPLICATE KEY UPDATE
-                rank = VALUES(rank),
-                on_duty = VALUES(on_duty),
-                joined_at = VALUES(joined_at)
-        ]], {
-            params.target.identifier,
-            params.factionId,
-            targetMember.rank,
-            targetMember.on_duty or 0,
-        })
-    end)
 
-    if not ok then
-        Logger:Error(("Failed to update faction member `%s`: %s"):format(params.target.name, err))
-        return { msg = "Database error!", msgType = "error", error = true }
+    local success, errVal, member = updater:Apply(true)
+
+    if errVal then
+        Logger:Debug("[updateFactionMember] Found error-> ", errVal)
     end
 
-    SyncPlayerFactions(nil, params.target.identifier)
-    return { success = true, msg = (lang.success["member_updated"]):format(params.target.name), msgType = "success" }
+    return { success = success, msg = (lang.success["member_updated"]):format(params.target.name), msgType = "success" }
 end)
 
 
@@ -467,9 +469,9 @@ regServerNuiCallback("promoteFactionMember", function(pid, idf, params)
         nextPrio
     ))
 
-    SetPlayerRank(params.target, params.factionId, nextPrio)
+    local s = SetPlayerRank(params.target, params.factionId, nextPrio)
 
-    return { msg = (lang.success["promoted"]):format(params.target, nextRank.name), msgType = "success", error = false }
+    return { success = s, msg = (lang.success["promoted"]):format(params.target, nextRank.name), msgType = "success", error = false }
 end)
 
 
@@ -496,9 +498,9 @@ regServerNuiCallback("demoteFactionMember", function(pid, idf, params)
         return { msg = lang.error["player_missing"], msgType = "error", error = true }
     end
 
-    if targetMember.rank >= member.rank then
-        return { msg = (lang.error["category_action_reason"]):format("demote"), msgType = "error", error = true }
-    end
+    -- if targetMember.rank >= member.rank then
+    --     return { msg = (lang.error["category_action_reason"]):format("demote"), msgType = "error", error = true }
+    -- end
 
     local nextPrio, nextRank = GetAdjacentRank(targetMember.rank, faction.ranks, "down")
     if not nextPrio or not nextRank then
@@ -514,9 +516,13 @@ regServerNuiCallback("demoteFactionMember", function(pid, idf, params)
         nextPrio
     ))
 
-    SetPlayerRank(params.target, params.factionId, nextPrio)
+    local success, errVal = SetPlayerRank(params.target, params.factionId, nextPrio)
 
-    return { msg = (lang.succes["demoted"]):format(params.target, nextRank.name), msgType = "success", error = false }
+    return {
+        msg = (lang.success["demoted"]):format(params.target, nextRank.name),
+        msgType = "success",
+        error = false
+    }
 end)
 
 

@@ -498,9 +498,9 @@ regServerNuiCallback("demoteFactionMember", function(pid, idf, params)
         return { msg = lang.error["player_missing"], msgType = "error", error = true }
     end
 
-    -- if targetMember.rank >= member.rank then
-    --     return { msg = (lang.error["category_action_reason"]):format("demote"), msgType = "error", error = true }
-    -- end
+    if targetMember.rank >= member.rank then
+        return { msg = (lang.error["category_action_reason"]):format("demote"), msgType = "error", error = true }
+    end
 
     local nextPrio, nextRank = GetAdjacentRank(targetMember.rank, faction.ranks, "down")
     if not nextPrio or not nextRank then

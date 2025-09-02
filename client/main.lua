@@ -136,15 +136,15 @@ end))
 local function addSuggestions()
   TriggerEvent('chat:addSuggestion', '/showfactions', 'Frakciók listázása')
 
-  --   local types = ''
-  --   for key, typ in pairs(FTYPES) do
-  --     types = types .. ('%s - %s, '):format(key, typ.label)
-  --   end
+  local types = ''
+  for key, typ in pairs(Config.ValidFactionTypes) do
+    types = types .. ('%s - %s, '):format(key, Functions.CapitalizeFirstLetter(key))
+  end
 
   TriggerEvent('chat:addSuggestion', '/makefaction', 'Frakció létrehozása', {
     { name = "name",  help = 'Név' },
     { name = "label", help = 'Label' },
-    { name = "typ",   help = ("Típus (%s)"):format("maffia, gang, job") },
+    { name = "typ",   help = ("Típus (%s)"):format(types) },
   })
 
   TriggerEvent('chat:addSuggestion', '/setfaction', 'Játékos frakcióba rakása', {

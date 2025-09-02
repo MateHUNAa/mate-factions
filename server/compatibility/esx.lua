@@ -1,4 +1,7 @@
+if GetResourceState("es_extended") ~= "started" then return end
+
 local logPrefix <const> = "[ESX COMPAT]-> "
+
 
 ---@param factionId string
 ---@param factionData Faction

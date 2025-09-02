@@ -1,5 +1,5 @@
 local Logger = require("shared.Logger")
-
+local Badge = require("server.features.badge")
 function LoadFactions()
     local res = MySQL.query.await("SELECT * FROM factions")
     for _, row in pairs(res) do
@@ -11,7 +11,7 @@ function LoadFactions()
             type          = row.type,
             ranks         = json.decode(row.ranks or "{}"),
             permissions   = json.decode(row.permissions or "{}"),
-            settings      = json.decode(row.settings or '{"allowDuty":true,"payment":true,"robbery":false}'),
+            settings      = row.settings and json.decode(row.settings) or Config.FactionAbilities[row.type or "job"] or {},
             allow_offduty = row.allow_offduty == 1,
             offduty_name  = row.offduty_name,
             members       = {},
@@ -29,11 +29,14 @@ function LoadFactionMembers()
     local res = MySQL.query.await("SELECT * FROM faction_members")
     for _, row in pairs(res) do
         local faction = Factions[row.faction_name]
+        local badge = Badge.loadByIdentifier(row.identifier, row.faction_name)
         if faction then
             faction.members[row.identifier] = {
                 rank      = row.rank,
                 on_duty   = 0,
-                joined_at = row.joined_at
+                joined_at = row.joined_at,
+                title     = row.title,
+                badge     = badge
             }
         end
     end
@@ -105,6 +108,15 @@ function Init()
         "KEY `faction_name` (`faction_name`)",
         "KEY `identifier` (`identifier`)",
         "CONSTRAINT `faction_members_ibfk_1` FOREIGN KEY(`faction_name`) REFERENCES `factions` (`name`) ON DELETE CASCADE"
+    })
+
+    mCore.createSQLTable("faction_badges", {
+        "badgeNumber VARCHAR(7) PRIMARY KEY",
+        "factionId VARCHAR(50) NOT NULL",
+        "identifier VARCHAR(50) UNIQUE",
+        "rank INT DEFAULT 0",
+        "createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+        "CONSTRAINT `faction_badges_ibfk_1` FOREIGN KEY(`factionId`) REFERENCES `factions`(`name`) ON DELETE CASCADE"
     })
 
 

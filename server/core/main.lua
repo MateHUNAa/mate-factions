@@ -29,9 +29,10 @@ isLoaded = false
 
 ---@class FactionMember
 ---@field rank number
----@field title string
+---@field title? string
 ---@field on_duty boolean
 ---@field joined_at Date
+---@field badge FactionBadge|nil
 
 
 ---@type Faction[]

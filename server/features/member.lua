@@ -493,6 +493,7 @@ regServerNuiCallback("demoteFactionMember", function(pid, idf, params)
         return { msg = (lang.error["permission_missing"]):format("manageMembers"), msgType = "error", error = true }
     end
 
+    ---@type FactionMember
     local targetMember = faction.members[params.target]
     if not targetMember then
         return { msg = lang.error["player_missing"], msgType = "error", error = true }

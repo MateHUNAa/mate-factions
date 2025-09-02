@@ -1,30 +1,27 @@
-local logPrefix <const> = "[ESX COMPAT] [%s]-> "
+local logPrefix <const> = "[ESX COMPAT]-> "
 
 ---@param factionId string
 ---@param factionData Faction
 RegisterNetEvent('mate-factions:FactionCreated', function(factionId, factionData)
-    MySQL.query("INSERT INTO jobs (name, label, whitelisted) VALUES (?, ?, 0)", {
-        factionId, factionData.label
-    }, function(res)
-        Logger:Debug("[ESX COMPAT] [FactionCreated]-> Res:", res)
+    local grades = {}
+    for rankId, rank in pairs(factionData.ranks) do
+        table.insert(grades, {
+            job_name    = factionId,
+            grade       = rankId,
+            name        = rank.name,
+            label       = rank.name,
+            salary      = 0,
+            skin_male   = {},
+            skin_female = {}
+        })
+    end
 
-        if res.affectedRows > 0 then
-            Logger:Info(("[ESX COMPAT] Faction `%s` added as job"):format(factionId))
+    local success = ESX.CreateJob(factionId, factionData.label, grades)
 
-            if factionData.ranks and #factionData.ranks > 0 then
-                for i, rank in ipairs(factionData) do
-                    MySQL.query.await(
-                        "INSERT INTO job_grades (job_name, grade, name, label, salary) VALUES (?, ?, ?, ?, ?)", {
-                            factionId, i - 1, rank.name, rank.name, 0
-                        })
-                end
-
-                Logger:Info(("[ESX COMPAT]: Inserted %s jobs into `%s`"):format(#factionData.ranks, factionId))
-            end
-        else
-            Logger:Error(("[ESX COMPAT]: Failed to insert faction %s into jobs"):format(factionId))
-        end
-    end)
+    if success then
+        Logger:Info(("%s Faction Created successfull: %s"):format(logPrefix, factionId))
+        ESX.RefreshJobs()
+    end
 end)
 
 ---@param playerIdentifier string
@@ -32,7 +29,7 @@ end)
 ---@param faction Faction
 RegisterNetEvent("mate-factions:PlayerFactionSet", function(playerIdentifier, factionId, faction)
     local xPlayer = ESX.GetPlayerFromIdentifier(playerIdentifier)
-    local grade = 0
+    local grade = 1
 
     if xPlayer then
         xPlayer.setJob(factionId, grade)

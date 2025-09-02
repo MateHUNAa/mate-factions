@@ -21,6 +21,7 @@ server_scripts {
 
     "server/features/*.lua",
     "server/admin/*.lua",
+    "server/compatibility/*.lua"
 }
 
 client_scripts {

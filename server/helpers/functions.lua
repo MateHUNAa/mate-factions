@@ -44,7 +44,7 @@ Functions = {
      end),
      ---@param identifier string|number
      ---@return boolean,number|nil
-     GetPlayerIDByIdentifier = (function(identifier)
+     GetPlayerServerIdByIdentifier = (function(identifier)
           local found, type, id = ParseIdentifier(identifier)
           if not found then return false end
 

@@ -117,6 +117,8 @@ nuiServerCallback("kickFactionMember")
 
 nuiServerCallback("changeMemberRank")
 
+nuiServerCallback("makeBadge")
+
 
 
 Citizen.CreateThread((function()

@@ -1,4 +1,5 @@
 import { PanelType } from "@/App";
+import { Button } from "@/components/ui/button";
 import { fetchNui } from "@/utils/fetchNui";
 import React, { useState } from "react"
 
@@ -60,14 +61,24 @@ const DutyPanel: React.FC<DutyPanelProps> = ({
             <div className="duty-content flex flex-col items-center justify-center gap-6 p-2">
                 <p>Frakció: {factionName || "Ismeretlen"}</p>
                 <p>Rangod: {rankLabel || "Ismeretlen"}</p>
-                <button
-                    onMouseOver={() => playSound("hover", 0.1)}
-                    onClick={ToggleDuty}
-                    className={`font-bold text-[1.6vh] py-1 px-2 rounded ${onDuty ? "bg-red-600 hover:bg-red-700" : "bg-green-600 hover:bg-green-700"
-                        }`}
-                >
-                    {onDuty ? "Kilépés a szolgálatból" : "Szolgálatba lépés"}
-                </button>
+                <div className="flex items-center justify-center gap-3 w-full">
+                    <Button
+                        onMouseOver={() => playSound("hover", 0.1)}
+                        onClick={ToggleDuty}
+                        className={`w-full font-bold text-[1.6vh] py-1 px-2 rounded ${onDuty ? "bg-red-600 hover:bg-red-700" : "bg-green-600 hover:bg-green-700"
+                            }`}
+                    >
+                        {onDuty ? "Kilépés a szolgálatból" : "Szolgálatba lépés"}
+                    </Button>
+
+                    <Button
+                        onMouseOver={() => playSound("hover", 0.1)}
+                        className={`w-full font-bold text-[1.6vh] py-1 px-2 rounded bg-green-600/80 hover:bg-green-700/80`}
+                        onClick={() => fetchNui("makeBadge", factionName)}
+                    >
+                        Make Badge
+                    </Button>
+                </div>
             </div>
         </div>
     )

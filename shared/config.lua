@@ -84,7 +84,7 @@ Config.FactionAbilities = {
           payment = true,
           duty    = true,
           badge   = true,
-          alert   = false
+          alert   = true
      }
 }
 

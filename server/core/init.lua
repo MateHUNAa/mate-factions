@@ -11,7 +11,6 @@ function LoadFactions()
             type          = row.type,
             ranks         = json.decode(row.ranks or "{}"),
             permissions   = json.decode(row.permissions or "{}"),
-            settings      = row.settings and json.decode(row.settings) or Config.FactionAbilities[row.type or "job"] or {},
             allow_offduty = row.allow_offduty == 1,
             offduty_name  = row.offduty_name,
             members       = {},

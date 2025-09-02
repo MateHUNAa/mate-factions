@@ -227,21 +227,14 @@ RegisterCommand("makebadge", function(source, args, raw)
     local targetId = tonumber(args[1])
     local factionId = args[2]
     if not targetId or not factionId then
-        mCore.Notify(source, lang.Title, "error", "Usage: /makebadge [playerID] [factionId]", 5000)
+        mCore.Notify(source, lang.Title, "Usage: /makebadge [playerID] [factionId]", "error", 5000)
         return
     end
 
-    local identifier
-    for i = 0, GetNumPlayerIdentifiers(targetId) - 1 do
-        local id = GetPlayerIdentifier(targetId, i)
-        if id:find("license:") then
-            identifier = id:sub(9)
-            break
-        end
-    end
+    local identifier = GetPlayerIdentifierByType(tostring(targetId), "license"):sub(9)
 
     if not identifier then
-        mCore.Notify(source, lang.Title, "error", "Could not find player's license identifier", 5000)
+        mCore.Notify(source, lang.Title, "Could not find player's license identifier", "error", 5000)
         return
     end
 
@@ -249,6 +242,6 @@ RegisterCommand("makebadge", function(source, args, raw)
     if success then
         mCore.Notify(source, lang.Title, "success", ("Badge assigned to player %s"):format(GetPlayerName(targetId)), 5000)
     else
-        mCore.Notify(source, lang.Title, "error", ("Failed to assign badge: %s"):format(result), 5000)
+        mCore.Notify(source, lang.Title, ("Failed to assign badge: %s"):format(result), "error", 5000)
     end
 end)

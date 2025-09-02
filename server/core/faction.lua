@@ -109,13 +109,12 @@ function InsertFaction(name, label, type)
             label         = label,
             type          = type,
             ranks         = Config.DefaultRanks,
-            permissions   = {},
+            permissions   = abilities,
             allow_offduty = false,
             offduty_name  = nil,
             members       = {},
             duty_point    = nil,
             posts         = {},
-            settings      = abilities,
             stash         = nil
         }
 
@@ -147,7 +146,7 @@ function SetFactionSetting(factionId, setting, value)
     -- TODO: Allow admins to change faction.settings
 end
 
-function GetEffectiveFaction(factionId, memberId)
+function GetEffectiveFaction(factionId, identifier)
     local function handleErr(ID, err, ...)
         if type(err) == "table" then
             return true
@@ -169,7 +168,7 @@ function GetEffectiveFaction(factionId, memberId)
         return nil, "faction_missing", handleErr
     end
 
-    local member = faction.members[memberId]
+    local member = faction.members[identifier]
     if not member then
         return nil, "not_member", handleErr
     end

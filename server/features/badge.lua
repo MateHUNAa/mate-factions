@@ -12,8 +12,9 @@ function Badge:new(badgeNumber, factionId, identifier, rank)
     local self = setmetatable({}, self)
     self.badgeNumber = badgeNumber
     self.factionId = factionId
-    if not Functions[self.factionId] then
-        return Logger:Error(("No faction found with `%s`"):format(factionId))
+    if not Factions[self.factionId] then
+        Logger:Error(("No faction found with `%s`"):format(factionId))
+        return nil
     end
     self.faction = Factions[self.factionId]
     self.identifier = identifier
@@ -27,7 +28,6 @@ function Badge:save()
         INSERT INTO faction_badges (badgeNumber, factionId, identifier, rank)
         VALUES (?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE
-            badgeNumber = VALUES(badgeNumber)
             rank = VALUES(rank)
     ]], { self.badgeNumber, self.factionId, self.identifier, self.rank })
 end
@@ -75,25 +75,37 @@ end
 ---@param rank string
 ---@reutrn FactionBadge,FactionBadge["badgeNumber"]
 function AssignBadgeToPlayer(identifier, factionId)
-    local pid = GetPlayerIDByIdentifier(identifier)
-    local faction, member, handleErr = GetEffectiveFaction(identifier, pid)
+    if not identifier or not factionId then
+        return Logger:Error((lang.error["missing_arg"]):format("identifier/factionId"))
+    end
 
+    local pid = GetPlayerServerIdByIdentifier(identifier)
+    local faction, member, handleErr = GetEffectiveFaction(factionId, identifier)
+
+    Logger:Debug("AssignBadgeToPlayer", faction, member)
     if not faction then
+        Logger:Error(member)
         return handleErr(member)
     end
 
     if not pid then
+        Logger:Error("No player iD")
+
         return false
     end
 
     if not HasFactionAbility(factionId, "badge") then
+        Logger:Error("Faction does not have ability to make badge")
         mCore.Notify(pid, lang.Title, (lang.error["no_ability"]):format("badge"), "error", 5000)
         return false
     end
 
     local exists = Badge.loadByIdentifier(identifier, factionId)
 
-    if exists then return exists, exists.badgeNumber end
+    if exists then
+        Logger:Debug("Returning existsng badge")
+        return exists, exists.badgeNumber
+    end
 
 
     local rank = member.rank or 1
@@ -103,24 +115,39 @@ function AssignBadgeToPlayer(identifier, factionId)
 
     Player(pid).state:set("factionBadge", {
         factionId   = faction.id,
-        badgeNumber = badge.badgeNumber,
+        badgeNumber = badgeNumber,
         rank        = rank,
         holder      = GetPlayerName(pid) -- TODO: use RPname here
     }, true)
 
     badge:save()
 
+    exports.ox_inventory:AddItem(pid, Config.BadgeItem, 1, {
+        factionId   = faction.id,
+        badgeNumber = badge.badgeNumber,
+        rank        = rank,
+        holder      = GetPlayerName(pid) -- TODO: use RPname here
+    })
+
     return badge, badge.badgeNumber
 end
 
 exports("useBadge", function(event, item, inventory, slot, data)
     Logger:Debug(
-        event,
-        item,
-        inventory,
-        slot,
-        data
+        "event", event, "\n",
+        "item", item, "\n",
+        "inventory", inventory, "\n",
+        "slot", slot, "\n",
+        "data", data, "\n"
     )
+end)
+
+regServerNuiCallback("makeBadge", function(pid, idf, params)
+    local badge, badgeNumber = AssignBadgeToPlayer(idf, params)
+
+
+
+    return { msg = "badge created", msgType = "info" }
 end)
 
 return Badge

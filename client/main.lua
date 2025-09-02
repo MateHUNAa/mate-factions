@@ -137,8 +137,8 @@ local function addSuggestions()
   TriggerEvent('chat:addSuggestion', '/showfactions', 'Frakciók listázása')
 
   local types = ''
-  for key, typ in pairs(Config.ValidFactionTypes) do
-    types = types .. ('%s - %s, '):format(key, Functions.CapitalizeFirstLetter(key))
+  for i, typ in pairs(Config.ValidFactionTypes) do
+    types = types .. ('%s%s - %s'):format(i~=1 and ", " or "",typ, Functions.CapitalizeFirstLetter(typ))
   end
 
   TriggerEvent('chat:addSuggestion', '/makefaction', 'Frakció létrehozása', {

@@ -19,7 +19,7 @@ isLoaded = false
 ---@field label string
 ---@field type FactionType
 ---@field ranks FactionRank[]
----@field permissions table<string, boolean>
+---@field permissions table<FactionAbilities, boolean>
 ---@field settings table<string, any>
 ---@field allow_offduty boolean
 ---@field duty_point vector3|nil

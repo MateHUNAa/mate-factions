@@ -54,3 +54,29 @@ lib.callback.register("mate-factions:requestClientFactions", (function(source)
 
     return playerFactions
 end))
+
+function SetPlayerDuty(identifier, onDuty)
+    local factionId, factionData, memberData = GetPlayerFaction(identifier)
+    if not factionId then return false end
+
+    if not HasFactionAbility(factionId, "duty") then
+        return Logger:Warning(("Faction %s does not support duty mode."):format(factionId))
+    end
+
+    memberData.on_duty = onDuty and 1 or 0
+    memberData.lastActive = os.time()
+
+    MySQL.update.await([[
+        UPDATE faction_members
+        SET on_duty = ?, last_active = NOW()
+        WHERE identifier = ? AND faction_name = ?
+    ]], {
+        memberData.on_duty,
+        identifier,
+        factionId
+    })
+
+    return true
+end
+
+exports("SetPlayerDuty", SetPlayerDuty)

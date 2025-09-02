@@ -86,6 +86,8 @@ function InsertFaction(name, label, type)
         end
     end
 
+    local abilities = Config.FactionAbilities[type or "job"] or {}
+
     local ok, result = pcall(function()
         return MySQL.insert.await([[
             INSERT INTO factions (name, label, type, permissions, ranks, allow_offduty)
@@ -94,7 +96,7 @@ function InsertFaction(name, label, type)
             name,
             label,
             type,
-            "{}",
+            json.encode(abilities or "{}"),
             json.encode(Config.DefaultRanks),
             0
         })
@@ -113,7 +115,7 @@ function InsertFaction(name, label, type)
             members       = {},
             duty_point    = nil,
             posts         = {},
-            settings      = {},
+            settings      = abilities,
             stash         = nil
         }
 
@@ -303,3 +305,16 @@ function SetFactionLeader(identifier, factionId, isLeader)
 end
 
 exports("SetFactionLeader", SetFactionLeader)
+
+---@param factionId string
+---@param ability FactionAbilities
+function HasFactionAbility(factionId, ability)
+    local faction = Factions[factionId]
+    if not faction then
+        return Logger:Debug(("[HasFactionAbility]: %s is not exists"):format(factionId))
+    end
+
+    local abilities = Config.FactionAbilities[faction.type]
+
+    return abilities[ability] or false
+end

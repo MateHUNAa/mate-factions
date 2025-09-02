@@ -55,11 +55,39 @@ Config.DefaultRanks = {
 
 ---@alias FactionType "job" | "gang" | "organization" | "maffia"
 Config.ValidFactionTypes = {
+     "job", -- DEFAULT
      "gang",
      "maffia",
-     "job", -- DEFAULT
      "organization"
 }
+---@alias FactionAbilities "payment" | "duty" | "badge" | "alert"
+Config.FactionAbilities = {
+     job = {
+          payment = true,
+          duty    = true,
+          badge   = false,
+          alert   = false
+     },
+     gang = {
+          payment = false,
+          duty    = false,
+          badge   = false,
+          alert   = false
+     },
+     maffia = {
+          payment = false,
+          duty    = false,
+          badge   = false,
+          alert   = true
+     },
+     organization = {
+          payment = true,
+          duty    = true,
+          badge   = true,
+          alert   = false
+     }
+}
+
 
 Config.Debug = true
 

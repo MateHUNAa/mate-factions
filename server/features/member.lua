@@ -104,27 +104,6 @@ function GetPlayerFactions(identifier)
 end
 
 exports("GetPlayerFactions", GetPlayerFactions)
-function SetPlayerDuty(identifier, onDuty)
-    local factionId, factionData, memberData = GetPlayerFaction(identifier)
-    if not factionId then return false end
-
-    memberData.on_duty = onDuty and 1 or 0
-    memberData.lastActive = os.time()
-
-    MySQL.update.await([[
-        UPDATE faction_members
-        SET on_duty = ?, last_active = NOW()
-        WHERE identifier = ? AND faction_name = ?
-    ]], {
-        memberData.on_duty,
-        identifier,
-        factionId
-    })
-
-    return true
-end
-
-exports("SetPlayerDuty", SetPlayerDuty)
 
 function SyncPlayerFactions(src, identifier)
     if not identifier then

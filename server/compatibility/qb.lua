@@ -84,3 +84,13 @@ RegisterNetEvent("mate-factions:MemberKickedFromFaction", function(identifier, f
         end
     end
 end)
+
+RegisterNetEvent('QBCore:Server:OnJobUpdate', function(jobData)
+    local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
+    if not Player then return end
+
+    local identifier = Player.PlayerData.citizenid
+
+    SetPlayerFaction(identifier, jobData.name)
+end)

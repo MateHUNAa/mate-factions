@@ -107,7 +107,19 @@ function AssignBadgeToPlayer(identifier, factionId)
         holder      = GetPlayerName(pid) -- TODO: use RPname here
     }, true)
 
+    badge:save()
+
     return badge, badge.badgeNumber
 end
+
+exports("useBadge", function(event, item, inventory, slot, data)
+    Logger:Debug(
+        event,
+        item,
+        inventory,
+        slot,
+        data
+    )
+end)
 
 return Badge

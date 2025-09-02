@@ -172,6 +172,11 @@ local function addSuggestions()
   TriggerEvent('chat:addSuggestion', '/deletestash', 'Frakció tároló törlése', {
     { name = "factionID", help = 'Tároló ID' },
   })
+
+  TriggerEvent('chat:addSuggestion', '/makebadge', 'Jelvényt Készítés a játékosnak', {
+    { name = "ID",        help = 'Játékos ID' },
+    { name = "factionID", help = 'Frakció ID' },
+  })
 end
 SetTimeout(1000, addSuggestions)
 

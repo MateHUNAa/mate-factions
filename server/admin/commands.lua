@@ -214,3 +214,18 @@ RegisterCommand("createstash", function(source, args, raw)
         mCore.Notify(source, lang.Title, lang.error["stash_place_failed"], "error", 5000)
     end
 end)
+
+
+RegisterCommand("makebadge", function(source, args, raw)
+    if not Functions.IsAdmin(source) then
+        Logger:Debug(("%s(%s) is not an admin Tried to use command: `setfaction`"):format(GetPlayerName(source),
+            source))
+        mCore.Notify(source, lang.Title, "error", lang.error["not_an_admin"], 5000)
+        return
+    end
+
+    local id = args[1]
+    local factonId = args[2]
+
+    AssignBadgeToPlayer(GetPlayerIdentifier(id, 'license'):sub(9), factonId)
+end)

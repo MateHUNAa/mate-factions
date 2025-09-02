@@ -73,6 +73,7 @@ end
 ---@param factionId string
 ---@param badgeNumber? number
 ---@param rank string
+---@reutrn FactionBadge,FactionBadge["badgeNumber"]
 function AssignBadgeToPlayer(identifier, factionId)
     local pid = GetPlayerIDByIdentifier(identifier)
     local faction, member, handleErr = GetEffectiveFaction(identifier, pid)

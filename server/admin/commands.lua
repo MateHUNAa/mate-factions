@@ -39,7 +39,7 @@ RegisterCommand("setfaction", function(source, args, raw)
     if not Functions.IsAdmin(source) then
         Logger:Debug(("%s(%s) is not an admin Tried to use command: `setfaction`"):format(GetPlayerName(source),
             source))
-        mCore.Notify(source, lang.Title, "error", lang.error["not_an_admin"], 5000)
+        mCore.Notify(source, lang.Title, lang.error["not_an_admin"], "error", 5000)
         return
     end
 
@@ -93,7 +93,7 @@ RegisterCommand("setfactionleader", function(source, args, raw)
     if not Functions.IsAdmin(source) then
         Logger:Debug(("%s(%s) is not an admin Tried to use command: `setfaction`"):format(GetPlayerName(source),
             source))
-        mCore.Notify(source, lang.Title, "error", lang.error["not_an_admin"], 5000)
+        mCore.Notify(source, lang.Title, lang.error["not_an_admin"], "error", 5000)
         return
     end
 
@@ -143,7 +143,7 @@ RegisterCommand("createduty", function(source, args, raw)
     if not Functions.IsAdmin(source) then
         Logger:Debug(("%s(%s) is not an admin Tried to use command: `setfaction`"):format(GetPlayerName(source),
             source))
-        mCore.Notify(source, lang.Title, "error", lang.error["not_an_admin"], 5000)
+        mCore.Notify(source, lang.Title, lang.error["not_an_admin"], "error", 5000)
         return
     end
 
@@ -184,7 +184,7 @@ RegisterCommand("createstash", function(source, args, raw)
     if not Functions.IsAdmin(source) then
         Logger:Debug(("%s(%s) is not an admin Tried to use command: `setfaction`"):format(GetPlayerName(source),
             source))
-        mCore.Notify(source, lang.Title, "error", lang.error["not_an_admin"], 5000)
+        mCore.Notify(source, lang.Title, lang.error["not_an_admin"], "error", 5000)
         return
     end
 
@@ -220,12 +220,35 @@ RegisterCommand("makebadge", function(source, args, raw)
     if not Functions.IsAdmin(source) then
         Logger:Debug(("%s(%s) is not an admin Tried to use command: `setfaction`"):format(GetPlayerName(source),
             source))
-        mCore.Notify(source, lang.Title, "error", lang.error["not_an_admin"], 5000)
+        mCore.Notify(source, lang.Title, lang.error["not_an_admin"], "error", 5000)
         return
     end
 
-    local id = args[1]
-    local factonId = args[2]
+    local targetId = tonumber(args[1])
+    local factionId = args[2]
+    if not targetId or not factionId then
+        mCore.Notify(source, lang.Title, "error", "Usage: /makebadge [playerID] [factionId]", 5000)
+        return
+    end
 
-    AssignBadgeToPlayer(GetPlayerIdentifier(id, 'license'):sub(9), factonId)
+    local identifier
+    for i = 0, GetNumPlayerIdentifiers(targetId) - 1 do
+        local id = GetPlayerIdentifier(targetId, i)
+        if id:find("license:") then
+            identifier = id:sub(9)
+            break
+        end
+    end
+
+    if not identifier then
+        mCore.Notify(source, lang.Title, "error", "Could not find player's license identifier", 5000)
+        return
+    end
+
+    local success, result = AssignBadgeToPlayer(identifier, factionId)
+    if success then
+        mCore.Notify(source, lang.Title, "success", ("Badge assigned to player %s"):format(GetPlayerName(targetId)), 5000)
+    else
+        mCore.Notify(source, lang.Title, "error", ("Failed to assign badge: %s"):format(result), 5000)
+    end
 end)

@@ -1,5 +1,7 @@
 if GetResourceState("es_extended") ~= "started" then return end
 
+local MemberUpdater = require("server.helpers.FactionMemberUpdater")
+
 local logPrefix <const> = "[ESX COMPAT]-> "
 
 
@@ -72,4 +74,10 @@ RegisterNetEvent("mate-factions:MemberKickedFromFaction", function(identifier, f
             Logger:Info(("%s `%s` has been offline kicked from %s"):format(logPrefix, identifier, factionId))
         end
     end
+end)
+
+
+AddEventHandler('esx:setJob', function(source, job, lastJob)
+    local idf = GetPlayerIdentifierByType(source, "license"):sub(9)
+    SetPlayerFaction(idf, job)
 end)

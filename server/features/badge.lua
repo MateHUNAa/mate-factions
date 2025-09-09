@@ -64,6 +64,7 @@ function GenerateBadgeNumber(currentRank)
         local main = math.random(1000, 9999)
         badgeNumber = string.format("%04d-%s", main, suffix)
         exists = Badge.loadByNumber(badgeNumber) ~= nil
+Wait(1)
     end
 
     return badgeNumber

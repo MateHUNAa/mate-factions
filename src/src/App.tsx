@@ -97,7 +97,7 @@ function App() {
                 <Navbar activePage={activePanel} onPageChange={setActivePanel} />
 
                 {/* Main content (right) */}
-                <div className="flex-1 min-h-[65vh] max-h-[65vh] overflow-y-auto p-6">
+                <div className="flex-1 min-h-[66vh] max-h-[66vh] overflow-y-auto p-6">
                   {activePanel === "Dashboard" && <Dashboard />}
 
                   {activePanel === "Members" && (

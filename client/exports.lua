@@ -105,10 +105,10 @@ function getFactionRanks()
         end
 
         table.insert(ranks, {
-            id = id,
-            name = data.name,
+            id          = id,
+            name        = data.name,
             permissions = perms,
-            color = data.color,
+            color       = data.color,
             description = data.description
         })
     end

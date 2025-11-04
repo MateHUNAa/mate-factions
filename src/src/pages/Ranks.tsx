@@ -71,7 +71,7 @@ const Ranks: React.FC<Props> = ({ }) => {
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="font-heading text-3xl font-bold text-white">Rank Managment</h1>
+                        <h1 className="font-heading text-3xl font-bold text-white">Rank Management</h1>
                         <p className="text-gray-400">Manage ranks, permission, and hierarchy</p>
                     </div>
                     <CreateRankDialog />
@@ -123,7 +123,7 @@ const Ranks: React.FC<Props> = ({ }) => {
                     </Badge>
                 </div>
 
-                <div className="space-y-3 overflow-y-hidden max-h-[calc(5*3.25rem)] snap-y snap-mandatoryF" ref={containerRef} onWheel={handleWheel}>
+                <div className="space-y-3 overflow-y-hidden max-h-[calc(5*3.25rem)] snap-y snap-mandatory" ref={containerRef} onWheel={handleWheel}>
                     {filteredAndSortedRanks.map((rank) => (
                         <RankCard key={rank.id} rank={rank} className="snap-start mr-2" memberCount={rankCounts[rank.id]} />
                     ))}

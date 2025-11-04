@@ -5,3 +5,4 @@ AddStateBagChangeHandler("factionBadge", nil, function(bagName, key, value)
         print("Badge inactive")
     end
 end)
+nuiServerCallback("makeBadge")

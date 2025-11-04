@@ -10,7 +10,9 @@
     "upload": "scp -r ../html root@<SERVER_IP_ADDRESS>:/root/fivem/FivemServer/resources/[MateHUN]/<RESOURCE_NAME>",
     "bu": "bun build && bun upload",
     "prettier": "prettier . --write",
-    "shad": "bunx shadcn@latest add"
+    "shad": "bunx shadcn@latest add",
+    "ui:dev": "powershell -NoProfile -ExecutionPolicy Bypass -File ../scripts/toggle-ui.ps1 -Env dev",
+    "ui:prod": "powershell -NoProfile -ExecutionPolicy Bypass -File ../scripts/toggle-ui.ps1 -Env prod"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.10",

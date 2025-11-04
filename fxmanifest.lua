@@ -13,7 +13,7 @@ shared_scripts {
 }
 
 server_scripts {
-    "server/helpers/*.lua",
+    "server/helpers/* .lua",
 
     "server/core/main.lua",
     "server/core/init.lua",
@@ -39,7 +39,8 @@ shared_script '@ox_lib/init.lua'
 dependency {
     'mCore',
     'oxmysql',
-    'ox_lib'
+    'ox_lib',
+    "mate-admin"
 }
 
 

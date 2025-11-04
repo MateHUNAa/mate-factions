@@ -313,7 +313,5 @@ function HasFactionAbility(factionId, ability)
         return Logger:Debug(("[HasFactionAbility]: %s is not exists"):format(factionId))
     end
 
-    local abilities = Config.FactionAbilities[faction.type]
-
-    return abilities[ability] or false
+    return faction.permissions[ability] or false
 end

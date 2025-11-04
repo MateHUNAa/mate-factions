@@ -2,6 +2,7 @@ local factionTypes      = {}
 local playerFactions    = {}
 local playerFactionsKey = {}
 
+
 local Logger            = require("shared.Logger")
 
 RegisterNetEvent("mate-factions:updateClientFactionTypes", function(data, factions)

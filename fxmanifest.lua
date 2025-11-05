@@ -13,7 +13,7 @@ shared_scripts {
 }
 
 server_scripts {
-    "server/helpers/* .lua",
+    "server/helpers/*.lua",
 
     "server/core/main.lua",
     "server/core/init.lua",
